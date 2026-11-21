@@ -8,7 +8,12 @@ import fnmatch, hashlib, json, os, sys, stat
 PROTECTED = ["packages.lock.json", "**/packages.lock.json", "package-lock.json", "**/package-lock.json", ".github", ".github/*", ".github/**", ".factory/**", ".factory",
              "CLAUDE.md", "**/CLAUDE.md", "AGENTS.md", "**/AGENTS.md", "GEMINI.md", "**/GEMINI.md", "CLAUDE.local.md", "**/CLAUDE.local.md", ".mcp.json", "**/.mcp.json",
              ".claude/**", ".codex/**", ".gemini/**", ".cursor/**", ".git", ".git/**", "**/.git", "**/.git/**", "Directory.Build.props", "Directory.Packages.props", "nuget.config", "NuGet.Config", ".npmrc"]
-def protected(p): return any(fnmatch.fnmatchcase(p, g) for g in PROTECTED)
+def protected(p):  # "**/x" is matched at any depth, including the top level; "dir/**" at the top level or under any parent
+    for g in PROTECTED:
+        if fnmatch.fnmatchcase(p, g): return True
+        if g.startswith("**/") and fnmatch.fnmatchcase(p, g[3:]): return True
+        if not g.startswith("**/") and any(fnmatch.fnmatchcase("/".join(p.split("/")[i:]), g) for i in range(1, p.count("/") + 1)): return True
+    return False
 def walk(repo):
     m = {}
     for d, dirs, files in os.walk(repo, followlinks=False):

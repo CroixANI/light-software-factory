@@ -35,7 +35,7 @@ rev = open(f"{d}/reviewer-readonly.sb").read(); bld = open(f"{d}/builder.sb").re
 open(f"{d}/reviewer-readonly.sb", "w").write(rev + net + rd)
 open(f"{d}/builder.sb", "w").write(bld + net + rd)
 open(f"{d}/check-step.sb", "w").write(";; MODEL (spike/sandbox/s3-s4/run.sh): check-step = builder shape below, network replaced by the Step's own service ports\n" + bld + f'(allow network-outbound (remote ip "localhost:{s1}") (remote ip "localhost:{s2}"))   ; MODEL: only the Step\'s own service ports, no gateway\n' + rd)
-rst = "\n".join(l for l in bld.splitlines() if '/repo"' not in l)   # builder exec/read rules minus the repo write rule
+rst = "\n".join(l for l in bld.splitlines() if '/repo"' not in l and not l.startswith(";; Shape builder"))   # builder exec/read rules minus the repo write rule
 open(f"{d}/restore.sb", "w").write(";; MODEL (spike/sandbox/s3-s4/run.sh): restore = builder exec/read rules WITHOUT the repo write; writes only the item overlay\n" + rst + "\n" + net + rd + f'(allow file-write* (subpath "{overlay}"))   ; MODEL: restore writes only the item overlay\n')
 l = open(f"{d}/run-sandboxed.sh").read()
 assert "^(reviewer-readonly|builder)$" in l
