@@ -6,16 +6,21 @@ set -euo pipefail
 here="$(cd "$(dirname "$0")" && pwd)"
 shape=; step=; port=; show=0; clidir=; mach=()
 while [ $# -gt 0 ]; do case "$1" in
-  --shape) shape=$2; shift 2;; --step) step=$2; shift 2;; --port) port=$2; shift 2;;
-  --cli-dir) clidir=$(cd "$2" && pwd -P); shift 2;; --mach) [[ "$2" =~ ^[A-Za-z0-9._-]+$ ]] || { echo "bad mach name" >&2; exit 2; }; mach+=("$2"); shift 2;; --show-profile) show=1; shift;; --) shift; break;; *) echo "bad arg $1" >&2; exit 2;;
+  --shape|--step|--port|--cli-dir|--mach) [ $# -ge 2 ] || { echo "missing value for $1" >&2; exit 2; }; k=$1; v=$2; shift 2
+    case $k in --shape) shape=$v;; --step) step=$v;; --port) port=$v;; --cli-dir) clidir=$(cd "$v" && pwd -P);;
+      --mach) [[ "$v" =~ ^[A-Za-z0-9._-]+$ ]] || { echo "bad mach name" >&2; exit 2; }; mach+=("$v");; esac;;
+  --show-profile) show=1; shift;; --) shift; break;; *) echo "bad arg $1" >&2; exit 2;;
 esac; done
 [[ "$shape" =~ ^(reviewer-readonly|builder)$ ]] && [[ "$port" =~ ^[0-9]+$ ]] && [ -f "$here/$shape.sb" ] && [ -d "$step" ] && [ -n "$port" ] && [ -n "$clidir" ] && [ $# -gt 0 ] || { echo "usage: see header" >&2; exit 2; }
 step="$(cd "$step" && pwd -P)"          # Seatbelt matches resolved paths (/private/var, not /var)
 interp="$(readlink -f "$(command -v python3)")"
 pyroot="${interp%/bin/*}"                # .../Python.framework/Versions/3.x
 nodebin="$(command -v node || true)"; noderoot=/nonexistent; [ -n "$nodebin" ] && noderoot="$(dirname "$(dirname "$(readlink -f "$nodebin")")")"
-for r in "$pyroot" "$noderoot" "$clidir"; do   # roots become read (and exec) rules: refuse broad ones
-  case "$r" in /|/usr|/usr/local|/opt|/opt/homebrew|/System|/Library|/bin|/Users|/private) echo "refusing broad root: $r (use a venv or a dedicated install)" >&2; exit 2;; esac
+repo_root="$(cd "$here/../../.." && pwd -P)"
+for r in "$pyroot" "$noderoot" "$clidir" "$step"; do   # roots become read (and exec) rules: refuse broad ones
+  case "$r" in /|/usr|/usr/local|/opt|/opt/homebrew|/System|/Library|/bin|/Users|/private|/Applications) echo "refusing broad root: $r" >&2; exit 2;; esac
+  case "$r" in *[\"\(\)\\]*) echo "refusing path with quote/paren/backslash: $r" >&2; exit 2;; esac
+  for guard in "$HOME" "$repo_root"; do case "$guard/" in "$r"/*) echo "refusing root that contains $guard: $r" >&2; exit 2;; esac; done
 done
 prof="$(mktemp -t lsf-profile)"; trap 'rm -f "$prof"' EXIT
 { cat "$here/base.sb"
