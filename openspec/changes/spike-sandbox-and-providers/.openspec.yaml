@@ -1,0 +1,5 @@
+schema: spec-driven
+created: 2026-11-21
+goal: Give each provider CLI (claude, codex, gemini) a supported/unsupported
+  verdict with evidence, and produce docs/spike/findings.md
+skip_specs: true
