@@ -2,7 +2,7 @@
 
 ← Back to the [repository README](../README.md).
 
-**Status:** requirements confirmed (D-01…D-73). Architecture v1 revision 4.1 — reviewed in 3 rounds, simplified after an independent Gemini review, consistency-checked; ready for the implementation spike. New readers start with [how-it-works.md](how-it-works.md).
+**Status:** requirements confirmed (D-01…D-74). Architecture v1 revision 4.1 — reviewed in 3 rounds, simplified after an independent Gemini review, consistency-checked; ready for the implementation spike. New readers start with [how-it-works.md](how-it-works.md).
 **Purpose of this folder:** agree on *what* we build before deciding *how*. Architecture, ADRs and specs come after the requirements reach `agreed`.
 
 ## What it is
@@ -54,6 +54,7 @@ cloud runner, deployment. **Out of v1:** see [requirements.md](requirements.md#n
 | [research-notes.md](research-notes.md) | Verified facts and sources |
 | [glossary.md](glossary.md) | Shared vocabulary |
 | [architecture/](architecture/) | Architecture v1 ([`architecture.md`](architecture/architecture.md), [`adr/`](architecture/adr/)); review rounds, triage ledgers and the Gemini review in [`reviews/`](architecture/reviews/) |
+| [process/session-protocol.md](process/session-protocol.md) | What an agent does on a short command ("do next task", "spec <slug>", …); D-74 |
 | [spike/plan.md](spike/plan.md) | Implementation-spike plan derived from the architecture's open questions |
 
 ## Process

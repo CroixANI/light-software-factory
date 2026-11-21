@@ -30,6 +30,14 @@ body:
       description: Paths this session may touch. Sessions run in parallel only if these do not overlap (D-38).
     validations:
       required: true
+  - type: dropdown
+    id: attended
+    attributes:
+      label: Attended
+      description: "yes = needs the owner present (e.g. a provider login); selection puts these last and the session asks first."
+      options: ["no", "yes"]
+    validations:
+      required: true
   - type: textarea
     id: done
     attributes:
