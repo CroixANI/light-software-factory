@@ -1,4 +1,6 @@
 ;; S5 extra rules for dotnet (appended after builder.sb by launcher.sh --extra). Each one was added after a concrete failure; see findings.
 ;; 1. .NET named mutex (NuGet-Migrations: taken by the restore task, and by the CLI's first-use code unless the sentinels are pre-seeded) lives under /tmp/.dotnet. Shared by every sandbox on the host: a real cost.
 (allow file-read* file-write* (subpath "/private/tmp/.dotnet"))
+;; /tmp is a symlink to /private/tmp; Seatbelt matches the resolved path. base.sb already allows metadata on /private; the two literals are kept explicit.
+;; If Factory.Station generates this rule dynamically (e.g. from TMPDIR or a per-Step shared-memory dir), it must use the resolved path and cover both the directory and its parent stat.
 (allow file-read-metadata (literal "/private/tmp") (literal "/tmp"))

@@ -38,7 +38,9 @@ for n in 10-cache-write-denied-nuget 11-cache-write-denied-npm 12-write-outside-
 req 13-direct-egress-denied "code=EPERM"
 # 14: pitfall. node aborts at startup (rc 134) when its stdout is a regular file OUTSIDE the readable roots; python and dotnet do not.
 t="$(mktemp -t s5-stdout)"; "$here/run.sh" "$step" -- node -v >"$t" 2>&1; rc14=$?; "$here/run.sh" "$step" -- python3 -c 1 >"$t.p" 2>&1; rc17=$?; "$here/run.sh" "$step" -- dotnet --version >"$t.d" 2>&1; rc18=$?; "$here/run.sh" "$step" -- node -v >"$step/io/out/n.txt" 2>&1; rc19=$?; rm -f "$t.p" "$t.d"; echo "INFO python-file=$rc17 dotnet-file=$rc18 node-file-in-io/out=$rc19 (expected 0 0 0)" | tee -a "$out/summary.txt"; clean <"$t" | head -8 >"$out/14-node-stdout-file-outside-step.txt"; rm -f "$t"
+[ "$rc17$rc18$rc19" = 000 ] || { echo "FAIL info python/dotnet/node file-stdout expected 0 0 0" | tee -a "$out/summary.txt"; fail=$((fail+1)); }
 echo "INFO rc=$rc14 14-node-stdout-file-outside-step (expected 134)" | tee -a "$out/summary.txt"
+[ "$rc14" = 134 ] || { echo "FAIL info case 14 expected rc 134 (node abort) got $rc14" | tee -a "$out/summary.txt"; fail=$((fail+1)); }
 echo "pass=$pass fail=$fail" | tee -a "$out/summary.txt"
 echo "env: macOS $(sw_vers -productVersion), dotnet $(dotnet --version), node $(node -v), npm $(npm -v)" | tee -a "$out/summary.txt"
 exit $((fail>0))
