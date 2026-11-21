@@ -158,4 +158,13 @@ case("e30-renamed-source-near-miss", "RENAMED FROM differs from the existing nam
      {"inventory": "## RENAMED Requirements\n\n- FROM: `### Requirement: bravo release`\n- TO: `### Requirement: Bravo cancellation`\n"})
 case("e31-removed-near-miss", "REMOVED name differs from the existing name only in case (hard error, unlike a totally absent name, see h12).",
      {"inventory": sec("REMOVED", "### Requirement: charlie audit log\n**Reason**: r\n**Migration**: m\n")})
+case("e14b-atomicity-later-capability-fails", "billing (alphabetically first) is valid, inventory (later) fails: is the billing spec still written? Distinguishes all-or-nothing from write-per-capability.",
+     {"billing": sec("ADDED", req("Refund", "The system SHALL refund a cancelled invoice.", [("Cancelled", "an invoice is cancelled", "the amount is refunded")])),
+      "inventory": sec("MODIFIED", req("Zulu nothing", "The system SHALL do nothing.", [("S", "w", "t")]))})
+case("h23-renamed-from-reused-by-added", "RENAMED Bravo release to Bravo cancellation AND ADDED a new requirement named `Bravo release`: allowed (rename applies before add); the renamed block keeps its slot, the new one goes last.",
+     {"inventory": "## RENAMED Requirements\n\n- FROM: `### Requirement: Bravo release`\n- TO: `### Requirement: Bravo cancellation`\n\n" + sec("ADDED", req("Bravo release", "The system SHALL release a hold when its owner asks.", [("Owner asks", "the owner asks", "the hold is released")]))})
+case("e32-modified-no-scenario", "MODIFIED block without any scenario.",
+     {"inventory": sec("MODIFIED", "### Requirement: Delta export\nThe system SHALL export the stock table as CSV on request.\n")})
+case("e33-renamed-on-new-spec", "RENAMED against a capability that has no spec yet.",
+     {"notifications": "## RENAMED Requirements\n\n- FROM: `### Requirement: Email notice`\n- TO: `### Requirement: Mail notice`\n"})
 print("cases:", len(os.listdir(cases_dir)))

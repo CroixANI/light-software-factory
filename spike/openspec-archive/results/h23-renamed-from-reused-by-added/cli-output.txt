@@ -1,0 +1,10 @@
+Task status: ✓ Complete
+
+Specs to update:
+  inventory: update
+Applying changes to openspec/specs/inventory/spec.md:
+  + 1 added
+  → 1 renamed
+Totals: + 1, ~ 0, - 0, → 1
+Specs updated successfully.
+Change 'h23-renamed-from-reused-by-added' archived as '<DATE>-h23-renamed-from-reused-by-added'.

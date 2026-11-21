@@ -1,12 +1,12 @@
 # S7 findings: OpenSpec's own archive on fixture changes
 
 Task 2.5 of `spike-sandbox-and-providers`, experiment S7, question Q8 (architecture §19). Issue #13.
-Evidence: [spike/openspec-archive/](../../../spike/openspec-archive/) (53 fixture cases, `run.sh`, one `results/<case>/` folder per case with the CLI output, exit code, before/after trees and a diff of the main specs).
+Evidence: [spike/openspec-archive/](../../../spike/openspec-archive/) (57 fixture cases, `run.sh`, one `results/<case>/` folder per case with the CLI output, exit code, before/after trees and a diff of the main specs).
 Every statement below cites a case id (`h*` = merges, `e*` = error and edge cases) that you can open under `results/`.
 
 ## Setup
 
-- CLI: `@fission-ai/openspec` **1.17.0** from the repo's `node_modules` (`package.json` asks for `^1.2.0`; the lock file installed 1.17.0), Node v24.
+- CLI: `@fission-ai/openspec` **1.17.0** from the repo's `node_modules` (`package.json` asks for `^1.2.0`; the lock file installed 1.17.0), Node v24 (local, not recorded in the results).
 - Each case runs in a **copy** of a minimal project (`openspec/config.yaml`, two capabilities `inventory` (4 requirements) and `billing` (1), empty `changes/archive/`) in a temp dir: `openspec archive -y <change>` with stdin from `/dev/null`, `NO_COLOR=1`. The repository's own `openspec/` was never touched.
 - After each run `openspec validate --specs --strict` is run on the result (`validate-after.txt`).
 - Besides running the CLI, the merge rules were read in the installed package (`dist/core/specs-apply.js`, `parsers/requirement-blocks.js`) to explain the observed results. Things that are only read from the source and not run are marked *(source only)*.
@@ -14,9 +14,9 @@ Every statement below cites a case id (`h*` = merges, `e*` = error and edge case
 
 ## What the CLI does, in order
 
-1. Reads the change folder `openspec/changes/<name>/`. Validates the change's delta specs (`validate` rules: duplicates, cross-section conflicts, RENAMED pairing, scenarios required, unknown `## ... Requirements` headers). A failure prints `Validation errors in change delta specs:` + `Validation failed. Please fix the errors before archiving.` and exits **1** (e06, e07, e11, e13, e17, e19).
+1. Reads the change folder `openspec/changes/<name>/`. Validates the change's delta specs (`validate` rules: duplicates, cross-section conflicts, RENAMED pairing, scenarios required, unknown `## ... Requirements` headers). A failure prints `Validation errors in change delta specs:` + `Validation failed. Please fix the errors before archiving.` and exits **1** (e06, e07, e11, e13, e16, e17, e19, e26-e29, e32).
 2. Checks `tasks.md` (`Task status: ✓ Complete` or `0/1 tasks`). Unchecked tasks only warn when `-y` is given: `Warning: 1 incomplete task(s) found. Continuing due to --yes flag.` and archive continues (h14). Without `-y` it asks interactively *(source only)*.
-3. For every capability folder under `changes/<name>/specs/` (alphabetical order in the output: billing, inventory, shipping, h07) builds the **new text of the main spec in memory**. Any error here aborts the whole archive with `Aborted. No files were changed.` and exit 1 (e14: a valid inventory delta is **not** written when the billing delta fails).
+3. For every capability folder under `changes/<name>/specs/` (alphabetical order in the output: billing, inventory, shipping, h07) builds the **new text of the main spec in memory**. Any error here aborts the whole archive with `Aborted. No files were changed.` and exit 1 (e14b: a valid billing delta, processed first, is **not** written when the later inventory delta fails; e14 is the reverse order).
 4. Validates each rebuilt main spec. A rebuilt spec with errors is not written (h08, e22). Warnings (for example a requirement without SHALL/MUST) do **not** block (e12, e25).
 5. Writes the specs, then moves the change folder to `openspec/changes/archive/<YYYY-MM-DD>-<name>/` (h02). The date is the **local** date of the machine (`formatLocalDate`, not UTC). The move is a byte-identical copy of the change folder, including the delta specs and `.openspec.yaml`, and including unchecked tasks (h14). If the target folder already exists (checked early, right after the task status, before any spec is touched): `✖ Error: Archive '<date>-<name>' already exists.`, exit 1, nothing changed (h18).
 6. Output ends with `Specs updated successfully.` and `Change '<name>' archived as '<date>-<name>'.` The CLI writes its output, errors included, to stdout (stderr was empty in two error cases checked by hand with separate redirects, e01 and e06; `run.sh` merges the streams, so the results folders cannot show this).
@@ -27,7 +27,7 @@ Every statement below cites a case id (`h*` = merges, `e*` = error and edge case
 
 Delta file format: `openspec/changes/<name>/specs/<capability>/spec.md` containing any of the four sections `## ADDED Requirements`, `## MODIFIED Requirements`, `## REMOVED Requirements`, `## RENAMED Requirements` (header match is case-insensitive in the reader *(source only)*; a differently spelled header such as `## ADD Requirements` is an **error**, e19; the same for `## Requirements`, e18). Requirements are `### Requirement: <name>` blocks, scenarios `#### Scenario: <name>`. Names are matched **exactly and case-sensitively** after trimming and removing a closing `###` sequence; case or spacing variants are detected as typos and are errors (e10, e24).
 
-**Apply order in the code is RENAMED, then REMOVED, then MODIFIED, then ADDED** *(source only, `specs-apply.js`)*, whatever the order of sections in the delta file (h06 writes them in the reverse order and still merges as described). All four work on a name-to-block map of the existing spec. What the fixtures can show of the order: the same requirement name cannot appear in two sections (pre-checks reject MODIFIED+REMOVED e26, MODIFIED+ADDED e27, ADDED+REMOVED e07, RENAMED+REMOVED e16, RENAMED TO + ADDED e28, MODIFIED under the old name of a rename e06), so the only observable consequences are: MODIFIED sees the NEW name of a renamed block (h06), and ADDED blocks come last.
+**Apply order in the code is RENAMED, then REMOVED, then MODIFIED, then ADDED** *(source only, `specs-apply.js`)*, whatever the order of sections in the delta file (h06 writes them in the reverse order and still merges as described). All four work on a name-to-block map of the existing spec. What the fixtures can show of the order: the same requirement name cannot appear in two sections (pre-checks reject MODIFIED+REMOVED e26, MODIFIED+ADDED e27, ADDED+REMOVED e07, RENAMED+REMOVED e16, RENAMED TO + ADDED e28, MODIFIED under the old name of a rename e06), so the observable consequences are: MODIFIED sees the NEW name of a renamed block (h06); ADDED blocks come last; and RENAMED is applied **before** ADDED, so a delta may rename `X` away and ADD a new `X` in the same change (h23: the renamed block keeps its slot, the new `X` goes at the end). An adapter that adds first, or rejects a name that is both a RENAMED FROM and an ADDED name, would abort on h23.
 
 | Kind | What it does to the main spec | Case |
 |---|---|---|
@@ -50,15 +50,15 @@ Formatting side effects: the file is rebuilt as `<text before ## Requirements>`,
 
 ### Retiring a capability
 
-Removing the **last** requirement of a spec aborts: `Spec must have at least one requirement` + a hint (h08). With `retire_capabilities: true` in the change's `.openspec.yaml` the spec file is deleted: `Retiring openspec/specs/billing/spec.md: all requirements removed.` (h17).
+Removing the **last** requirement of a spec aborts: `Spec must have at least one requirement` + a hint (h08). With `retire_capabilities: true` in the change's `.openspec.yaml` the spec file is deleted (the whole `specs/<cap>/` folder disappears, see `specs.diff`): `Retiring openspec/specs/billing/spec.md: all requirements removed.` (h17).
 
 ### Idempotence ("early sync")
 
-OpenSpec has a `sync` flow that merges deltas before archive, so archive tolerates already-applied deltas: ADDED with byte-identical block (after trim and line-ending normalisation), MODIFIED with identical block, RENAMED where FROM is gone and TO exists, and REMOVED of a completely absent requirement are no-ops (`Specs already in sync; no files changed.` h11, h20, h21; REMOVED absent gives a warning, h12). A REMOVED whose name differs from an existing one only in case or spacing is a hard error, not a no-op (e31). Only **differing** content is an error. The factory has no sync step, so the adapter can choose to reject these; but if a human ran `openspec sync` on the branch, the closing PR would hit this case.
+OpenSpec has a `sync` flow that merges deltas before archive, so archive tolerates already-applied deltas: ADDED with byte-identical block (after trim and line-ending normalisation *(source only)*), MODIFIED with identical block, RENAMED where FROM is gone and TO exists, and REMOVED of a completely absent requirement are no-ops (`Specs already in sync; no files changed.` h11, h20, h21; REMOVED absent gives a warning, h12). A REMOVED whose name differs from an existing one only in case or spacing is a hard error, not a no-op (e31). Only **differing** content is an error. The factory has no sync step, so the adapter can choose to reject these; but if a human ran `openspec sync` on the branch, the closing PR would hit this case.
 
 ## Error cases and exact messages
 
-All exit 1 and print `Aborted. No files were changed.` unless noted. `<cap>` is the capability folder name.
+All exit 1. Two output shapes: spec-merge errors print `Specs to update:` ... the message ... `Aborted. No files were changed.`; the **pre-check** rows (marked so) print `Validation errors in change delta specs:` + `✗ <message>` + `Validation failed. Please fix the errors before archiving.` + the `--no-validate` hint, before any `Specs to update`. h18 prints only the `✖ Error` line. `<cap>` is the capability folder name.
 
 | Situation | Message (prefix) | Case |
 |---|---|---|
@@ -80,18 +80,18 @@ All exit 1 and print `Aborted. No files were changed.` unless noted. `<cap>` is 
 | FROM without TO | pre-check: `RENAMED FROM: "X" has no matching TO: line. ...` (plus two more errors about "no requirement entries parsed" / "no deltas") | e17 |
 | Requirement under a non-delta `## ... Requirements` header | pre-check (e19, header `## ADD Requirements`) or, when the file has no delta at all, `<cap> validation failed - requirement "X" (line N) is under "## Requirements", which is not a delta section, so it would not be applied.` (e18) | e18, e19 |
 | Delta file with no operation | `Delta parsing found no operations for <cap>. Provide ADDED/MODIFIED/REMOVED/RENAMED sections in change spec.` | e09 |
-| MODIFIED/RENAMED on a new capability | see "New capability" | e08 |
+| MODIFIED/RENAMED on a new capability | see "New capability" | e08 (MODIFIED), e33 (RENAMED) |
 | ADDED requirement without a scenario | pre-check: `ADDED "X" must include at least one scenario` | e13 |
 | Archive folder exists | `✖ Error: Archive '<date>-<name>' already exists.` | h18 |
-| Atomicity | one failing capability stops all; no spec written | e14 |
+| Atomicity | one failing capability stops all; no spec written, also when the failing one is processed after a valid one | e14b (e14 reverse order) |
 
-Not an error, only a later validate warning: a requirement text **without SHALL/MUST** is archived successfully in both ADDED (e12) and MODIFIED (e25); the next `openspec validate --specs --strict` then fails with `should contain SHALL or MUST`. The pre-check that rejects a missing scenario (e13) does exist for ADDED; a MODIFIED block without any scenario was not tried.
+Not an error, only a later validate warning: a requirement text **without SHALL/MUST** is archived successfully in both ADDED (e12) and MODIFIED (e25); the next `openspec validate --specs --strict` then fails with `should contain SHALL or MUST`. The pre-check that rejects a missing scenario (e13) does exist for ADDED; a MODIFIED block without any scenario is rejected the same way: `MODIFIED "X" must include at least one scenario` (e32).
 
 ## Comparison with the architecture's assumptions
 
 | Assumption (architecture §3, §7, Q8, A20) | Observed |
 |---|---|
-| "Facts show only `ADDED`", the other kinds are guesses | All four kinds behave as above; MODIFIED-as-full-replace and the strict name conflicts are the things nobody would guess; the apply order itself is only visible through the source. |
+| "Facts show only `ADDED`", the other kinds are guesses | All four kinds behave as above; MODIFIED-as-full-replace and the strict name conflicts are the things nobody would guess; the order REMOVED before MODIFIED/ADDED is only visible through the source, RENAMED before ADDED through h23. |
 | "Delta sections merged into `openspec/specs/`" | True, but MODIFIED is a **full replace** of the block (not a field-level merge) and ADDED always appends at the end. |
 | "Change folder moved to `openspec/changes/archive/<date>-<change>/`" | Confirmed. The date is the **local** date `YYYY-MM-DD`; the folder is a byte copy of the change (deltas, `proposal.md`, `tasks.md`, `.openspec.yaml`). |
 | Archive is deterministic | Yes for a given CLI version and input, apart from the date. All-or-nothing across capabilities for the spec writes. The folder move happens after the writes; a failure in between is not exercised. |
@@ -131,7 +131,7 @@ Use the `results/<id>/` folders as expected output (`specs.diff`, `after/specs/`
 19. e08 MODIFIED/RENAMED on a new capability; e22 REMOVED-only on a new capability.
 20. h08 removing the last requirement without retirement.
 21. e09 empty delta; e13 ADDED without scenario; e18, e19 requirement under a non-delta header.
-22. e14 atomicity across capabilities.
+22. e14b atomicity: a later failing capability discards an earlier valid one (e14 alone does not prove this, because the failing capability comes first). Also must merge: h23 rename away and ADD the same name.
 23. h18 archive folder already exists.
 
 **Judgement calls for the owner/adapter** (CLI accepts, but the factory could choose otherwise): e12/e25 missing SHALL/MUST (archived, later validate fails); e23 change with no deltas and no `skip_specs`.
@@ -140,7 +140,7 @@ Use the `results/<id>/` folders as expected output (`specs.diff`, `after/specs/`
 
 - CRLF line endings, tabs, `\r` in baselines; fenced code blocks containing `### Requirement:` lines; HTML comments; trailing `###` in headers; unicode names *(source only)*.
 - A baseline spec with sections after the last requirement (the "foreign tail" warning).
-- A MODIFIED block with no scenarios; very large specs; a crash between writing specs and moving the folder.
+- Very large specs; a crash between writing specs and moving the folder.
 - Interactive mode (no `-y`): prompts are not exercised; the factory should always pass `-y` or `--json`.
 - Other OpenSpec versions.
 
