@@ -1,0 +1,13 @@
+# Step folders, credential copies and raw logs never go into git (design.md, decision 4).
+work/
+**/work/
+# credential copies
+cred/
+*.credential
+auth.json
+.credentials.json
+oauth_creds.json
+# raw logs (commit excerpts only, under docs/spike/findings/)
+*.log
+logs/
+raw/
