@@ -1,0 +1,7 @@
+{
+  "schema": "fake-result/1",
+  "status": "done",
+  "role_shape": "reviewer-readonly",
+  "summary": "fake reviewer-readonly read 7 prompt chars and finished with done",
+  "tools_used": []
+}

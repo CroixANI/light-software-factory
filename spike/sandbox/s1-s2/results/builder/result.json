@@ -1,0 +1,11 @@
+{
+  "schema": "fake-result/1",
+  "status": "done",
+  "role_shape": "builder",
+  "summary": "fake builder read 7 prompt chars and finished with done",
+  "tools_used": [
+    "sh",
+    "dotnet",
+    "npm"
+  ]
+}

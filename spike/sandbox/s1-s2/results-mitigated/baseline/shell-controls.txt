@@ -1,0 +1,5 @@
+rc=0 :: launchctl help
+rc=1 :: open
+rc=0 :: osascript -e 'return 1'
+rc=0 :: ps eww -p 39228
+rc=0 :: security list-keychains

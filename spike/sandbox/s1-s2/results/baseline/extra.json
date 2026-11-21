@@ -1,0 +1,102 @@
+[
+  {
+    "attack": "procargs2-orchestrator",
+    "outcome": "succeeded",
+    "detail": "read 4860 bytes of argv+environ; environment canary FOUND; argv canary FOUND"
+  },
+  {
+    "attack": "procargs2-parent",
+    "outcome": "succeeded",
+    "detail": "read 39 bytes of argv+environ; environment canary not found; argv canary not found"
+  },
+  {
+    "attack": "procargs2-pid1-launchd",
+    "outcome": "error",
+    "detail": "errno 22 (Invalid argument)"
+  },
+  {
+    "attack": "procargs2-self",
+    "outcome": "succeeded",
+    "detail": "read 5132 bytes of argv+environ; environment canary FOUND; argv canary FOUND"
+  },
+  {
+    "attack": "proc_listallpids",
+    "outcome": "succeeded",
+    "detail": "859 pids listed; orchestrator pid visible"
+  },
+  {
+    "attack": "proc_name-orchestrator",
+    "outcome": "succeeded",
+    "detail": "Python"
+  },
+  {
+    "attack": "proc_pidpath-orchestrator",
+    "outcome": "succeeded",
+    "detail": "/opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python"
+  },
+  {
+    "attack": "sysctl-kern.proc.all",
+    "outcome": "succeeded",
+    "detail": "process table of 559872 bytes readable"
+  },
+  {
+    "attack": "kill-0-orchestrator",
+    "outcome": "succeeded",
+    "detail": "signal 0 delivered"
+  },
+  {
+    "attack": "kill-TERM-orchestrator",
+    "outcome": "succeeded",
+    "detail": "SIGTERM delivered to the stand-in"
+  },
+  {
+    "attack": "kill-0-pid1",
+    "outcome": "denied",
+    "detail": "errno 1 (Operation not permitted)"
+  },
+  {
+    "attack": "mach-lookup:com.apple.coreservices.launchservicesd",
+    "outcome": "succeeded",
+    "detail": "kern_return 0; LaunchServices (open)"
+  },
+  {
+    "attack": "mach-lookup:com.apple.CoreServices.coreservicesd",
+    "outcome": "succeeded",
+    "detail": "kern_return 0; LaunchServices (open)"
+  },
+  {
+    "attack": "mach-lookup:com.apple.SecurityServer",
+    "outcome": "succeeded",
+    "detail": "kern_return 0; Keychain / security"
+  },
+  {
+    "attack": "mach-lookup:com.apple.securityd.xpc",
+    "outcome": "succeeded",
+    "detail": "kern_return 0; Keychain / security (xpc)"
+  },
+  {
+    "attack": "mach-lookup:com.apple.pasteboard.1",
+    "outcome": "succeeded",
+    "detail": "kern_return 0; pasteboard"
+  },
+  {
+    "attack": "mach-lookup:com.apple.coreservices.appleevents",
+    "outcome": "succeeded",
+    "detail": "kern_return 0; Apple Events (osascript target)"
+  },
+  {
+    "attack": "mach-lookup:com.apple.system.opendirectoryd.libinfo",
+    "outcome": "succeeded",
+    "detail": "kern_return 0; directory service (candidate, not added)"
+  },
+  {
+    "attack": "mach-lookup:com.apple.cfprefsd.daemon",
+    "outcome": "succeeded",
+    "detail": "kern_return 0; preferences daemon"
+  },
+  {
+    "attack": "mach-lookup:com.apple.trustd",
+    "outcome": "succeeded",
+    "detail": "kern_return 0; trust evaluation"
+  }
+]

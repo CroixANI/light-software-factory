@@ -1,0 +1,102 @@
+[
+  {
+    "attack": "procargs2-orchestrator",
+    "outcome": "succeeded",
+    "detail": "read 4860 bytes of argv+environ; environment canary FOUND; argv canary FOUND"
+  },
+  {
+    "attack": "procargs2-parent",
+    "outcome": "succeeded",
+    "detail": "read 834 bytes of argv+environ; environment canary FOUND; argv canary FOUND"
+  },
+  {
+    "attack": "procargs2-pid1-launchd",
+    "outcome": "denied",
+    "detail": "errno 1 (Operation not permitted)"
+  },
+  {
+    "attack": "procargs2-self",
+    "outcome": "succeeded",
+    "detail": "read 2620 bytes of argv+environ; environment canary FOUND; argv canary FOUND"
+  },
+  {
+    "attack": "proc_listallpids",
+    "outcome": "succeeded",
+    "detail": "867 pids listed; orchestrator pid visible"
+  },
+  {
+    "attack": "proc_name-orchestrator",
+    "outcome": "succeeded",
+    "detail": "Python"
+  },
+  {
+    "attack": "proc_pidpath-orchestrator",
+    "outcome": "succeeded",
+    "detail": "/opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python"
+  },
+  {
+    "attack": "sysctl-kern.proc.all",
+    "outcome": "denied",
+    "detail": "errno 1 (Operation not permitted)"
+  },
+  {
+    "attack": "kill-0-orchestrator",
+    "outcome": "denied",
+    "detail": "errno 1 (Operation not permitted)"
+  },
+  {
+    "attack": "kill-TERM-orchestrator",
+    "outcome": "denied",
+    "detail": "errno 1 (Operation not permitted)"
+  },
+  {
+    "attack": "kill-0-pid1",
+    "outcome": "denied",
+    "detail": "errno 1 (Operation not permitted)"
+  },
+  {
+    "attack": "mach-lookup:com.apple.coreservices.launchservicesd",
+    "outcome": "denied",
+    "detail": "kern_return 1100; LaunchServices (open)"
+  },
+  {
+    "attack": "mach-lookup:com.apple.CoreServices.coreservicesd",
+    "outcome": "denied",
+    "detail": "kern_return 1100; LaunchServices (open)"
+  },
+  {
+    "attack": "mach-lookup:com.apple.SecurityServer",
+    "outcome": "denied",
+    "detail": "kern_return 1100; Keychain / security"
+  },
+  {
+    "attack": "mach-lookup:com.apple.securityd.xpc",
+    "outcome": "denied",
+    "detail": "kern_return 1100; Keychain / security (xpc)"
+  },
+  {
+    "attack": "mach-lookup:com.apple.pasteboard.1",
+    "outcome": "denied",
+    "detail": "kern_return 1100; pasteboard"
+  },
+  {
+    "attack": "mach-lookup:com.apple.coreservices.appleevents",
+    "outcome": "denied",
+    "detail": "kern_return 1100; Apple Events (osascript target)"
+  },
+  {
+    "attack": "mach-lookup:com.apple.system.opendirectoryd.libinfo",
+    "outcome": "denied",
+    "detail": "kern_return 1100; directory service (candidate, not added)"
+  },
+  {
+    "attack": "mach-lookup:com.apple.cfprefsd.daemon",
+    "outcome": "denied",
+    "detail": "kern_return 1100; preferences daemon"
+  },
+  {
+    "attack": "mach-lookup:com.apple.trustd",
+    "outcome": "denied",
+    "detail": "kern_return 1100; trust evaluation"
+  }
+]

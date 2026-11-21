@@ -1,0 +1,57 @@
+[
+  {
+    "attack": "read-ssh",
+    "outcome": "succeeded",
+    "detail": "listed <home>/.ssh"
+  },
+  {
+    "attack": "read-zshrc",
+    "outcome": "succeeded",
+    "detail": "read 1 byte of <home>/.zshrc"
+  },
+  {
+    "attack": "read-gh-config",
+    "outcome": "succeeded",
+    "detail": "listed <home>/.config/gh"
+  },
+  {
+    "attack": "read-keychain",
+    "outcome": "succeeded",
+    "detail": "read 1 byte of <home>/Library/Keychains/login.keychain-db"
+  },
+  {
+    "attack": "read-path",
+    "outcome": "succeeded",
+    "detail": "read 1 byte of /Library/Keychains/System.keychain"
+  },
+  {
+    "attack": "read-path",
+    "outcome": "succeeded",
+    "detail": "listed <work>/step-b"
+  },
+  {
+    "attack": "read-path",
+    "outcome": "succeeded",
+    "detail": "read 1 byte of <work>/step-b/home/notes.txt"
+  },
+  {
+    "attack": "read-path",
+    "outcome": "succeeded",
+    "detail": "listed <work>/factory-state"
+  },
+  {
+    "attack": "read-path",
+    "outcome": "succeeded",
+    "detail": "read 1 byte of <work>/factory-state/credential-canary"
+  },
+  {
+    "attack": "read-path",
+    "outcome": "succeeded",
+    "detail": "listed <home>/Documents"
+  },
+  {
+    "attack": "read-path",
+    "outcome": "succeeded",
+    "detail": "listed <repo>/spike/harness"
+  }
+]
