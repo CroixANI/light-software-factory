@@ -48,9 +48,9 @@ else:
 # proc_name / proc_pidpath of another process
 buf = ctypes.create_string_buffer(1024)
 r = libc.proc_name(a.orch_pid, buf, 1024)
-rec("proc_name-orchestrator", "succeeded" if r > 0 else "denied", buf.value.decode(errors="replace") if r > 0 else errname(ctypes.get_errno()))
+rec("proc_name-orchestrator", "succeeded" if r > 0 else ("denied" if ctypes.get_errno() in (1, 13) else "error"), buf.value.decode(errors="replace") if r > 0 else errname(ctypes.get_errno()))
 r = libc.proc_pidpath(a.orch_pid, buf, 1024)
-rec("proc_pidpath-orchestrator", "succeeded" if r > 0 else "denied", buf.value.decode(errors="replace") if r > 0 else errname(ctypes.get_errno()))
+rec("proc_pidpath-orchestrator", "succeeded" if r > 0 else ("denied" if ctypes.get_errno() in (1, 13) else "error"), buf.value.decode(errors="replace") if r > 0 else errname(ctypes.get_errno()))
 
 # sysctl KERN_PROC_ALL (what ps uses for the process table)
 mib = (ctypes.c_int * 3)(CTL_KERN, KERN_PROC, KERN_PROC_ALL)
@@ -83,5 +83,5 @@ SERVICES = [
 for svc, why in SERVICES:
     p = ctypes.c_uint(0)
     kr = libc.bootstrap_look_up(port.value, svc.encode(), ctypes.byref(p))
-    rec(f"mach-lookup:{svc}", "succeeded" if kr == 0 else "denied", f"kern_return {kr}; {why}")
+    rec(f"mach-lookup:{svc}", "succeeded" if kr == 0 else ("denied" if kr == 1100 else "error"), f"kern_return {kr}; {why}")
 with open(a.out, "w") as f: json.dump(res, f, indent=2)

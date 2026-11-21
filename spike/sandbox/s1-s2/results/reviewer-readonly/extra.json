@@ -7,7 +7,7 @@
   {
     "attack": "procargs2-parent",
     "outcome": "succeeded",
-    "detail": "read 835 bytes of argv+environ; environment canary FOUND; argv canary FOUND"
+    "detail": "read 834 bytes of argv+environ; environment canary FOUND; argv canary FOUND"
   },
   {
     "attack": "procargs2-pid1-launchd",
@@ -22,7 +22,7 @@
   {
     "attack": "proc_listallpids",
     "outcome": "succeeded",
-    "detail": "869 pids listed; orchestrator pid visible"
+    "detail": "867 pids listed; orchestrator pid visible"
   },
   {
     "attack": "proc_name-orchestrator",

@@ -5,7 +5,7 @@
 # Needs: macOS, python3, the repo's spike/harness. Creates spike/work/s1-s2 (git-ignored), leaves nothing running.
 set -uo pipefail
 here="$(cd "$(dirname "$0")" && pwd -P)"; SB="${SANDBOX_DIR:-}"; H="$here/../../harness"; H="$(cd "$H" && pwd -P)"
-[ -n "$SB" ] || SB="$H/sandbox"; RES="${RESULTS_NAME:-results}"
+[ -n "$SB" ] || SB="$H/sandbox"; RES="${RESULTS_NAME:-results}"; [[ "$RES" =~ ^results[A-Za-z0-9._-]*$ && "$RES" != *..* ]] || { echo "bad RESULTS_NAME" >&2; exit 2; }
 W="$(cd "$here/../.." && pwd -P)/work/s1-s2"
 case "$W" in */spike/work/s1-s2) rm -rf "$W";; *) echo "unexpected work dir" >&2; exit 2;; esac
 mkdir -p "$W"
@@ -58,4 +58,5 @@ echo p | python3 "$H/fake-cli/fake-cli.py" --shape builder --step "$B" "${bl[@]}
 { for cmd in "launchctl help" "open" "osascript -e 'return 1'" "ps eww -p $$" "security list-keychains"; do bash -c "$cmd" >/dev/null 2>&1; echo "rc=$? :: $cmd"; done; } > "$out/baseline/shell-controls.txt"
 wait 2>/dev/null
 find "$out" -type f \( -name '*.json' -o -name '*.txt' -o -name '*.stderr' -o -name '*.exit' \) -print0 | while IFS= read -r -d '' f; do sanitize < "$f" > "$f.tmp" && mv "$f.tmp" "$f"; done
+find "$out" -name "*.stderr" -size 0 -delete
 echo "done: $out"

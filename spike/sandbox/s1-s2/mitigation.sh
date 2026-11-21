@@ -5,11 +5,13 @@
 set -euo pipefail
 here="$(cd "$(dirname "$0")" && pwd -P)"; spike="$(cd "$here/../.." && pwd -P)"
 dst="$spike/work/patched"; rm -rf "$dst"; mkdir -p "$spike/work"; cp -R "$spike/harness/sandbox" "$dst"
-cat >> "$dst/base.sb" <<'RULES'
-
-;; CANDIDATE (task 2.1): process-info-pidinfo is the operation behind sysctl(KERN_PROCARGS2) and proc_pidinfo.
-;; `(deny process-info-pidinfo (target others))` does NOT stop it; denying the whole family and re-allowing pidinfo for self does.
-(deny process-info*)
-(allow process-info-pidinfo (target self))
-RULES
+# Replace (not append to) the process-info lines, so the tested profile is exactly the proposed one.
+python3 - "$dst/base.sb" <<'PY'
+import sys
+p=sys.argv[1]; s=open(p).read()
+a="(allow process-info* (target self))\n(deny process-info* (target others))\n"
+assert a in s
+s=s.replace(a,"(deny process-info*)\n(allow process-info-pidinfo (target self))   ; CANDIDATE: only pidinfo of self (sysctl KERN_PROCARGS2, proc_pidinfo)\n")
+open(p,"w").write(s)
+PY
 SANDBOX_DIR="$dst" RESULTS_NAME=results-mitigated "$here/run.sh"

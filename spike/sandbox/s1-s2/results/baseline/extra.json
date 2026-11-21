@@ -22,7 +22,7 @@
   {
     "attack": "proc_listallpids",
     "outcome": "succeeded",
-    "detail": "867 pids listed; orchestrator pid visible"
+    "detail": "859 pids listed; orchestrator pid visible"
   },
   {
     "attack": "proc_name-orchestrator",
@@ -37,7 +37,7 @@
   {
     "attack": "sysctl-kern.proc.all",
     "outcome": "succeeded",
-    "detail": "process table of 565056 bytes readable"
+    "detail": "process table of 559872 bytes readable"
   },
   {
     "attack": "kill-0-orchestrator",
