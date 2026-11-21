@@ -7,22 +7,22 @@
   {
     "probe": "repo-edit-existing",
     "outcome": "denied",
-    "detail": "PermissionError: [Errno 1] Operation not permitted: '<work>/step-e/repo/src/calc."
+    "detail": "PermissionError: [Errno 1] Operation not permitted: '<work>/step-e/repo/src/calc.py'"
   },
   {
     "probe": "repo-lockfile-packages",
     "outcome": "denied",
-    "detail": "PermissionError: [Errno 1] Operation not permitted: '<work>/step-e/repo/packages."
+    "detail": "PermissionError: [Errno 1] Operation not permitted: '<work>/step-e/repo/packages.lock.json'"
   },
   {
     "probe": "repo-lockfile-npm",
     "outcome": "denied",
-    "detail": "PermissionError: [Errno 1] Operation not permitted: '<work>/step-e/repo/package-l"
+    "detail": "PermissionError: [Errno 1] Operation not permitted: '<work>/step-e/repo/package-lock.json'"
   },
   {
     "probe": "repo-edit-CLAUDE.md",
     "outcome": "denied",
-    "detail": "PermissionError: [Errno 1] Operation not permitted: '<work>/step-e/repo/CLAUDE.md"
+    "detail": "PermissionError: [Errno 1] Operation not permitted: '<work>/step-e/repo/CLAUDE.md'"
   },
   {
     "probe": "repo-mkdir-github",
@@ -32,12 +32,12 @@
   {
     "probe": "repo-symlink-out",
     "outcome": "denied",
-    "detail": "PermissionError: [Errno 1] Operation not permitted: '<work>/outside-dir' -> '/Use"
+    "detail": "PermissionError: [Errno 1] Operation not permitted: '<work>/outside-dir' -> '<work>/step-e/repo/link-out'"
   },
   {
     "probe": "repo-write-through-symlink",
     "outcome": "error",
-    "detail": "FileNotFoundError: [Errno 2] No such file or directory: '<work>/step-e/repo/link-"
+    "detail": "FileNotFoundError: [Errno 2] No such file or directory: '<work>/step-e/repo/link-out/pwn.txt'"
   },
   {
     "probe": "out-io/out",
@@ -87,27 +87,27 @@
   {
     "probe": "deny-other-step-edit",
     "outcome": "denied",
-    "detail": "PermissionError: [Errno 1] Operation not permitted: '<work>/step-b/home/notes.txt"
+    "detail": "PermissionError: [Errno 1] Operation not permitted: '<work>/step-b/home/notes.txt'"
   },
   {
     "probe": "deny-factory-state",
     "outcome": "denied",
-    "detail": "PermissionError: [Errno 1] Operation not permitted: '<work>/factory-state/pwn.txt"
+    "detail": "PermissionError: [Errno 1] Operation not permitted: '<work>/factory-state/pwn.txt'"
   },
   {
     "probe": "deny-owner-home",
     "outcome": "denied",
-    "detail": "PermissionError: [Errno 1] Operation not permitted: '<home>/.s3s4-marker-56024'"
+    "detail": "PermissionError: [Errno 1] Operation not permitted: '<home>/.s3s4-marker-57919'"
   },
   {
     "probe": "deny-rename-out",
     "outcome": "denied",
-    "detail": "PermissionError: [Errno 1] Operation not permitted: '<work>/step-e/repo/README.md"
+    "detail": "PermissionError: [Errno 1] Operation not permitted: '<work>/step-e/repo/README.md' -> '<work>/step-e/README.md'"
   },
   {
     "probe": "deny-symlink-at-root",
     "outcome": "denied",
-    "detail": "PermissionError: [Errno 1] Operation not permitted: '/etc' -> '<work>/step-e/link"
+    "detail": "PermissionError: [Errno 1] Operation not permitted: '/etc' -> '<work>/step-e/link-root'"
   },
   {
     "probe": "cache-read",
@@ -132,7 +132,7 @@
   {
     "probe": "cache-rename-in",
     "outcome": "denied",
-    "detail": "PermissionError: [Errno 1] Operation not permitted: '<work>/caches/nuget/pkg.txt'"
+    "detail": "PermissionError: [Errno 1] Operation not permitted: '<work>/caches/nuget/pkg.txt' -> '<work>/step-e/home/stolen.txt'"
   },
   {
     "probe": "cache-chmod",
@@ -147,7 +147,7 @@
   {
     "probe": "cache-unlink",
     "outcome": "denied",
-    "detail": "PermissionError: [Errno 1] Operation not permitted: '<work>/caches/nuget/pkg.txt'"
+    "detail": "PermissionError: [Errno 1] Operation not permitted: '<work>/caches/nuget/other.txt'"
   },
   {
     "probe": "overlay-read",
@@ -167,11 +167,11 @@
   {
     "probe": "overlay-other-item",
     "outcome": "denied",
-    "detail": "PermissionError: [Errno 1] Operation not permitted: '<work>/items/2/packages/new."
+    "detail": "PermissionError: [Errno 1] Operation not permitted: '<work>/items/2/packages/new.txt'"
   },
   {
     "probe": "overlay-other-item-edit",
     "outcome": "denied",
-    "detail": "PermissionError: [Errno 1] Operation not permitted: '<work>/items/2/packages/exis"
+    "detail": "PermissionError: [Errno 1] Operation not permitted: '<work>/items/2/packages/existing.txt'"
   }
 ]

@@ -15,7 +15,7 @@ import errno, json, os, socket, sys
 
 DEN = (errno.EPERM, errno.EACCES)
 res = []
-def rec(name, outcome, detail=""): res.append({"probe": name, "outcome": outcome, "detail": str(detail)[:200]})
+def rec(name, outcome, detail=""): res.append({"probe": name, "outcome": outcome, "detail": str(detail)[:600]})
 
 def do(kind, arg):
     if kind in ("tcp", "udp"):

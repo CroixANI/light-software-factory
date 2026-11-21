@@ -15,6 +15,21 @@
     "detail": "PermissionError: [Errno 1] Operation not permitted"
   },
   {
+    "probe": "direct-ext-ip-on-gw-a-port",
+    "outcome": "denied",
+    "detail": "PermissionError: [Errno 1] Operation not permitted"
+  },
+  {
+    "probe": "direct-ext-ip-on-gw-c-port",
+    "outcome": "denied",
+    "detail": "PermissionError: [Errno 1] Operation not permitted"
+  },
+  {
+    "probe": "direct-ext-ip-on-gw-restore-port",
+    "outcome": "denied",
+    "detail": "PermissionError: [Errno 1] Operation not permitted"
+  },
+  {
     "probe": "dns-github.com",
     "outcome": "error",
     "detail": "gaierror: [Errno 8] nodename nor servname provided, or not known"

@@ -1,3 +1,4 @@
+;; MODEL (spike/sandbox/s3-s4/run.sh): check-step = builder shape below, network replaced by the Step's own service ports
 ;; Shape builder: write repo/, shell + toolchain exec (offline).
 (allow file-write* (subpath (string-append (param "STEP") "/repo")))
 (allow file-read* (subpath "/usr/local/share/dotnet"))

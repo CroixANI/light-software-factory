@@ -15,6 +15,21 @@
     "detail": "sent datagram"
   },
   {
+    "probe": "direct-ext-ip-on-gw-a-port",
+    "outcome": "error",
+    "detail": "TimeoutError: timed out"
+  },
+  {
+    "probe": "direct-ext-ip-on-gw-c-port",
+    "outcome": "error",
+    "detail": "TimeoutError: timed out"
+  },
+  {
+    "probe": "direct-ext-ip-on-gw-restore-port",
+    "outcome": "error",
+    "detail": "TimeoutError: timed out"
+  },
+  {
     "probe": "dns-github.com",
     "outcome": "succeeded",
     "detail": "resolved 140.82.121.3"

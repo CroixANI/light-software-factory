@@ -1,3 +1,4 @@
+;; MODEL (spike/sandbox/s3-s4/run.sh): restore = builder exec/read rules WITHOUT the repo write; writes only the item overlay
 ;; Shape builder: write repo/, shell + toolchain exec (offline).
 (allow file-read* (subpath "/usr/local/share/dotnet"))
 (allow process-exec (subpath (param "PYROOT")) (literal "/bin/sh") (literal "/bin/bash") (literal "/usr/bin/env") (literal "/bin/sleep")

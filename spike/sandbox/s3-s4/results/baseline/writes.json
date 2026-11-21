@@ -146,8 +146,8 @@
   },
   {
     "probe": "cache-unlink",
-    "outcome": "error",
-    "detail": "FileNotFoundError: [Errno 2] No such file or directory: '<work>/caches/nuget/pkg."
+    "outcome": "succeeded",
+    "detail": "removed"
   },
   {
     "probe": "overlay-read",

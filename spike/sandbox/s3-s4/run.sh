@@ -16,7 +16,7 @@ CACHES="$W/caches"; OVERLAY="$W/items/1/packages"; OVERLAY2="$W/items/2/packages
 mkdir -p "$CACHES/nuget" "$CACHES/npm" "$OVERLAY" "$OVERLAY2" "$W/outside-dir" "$W/factory-state"
 reset_state() {   # the caches are deliberately owner-WRITABLE, so a denial below is the profile's doing and not file modes
   find "${CACHES:?}" "${W:?}/items" -type f -delete; rm -rf "${CACHES:?}/npm/evil"
-  echo "cache-file" > "$CACHES/nuget/pkg.txt"; echo "cache-file" > "$CACHES/npm/index.txt"
+  echo "cache-file" > "$CACHES/nuget/pkg.txt"; echo "cache-file" > "$CACHES/npm/index.txt"; echo "cache-file" > "$CACHES/nuget/other.txt"
   echo "overlay-of-item-1" > "$OVERLAY/existing.txt"; echo "overlay-of-item-2" > "$OVERLAY2/existing.txt"
 }
 reset_state; echo '{"canary":"state"}' > "$W/factory-state/state.json"
@@ -34,9 +34,9 @@ rd = f'(allow file-read* (subpath "{caches}") (subpath "{overlay}"))   ; shared 
 rev = open(f"{d}/reviewer-readonly.sb").read(); bld = open(f"{d}/builder.sb").read()
 open(f"{d}/reviewer-readonly.sb", "w").write(rev + net + rd)
 open(f"{d}/builder.sb", "w").write(bld + net + rd)
-open(f"{d}/check-step.sb", "w").write(bld + f'(allow network-outbound (remote ip "localhost:{s1}") (remote ip "localhost:{s2}"))   ; MODEL: only the Step\'s own service ports, no gateway\n' + rd)
+open(f"{d}/check-step.sb", "w").write(";; MODEL (spike/sandbox/s3-s4/run.sh): check-step = builder shape below, network replaced by the Step's own service ports\n" + bld + f'(allow network-outbound (remote ip "localhost:{s1}") (remote ip "localhost:{s2}"))   ; MODEL: only the Step\'s own service ports, no gateway\n' + rd)
 rst = "\n".join(l for l in bld.splitlines() if '/repo"' not in l)   # builder exec/read rules minus the repo write rule
-open(f"{d}/restore.sb", "w").write(rst + "\n" + net + rd + f'(allow file-write* (subpath "{overlay}"))   ; MODEL: restore writes only the item overlay\n')
+open(f"{d}/restore.sb", "w").write(";; MODEL (spike/sandbox/s3-s4/run.sh): restore = builder exec/read rules WITHOUT the repo write; writes only the item overlay\n" + rst + "\n" + net + rd + f'(allow file-write* (subpath "{overlay}"))   ; MODEL: restore writes only the item overlay\n')
 l = open(f"{d}/run-sandboxed.sh").read()
 assert "^(reviewer-readonly|builder)$" in l
 open(f"{d}/run-sandboxed.sh", "w").write(l.replace("^(reviewer-readonly|builder)$", "^(reviewer-readonly|builder|check-step|restore)$"))
@@ -76,7 +76,7 @@ fcli() { local shape=$1 step=$2 port=$3; shift 3; echo prompt | "$SB/run-sandbox
   python3 "$H/fake-cli/fake-cli.py" --shape "$([ "$shape" = reviewer-readonly ] && echo reviewer-readonly || echo builder)" --step "$step" "$@"; }
 
 # ---- S3 ----
-NET=( "direct-1.1.1.1:443=tcp:1.1.1.1:443" "direct-8.8.8.8:53-tcp=tcp:8.8.8.8:53" "direct-udp-dns=udp:8.8.8.8:53" "dns-github.com=dns:github.com"
+NET=( "direct-1.1.1.1:443=tcp:1.1.1.1:443" "direct-8.8.8.8:53-tcp=tcp:8.8.8.8:53" "direct-udp-dns=udp:8.8.8.8:53" "direct-ext-ip-on-gw-a-port=tcp:1.1.1.1:$GA" "direct-ext-ip-on-gw-c-port=tcp:1.1.1.1:$GC" "direct-ext-ip-on-gw-restore-port=tcp:1.1.1.1:$GR" "dns-github.com=dns:github.com"
       "mdns-responder-socket=unix:/var/run/mDNSResponder" "listen-127.0.0.1:8920=listen:8920"
       "gw-a=tcp:127.0.0.1:$GA" "gw-b=tcp:127.0.0.1:$GB" "gw-c=tcp:127.0.0.1:$GC" "gw-restore=tcp:127.0.0.1:$GR" "svc-1=tcp:127.0.0.1:$S1" "svc-2=tcp:127.0.0.1:$S2" "orch-api=tcp:127.0.0.1:$X"
       "gw-a-via-localhost=tcp:localhost:$GA" "gw-a-via-ipv6=tcp:::1:$GA" "gw-a-via-127.0.0.2=tcp:127.0.0.2:$GA" )
@@ -101,7 +101,7 @@ WR() { local S=$1
        "deny-parent-dir=write:$(dirname "$S")/outside-marker.txt" "deny-other-step-home=write:$B/home/pwn.txt" "deny-other-step-edit=append:$B/home/notes.txt" "deny-factory-state=write:$W/factory-state/pwn.txt" \
        "deny-owner-home=write:$MARKER" "deny-rename-out=rename:$S/repo/README.md>$S/README.md" "deny-symlink-at-root=symlink:/etc>$S/link-root" \
        "cache-read=read:$CACHES/nuget/pkg.txt" "cache-new-file=write:$CACHES/nuget/new.txt" "cache-append=append:$CACHES/nuget/pkg.txt" "cache-truncate=truncate:$CACHES/nuget/pkg.txt" \
-       "cache-rename-in=rename:$CACHES/nuget/pkg.txt>$S/home/stolen.txt" "cache-chmod=chmod:$CACHES/npm/index.txt" "cache-mkdir=mkdir:$CACHES/npm/evil" "cache-unlink=unlink:$CACHES/nuget/pkg.txt" \
+       "cache-rename-in=rename:$CACHES/nuget/pkg.txt>$S/home/stolen.txt" "cache-chmod=chmod:$CACHES/npm/index.txt" "cache-mkdir=mkdir:$CACHES/npm/evil" "cache-unlink=unlink:$CACHES/nuget/other.txt" \
        "overlay-read=read:$OVERLAY/existing.txt" "overlay-new-file=write:$OVERLAY/new.txt" "overlay-append=append:$OVERLAY/existing.txt" "overlay-other-item=write:$OVERLAY2/new.txt" "overlay-other-item-edit=append:$OVERLAY2/existing.txt"
 }
 MARKER="$HOME/.s3s4-marker-$$"      # in the owner's home: must NOT be created (removed if it is)
