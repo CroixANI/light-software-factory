@@ -2,7 +2,7 @@ schema: spec-driven
 
 context: |
   Project: Light Software Factory — a local, single-user software factory (.NET, React, SQLite on macOS).
-  Read CLAUDE.md, docs/values.md (priority-ordered values, D-33), docs/how-it-works.md, and docs/decisions.md before proposing or changing anything.
+  Read AGENTS.md, docs/values.md (priority-ordered values, D-33), docs/how-it-works.md, and docs/decisions.md before proposing or changing anything.
 
   Binding constraints:
   - All docs, specs, code comments, and commit messages are in English (D-07).
