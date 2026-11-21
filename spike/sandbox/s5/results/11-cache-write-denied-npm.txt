@@ -1,0 +1,2 @@
+Error opening /private/var/select/sh: Operation not permitted
+/bin/sh: <step>/io/in/cache/npm/x: Operation not permitted

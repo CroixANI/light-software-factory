@@ -1,0 +1,2 @@
+Error opening /private/var/select/sh: Operation not permitted
+/bin/sh: <step>/home/../escape.txt: Operation not permitted

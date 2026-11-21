@@ -1,0 +1,5 @@
+;; 2. `dotnet test` (vstest): the host listens on a random loopback TCP port and testhost connects back. Loopback only, ANY port:
+;;    this also reaches other Steps' gateway ports on 127.0.0.1 (breaks S3 isolation), so it must be avoided or narrowed. See findings.
+(allow network-bind (local ip "localhost:*"))
+(allow network-inbound (local ip "localhost:*"))
+(allow network-outbound (remote ip "localhost:*"))
