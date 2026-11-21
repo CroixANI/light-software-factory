@@ -1,0 +1,112 @@
+[
+  {
+    "probe": "direct-1.1.1.1:443",
+    "outcome": "denied",
+    "detail": "PermissionError: [Errno 1] Operation not permitted"
+  },
+  {
+    "probe": "direct-8.8.8.8:53-tcp",
+    "outcome": "denied",
+    "detail": "PermissionError: [Errno 1] Operation not permitted"
+  },
+  {
+    "probe": "direct-udp-dns",
+    "outcome": "denied",
+    "detail": "PermissionError: [Errno 1] Operation not permitted"
+  },
+  {
+    "probe": "direct-ext-ip-on-gw-a-port",
+    "outcome": "denied",
+    "detail": "PermissionError: [Errno 1] Operation not permitted"
+  },
+  {
+    "probe": "direct-ext-ip-on-gw-c-port",
+    "outcome": "denied",
+    "detail": "PermissionError: [Errno 1] Operation not permitted"
+  },
+  {
+    "probe": "direct-ext-ip-on-gw-restore-port",
+    "outcome": "denied",
+    "detail": "PermissionError: [Errno 1] Operation not permitted"
+  },
+  {
+    "probe": "dns-github.com",
+    "outcome": "error",
+    "detail": "gaierror: [Errno 8] nodename nor servname provided, or not known"
+  },
+  {
+    "probe": "mdns-responder-socket",
+    "outcome": "denied",
+    "detail": "PermissionError: [Errno 1] Operation not permitted"
+  },
+  {
+    "probe": "listen-127.0.0.1:8920",
+    "outcome": "denied",
+    "detail": "PermissionError: [Errno 1] Operation not permitted"
+  },
+  {
+    "probe": "gw-a",
+    "outcome": "denied",
+    "detail": "PermissionError: [Errno 1] Operation not permitted"
+  },
+  {
+    "probe": "gw-b",
+    "outcome": "denied",
+    "detail": "PermissionError: [Errno 1] Operation not permitted"
+  },
+  {
+    "probe": "gw-c",
+    "outcome": "succeeded",
+    "detail": "connected, banner=''"
+  },
+  {
+    "probe": "gw-restore",
+    "outcome": "denied",
+    "detail": "PermissionError: [Errno 1] Operation not permitted"
+  },
+  {
+    "probe": "svc-1",
+    "outcome": "denied",
+    "detail": "PermissionError: [Errno 1] Operation not permitted"
+  },
+  {
+    "probe": "svc-2",
+    "outcome": "denied",
+    "detail": "PermissionError: [Errno 1] Operation not permitted"
+  },
+  {
+    "probe": "orch-api",
+    "outcome": "denied",
+    "detail": "PermissionError: [Errno 1] Operation not permitted"
+  },
+  {
+    "probe": "gw-a-via-localhost",
+    "outcome": "error",
+    "detail": "gaierror: [Errno 8] nodename nor servname provided, or not known"
+  },
+  {
+    "probe": "gw-a-via-ipv6",
+    "outcome": "denied",
+    "detail": "PermissionError: [Errno 1] Operation not permitted"
+  },
+  {
+    "probe": "gw-a-via-127.0.0.2",
+    "outcome": "denied",
+    "detail": "PermissionError: [Errno 1] Operation not permitted"
+  },
+  {
+    "probe": "gw-a-via-lan-ip",
+    "outcome": "denied",
+    "detail": "PermissionError: [Errno 1] Operation not permitted"
+  },
+  {
+    "probe": "proxy-allowed-host",
+    "outcome": "succeeded",
+    "detail": "status line: HTTP/1.1 200 Connection Established"
+  },
+  {
+    "probe": "proxy-other-host",
+    "outcome": "succeeded",
+    "detail": "status line: HTTP/1.1 403 Forbidden"
+  }
+]

@@ -1,0 +1,177 @@
+[
+  {
+    "probe": "repo-new",
+    "outcome": "succeeded",
+    "detail": "created"
+  },
+  {
+    "probe": "repo-edit-existing",
+    "outcome": "succeeded",
+    "detail": "appended"
+  },
+  {
+    "probe": "repo-lockfile-packages",
+    "outcome": "succeeded",
+    "detail": "created"
+  },
+  {
+    "probe": "repo-lockfile-npm",
+    "outcome": "succeeded",
+    "detail": "created"
+  },
+  {
+    "probe": "repo-edit-CLAUDE.md",
+    "outcome": "succeeded",
+    "detail": "appended"
+  },
+  {
+    "probe": "repo-mkdir-github",
+    "outcome": "succeeded",
+    "detail": "created directory"
+  },
+  {
+    "probe": "repo-symlink-out",
+    "outcome": "succeeded",
+    "detail": "symlink created"
+  },
+  {
+    "probe": "repo-write-through-symlink",
+    "outcome": "denied",
+    "detail": "PermissionError: [Errno 1] Operation not permitted: '<work>/step-d/repo/link-out/pwn.txt'"
+  },
+  {
+    "probe": "out-io/out",
+    "outcome": "succeeded",
+    "detail": "created"
+  },
+  {
+    "probe": "out-home",
+    "outcome": "succeeded",
+    "detail": "created"
+  },
+  {
+    "probe": "out-tmp",
+    "outcome": "succeeded",
+    "detail": "created"
+  },
+  {
+    "probe": "deny-step-root",
+    "outcome": "denied",
+    "detail": "PermissionError: [Errno 1] Operation not permitted: '<work>/step-d/root-file.txt'"
+  },
+  {
+    "probe": "deny-io/in",
+    "outcome": "denied",
+    "detail": "PermissionError: [Errno 1] Operation not permitted: '<work>/step-d/io/in/x.txt'"
+  },
+  {
+    "probe": "deny-io-dir",
+    "outcome": "denied",
+    "detail": "PermissionError: [Errno 1] Operation not permitted: '<work>/step-d/io/extra'"
+  },
+  {
+    "probe": "deny-mkdir-step",
+    "outcome": "denied",
+    "detail": "PermissionError: [Errno 1] Operation not permitted: '<work>/step-d/extra'"
+  },
+  {
+    "probe": "deny-parent-dir",
+    "outcome": "denied",
+    "detail": "PermissionError: [Errno 1] Operation not permitted: '<work>/outside-marker.txt'"
+  },
+  {
+    "probe": "deny-other-step-home",
+    "outcome": "denied",
+    "detail": "PermissionError: [Errno 1] Operation not permitted: '<work>/step-b/home/pwn.txt'"
+  },
+  {
+    "probe": "deny-other-step-edit",
+    "outcome": "denied",
+    "detail": "PermissionError: [Errno 1] Operation not permitted: '<work>/step-b/home/notes.txt'"
+  },
+  {
+    "probe": "deny-factory-state",
+    "outcome": "denied",
+    "detail": "PermissionError: [Errno 1] Operation not permitted: '<work>/factory-state/pwn.txt'"
+  },
+  {
+    "probe": "deny-owner-home",
+    "outcome": "denied",
+    "detail": "PermissionError: [Errno 1] Operation not permitted: '<home>/.s3s4-marker-60088'"
+  },
+  {
+    "probe": "deny-rename-out",
+    "outcome": "denied",
+    "detail": "PermissionError: [Errno 1] Operation not permitted: '<work>/step-d/repo/README.md' -> '<work>/step-d/README.md'"
+  },
+  {
+    "probe": "deny-symlink-at-root",
+    "outcome": "denied",
+    "detail": "PermissionError: [Errno 1] Operation not permitted: '/etc' -> '<work>/step-d/link-root'"
+  },
+  {
+    "probe": "cache-read",
+    "outcome": "succeeded",
+    "detail": "read 1 byte"
+  },
+  {
+    "probe": "cache-new-file",
+    "outcome": "denied",
+    "detail": "PermissionError: [Errno 1] Operation not permitted: '<work>/caches/nuget/new.txt'"
+  },
+  {
+    "probe": "cache-append",
+    "outcome": "denied",
+    "detail": "PermissionError: [Errno 1] Operation not permitted: '<work>/caches/nuget/pkg.txt'"
+  },
+  {
+    "probe": "cache-truncate",
+    "outcome": "denied",
+    "detail": "PermissionError: [Errno 1] Operation not permitted: '<work>/caches/nuget/pkg.txt'"
+  },
+  {
+    "probe": "cache-rename-in",
+    "outcome": "denied",
+    "detail": "PermissionError: [Errno 1] Operation not permitted: '<work>/caches/nuget/pkg.txt' -> '<work>/step-d/home/stolen.txt'"
+  },
+  {
+    "probe": "cache-chmod",
+    "outcome": "denied",
+    "detail": "PermissionError: [Errno 1] Operation not permitted: '<work>/caches/npm/index.txt'"
+  },
+  {
+    "probe": "cache-mkdir",
+    "outcome": "denied",
+    "detail": "PermissionError: [Errno 1] Operation not permitted: '<work>/caches/npm/evil'"
+  },
+  {
+    "probe": "cache-unlink",
+    "outcome": "denied",
+    "detail": "PermissionError: [Errno 1] Operation not permitted: '<work>/caches/nuget/other.txt'"
+  },
+  {
+    "probe": "overlay-read",
+    "outcome": "succeeded",
+    "detail": "read 1 byte"
+  },
+  {
+    "probe": "overlay-new-file",
+    "outcome": "denied",
+    "detail": "PermissionError: [Errno 1] Operation not permitted: '<work>/items/1/packages/new.txt'"
+  },
+  {
+    "probe": "overlay-append",
+    "outcome": "denied",
+    "detail": "PermissionError: [Errno 1] Operation not permitted: '<work>/items/1/packages/existing.txt'"
+  },
+  {
+    "probe": "overlay-other-item",
+    "outcome": "denied",
+    "detail": "PermissionError: [Errno 1] Operation not permitted: '<work>/items/2/packages/new.txt'"
+  },
+  {
+    "probe": "overlay-other-item-edit",
+    "outcome": "denied",
+    "detail": "PermissionError: [Errno 1] Operation not permitted: '<work>/items/2/packages/existing.txt'"
+  }
+]

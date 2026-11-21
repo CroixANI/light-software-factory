@@ -1,0 +1,17 @@
+[
+  {
+    "probe": "benign-edit-source",
+    "outcome": "succeeded",
+    "detail": "appended"
+  },
+  {
+    "probe": "benign-new-source",
+    "outcome": "succeeded",
+    "detail": "created"
+  },
+  {
+    "probe": "benign-new-test",
+    "outcome": "succeeded",
+    "detail": "created"
+  }
+]

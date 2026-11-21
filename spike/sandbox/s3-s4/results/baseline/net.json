@@ -1,0 +1,112 @@
+[
+  {
+    "probe": "direct-1.1.1.1:443",
+    "outcome": "succeeded",
+    "detail": "connected, banner=''"
+  },
+  {
+    "probe": "direct-8.8.8.8:53-tcp",
+    "outcome": "succeeded",
+    "detail": "connected, banner=''"
+  },
+  {
+    "probe": "direct-udp-dns",
+    "outcome": "succeeded",
+    "detail": "sent datagram"
+  },
+  {
+    "probe": "direct-ext-ip-on-gw-a-port",
+    "outcome": "error",
+    "detail": "TimeoutError: timed out"
+  },
+  {
+    "probe": "direct-ext-ip-on-gw-c-port",
+    "outcome": "error",
+    "detail": "TimeoutError: timed out"
+  },
+  {
+    "probe": "direct-ext-ip-on-gw-restore-port",
+    "outcome": "error",
+    "detail": "TimeoutError: timed out"
+  },
+  {
+    "probe": "dns-github.com",
+    "outcome": "succeeded",
+    "detail": "resolved 140.82.121.3"
+  },
+  {
+    "probe": "mdns-responder-socket",
+    "outcome": "succeeded",
+    "detail": "connected"
+  },
+  {
+    "probe": "listen-127.0.0.1:8920",
+    "outcome": "succeeded",
+    "detail": "bound and listening"
+  },
+  {
+    "probe": "gw-a",
+    "outcome": "succeeded",
+    "detail": "connected, banner=''"
+  },
+  {
+    "probe": "gw-b",
+    "outcome": "succeeded",
+    "detail": "connected, banner=''"
+  },
+  {
+    "probe": "gw-c",
+    "outcome": "succeeded",
+    "detail": "connected, banner=''"
+  },
+  {
+    "probe": "gw-restore",
+    "outcome": "succeeded",
+    "detail": "connected, banner=''"
+  },
+  {
+    "probe": "svc-1",
+    "outcome": "succeeded",
+    "detail": "connected, banner='svc-8913'"
+  },
+  {
+    "probe": "svc-2",
+    "outcome": "succeeded",
+    "detail": "connected, banner='svc-8914'"
+  },
+  {
+    "probe": "orch-api",
+    "outcome": "succeeded",
+    "detail": "connected, banner='svc-8915'"
+  },
+  {
+    "probe": "gw-a-via-localhost",
+    "outcome": "succeeded",
+    "detail": "connected, banner=''"
+  },
+  {
+    "probe": "gw-a-via-ipv6",
+    "outcome": "refused",
+    "detail": "ConnectionRefusedError: [Errno 61] Connection refused"
+  },
+  {
+    "probe": "gw-a-via-127.0.0.2",
+    "outcome": "error",
+    "detail": "TimeoutError: timed out"
+  },
+  {
+    "probe": "gw-a-via-lan-ip",
+    "outcome": "refused",
+    "detail": "ConnectionRefusedError: [Errno 61] Connection refused"
+  },
+  {
+    "probe": "proxy-allowed-host",
+    "outcome": "succeeded",
+    "detail": "status line: HTTP/1.1 200 Connection Established"
+  },
+  {
+    "probe": "proxy-other-host",
+    "outcome": "succeeded",
+    "detail": "status line: HTTP/1.1 403 Forbidden"
+  }
+]
