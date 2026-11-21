@@ -1,0 +1,8 @@
+openspec/changes/archive/.gitkeep
+openspec/changes/e15-removed-with-scenarios-block-form/.openspec.yaml
+openspec/changes/e15-removed-with-scenarios-block-form/proposal.md
+openspec/changes/e15-removed-with-scenarios-block-form/specs/inventory/spec.md
+openspec/changes/e15-removed-with-scenarios-block-form/tasks.md
+openspec/config.yaml
+openspec/specs/billing/spec.md
+openspec/specs/inventory/spec.md

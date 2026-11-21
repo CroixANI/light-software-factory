@@ -1,0 +1,8 @@
+openspec/changes/archive/.gitkeep
+openspec/changes/archive/<DATE>-h15-modified-whitespace-header/.openspec.yaml
+openspec/changes/archive/<DATE>-h15-modified-whitespace-header/proposal.md
+openspec/changes/archive/<DATE>-h15-modified-whitespace-header/specs/inventory/spec.md
+openspec/changes/archive/<DATE>-h15-modified-whitespace-header/tasks.md
+openspec/config.yaml
+openspec/specs/billing/spec.md
+openspec/specs/inventory/spec.md

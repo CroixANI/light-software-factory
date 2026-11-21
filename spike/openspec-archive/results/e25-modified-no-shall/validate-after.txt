@@ -1,0 +1,6 @@
+✓ spec/billing
+✗ spec/inventory
+  ⚠ [WARNING] requirements[3]: Requirement "Delta export" should contain SHALL or MUST (RFC 2119 best practice for English specs)
+Totals: 1 passed, 1 failed (2 items)
+Details: openspec validate inventory --type spec
+exit=1

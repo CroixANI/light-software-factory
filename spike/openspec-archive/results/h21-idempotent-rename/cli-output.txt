@@ -1,0 +1,7 @@
+Task status: ✓ Complete
+
+Specs to update:
+  inventory: update
+Totals: + 0, ~ 0, - 0, → 0
+Specs already in sync; no files changed.
+Change 'h21-idempotent-rename' archived as '<DATE>-h21-idempotent-rename'.

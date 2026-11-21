@@ -1,0 +1,8 @@
+openspec/changes/archive/.gitkeep
+openspec/changes/e05-renamed-target-exists/.openspec.yaml
+openspec/changes/e05-renamed-target-exists/proposal.md
+openspec/changes/e05-renamed-target-exists/specs/inventory/spec.md
+openspec/changes/e05-renamed-target-exists/tasks.md
+openspec/config.yaml
+openspec/specs/billing/spec.md
+openspec/specs/inventory/spec.md

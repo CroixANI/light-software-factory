@@ -1,0 +1,9 @@
+Task status: ✓ Complete
+
+Specs to update:
+  billing: update
+Retiring openspec/specs/billing/spec.md: all requirements removed.
+   If it was committed, restore it with: git checkout HEAD -- ":(top)openspec/specs/billing/spec.md"
+Totals: + 0, ~ 0, - 1, → 0
+Specs updated successfully.
+Change 'h17-retire-capability' archived as '<DATE>-h17-retire-capability'.

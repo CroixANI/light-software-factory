@@ -1,0 +1,21 @@
+diff -ru before/specs/inventory/spec.md ./openspec/specs/inventory/spec.md
+--- before/specs/inventory/spec.md
++++ ./openspec/specs/inventory/spec.md
+@@ -5,7 +5,7 @@
+ 
+ ## Requirements
+ 
+-### Requirement: Alpha reservation
++### Requirement: Alpha hold
+ The system SHALL reserve stock when a reservation is requested.
+ 
+ #### Scenario: Reserve available stock
+@@ -30,7 +30,7 @@
+ - **WHEN** the available count changes
+ - **THEN** an audit entry with the old and new count is stored
+ 
+-### Requirement: Delta export
++### Requirement: Delta csv export
+ The system SHALL export the stock table as CSV on request.
+ 
+ #### Scenario: Export requested

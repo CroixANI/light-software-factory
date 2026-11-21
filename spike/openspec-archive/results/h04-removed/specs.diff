@@ -1,0 +1,17 @@
+diff -ru before/specs/inventory/spec.md ./openspec/specs/inventory/spec.md
+--- before/specs/inventory/spec.md
++++ ./openspec/specs/inventory/spec.md
+@@ -23,13 +23,6 @@
+ - **WHEN** a reservation is cancelled
+ - **THEN** the reserved quantity returns to the available count
+ 
+-### Requirement: Charlie audit log
+-The system SHALL write an audit entry for every stock change.
+-
+-#### Scenario: Audit entry written
+-- **WHEN** the available count changes
+-- **THEN** an audit entry with the old and new count is stored
+-
+ ### Requirement: Delta export
+ The system SHALL export the stock table as CSV on request.
+ 

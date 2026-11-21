@@ -1,0 +1,8 @@
+openspec/changes/archive/.gitkeep
+openspec/changes/e04-renamed-source-missing/.openspec.yaml
+openspec/changes/e04-renamed-source-missing/proposal.md
+openspec/changes/e04-renamed-source-missing/specs/inventory/spec.md
+openspec/changes/e04-renamed-source-missing/tasks.md
+openspec/config.yaml
+openspec/specs/billing/spec.md
+openspec/specs/inventory/spec.md

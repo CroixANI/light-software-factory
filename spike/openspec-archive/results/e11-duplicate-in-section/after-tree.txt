@@ -1,0 +1,8 @@
+openspec/changes/archive/.gitkeep
+openspec/changes/e11-duplicate-in-section/.openspec.yaml
+openspec/changes/e11-duplicate-in-section/proposal.md
+openspec/changes/e11-duplicate-in-section/specs/inventory/spec.md
+openspec/changes/e11-duplicate-in-section/tasks.md
+openspec/config.yaml
+openspec/specs/billing/spec.md
+openspec/specs/inventory/spec.md

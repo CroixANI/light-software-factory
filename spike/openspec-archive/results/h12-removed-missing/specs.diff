@@ -1,0 +1,18 @@
+diff -ru before/specs/inventory/spec.md ./openspec/specs/inventory/spec.md
+--- before/specs/inventory/spec.md
++++ ./openspec/specs/inventory/spec.md
+@@ -36,3 +36,14 @@
+ #### Scenario: Export requested
+ - **WHEN** an export is requested
+ - **THEN** a CSV file with one row per item is produced
++
++### Requirement: Echo low-stock alert
++The system SHALL raise an alert when stock falls below the threshold.
++
++#### Scenario: Below threshold
++- **WHEN** the available count drops below the threshold
++- **THEN** an alert is raised
++
++#### Scenario: At threshold
++- **WHEN** the available count equals the threshold
++- **THEN** no alert is raised

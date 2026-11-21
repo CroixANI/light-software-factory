@@ -1,0 +1,8 @@
+openspec/changes/archive/.gitkeep
+openspec/changes/h21-idempotent-rename/.openspec.yaml
+openspec/changes/h21-idempotent-rename/proposal.md
+openspec/changes/h21-idempotent-rename/specs/inventory/spec.md
+openspec/changes/h21-idempotent-rename/tasks.md
+openspec/config.yaml
+openspec/specs/billing/spec.md
+openspec/specs/inventory/spec.md

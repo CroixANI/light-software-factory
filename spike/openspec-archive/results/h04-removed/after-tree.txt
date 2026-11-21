@@ -1,0 +1,8 @@
+openspec/changes/archive/.gitkeep
+openspec/changes/archive/<DATE>-h04-removed/.openspec.yaml
+openspec/changes/archive/<DATE>-h04-removed/proposal.md
+openspec/changes/archive/<DATE>-h04-removed/specs/inventory/spec.md
+openspec/changes/archive/<DATE>-h04-removed/tasks.md
+openspec/config.yaml
+openspec/specs/billing/spec.md
+openspec/specs/inventory/spec.md

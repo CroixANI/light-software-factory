@@ -1,0 +1,7 @@
+openspec/changes/archive/.gitkeep
+openspec/changes/archive/<DATE>-h22-skip-specs-metadata/.openspec.yaml
+openspec/changes/archive/<DATE>-h22-skip-specs-metadata/proposal.md
+openspec/changes/archive/<DATE>-h22-skip-specs-metadata/tasks.md
+openspec/config.yaml
+openspec/specs/billing/spec.md
+openspec/specs/inventory/spec.md

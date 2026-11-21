@@ -1,0 +1,9 @@
+openspec/changes/archive/.gitkeep
+openspec/changes/archive/<DATE>-h18-archive-target-exists/proposal.md
+openspec/changes/h18-archive-target-exists/.openspec.yaml
+openspec/changes/h18-archive-target-exists/proposal.md
+openspec/changes/h18-archive-target-exists/specs/inventory/spec.md
+openspec/changes/h18-archive-target-exists/tasks.md
+openspec/config.yaml
+openspec/specs/billing/spec.md
+openspec/specs/inventory/spec.md

@@ -1,0 +1,8 @@
+openspec/changes/archive/.gitkeep
+openspec/changes/e08-modified-on-new-spec/.openspec.yaml
+openspec/changes/e08-modified-on-new-spec/proposal.md
+openspec/changes/e08-modified-on-new-spec/specs/notifications/spec.md
+openspec/changes/e08-modified-on-new-spec/tasks.md
+openspec/config.yaml
+openspec/specs/billing/spec.md
+openspec/specs/inventory/spec.md

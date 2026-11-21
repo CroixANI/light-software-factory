@@ -1,0 +1,8 @@
+openspec/changes/archive/.gitkeep
+openspec/changes/h17-retire-capability/.openspec.yaml
+openspec/changes/h17-retire-capability/proposal.md
+openspec/changes/h17-retire-capability/specs/billing/spec.md
+openspec/changes/h17-retire-capability/tasks.md
+openspec/config.yaml
+openspec/specs/billing/spec.md
+openspec/specs/inventory/spec.md

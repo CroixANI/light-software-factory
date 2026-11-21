@@ -1,0 +1,8 @@
+openspec/changes/archive/.gitkeep
+openspec/changes/e16-renamed-and-removed/.openspec.yaml
+openspec/changes/e16-renamed-and-removed/proposal.md
+openspec/changes/e16-renamed-and-removed/specs/inventory/spec.md
+openspec/changes/e16-renamed-and-removed/tasks.md
+openspec/config.yaml
+openspec/specs/billing/spec.md
+openspec/specs/inventory/spec.md

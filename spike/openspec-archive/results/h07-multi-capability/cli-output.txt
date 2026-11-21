@@ -1,0 +1,15 @@
+Task status: ✓ Complete
+
+Specs to update:
+  billing: update
+  inventory: update
+  shipping: create
+Applying changes to openspec/specs/billing/spec.md:
+  + 1 added
+Applying changes to openspec/specs/inventory/spec.md:
+  + 1 added
+Applying changes to openspec/specs/shipping/spec.md:
+  + 1 added
+Totals: + 3, ~ 0, - 0, → 0
+Specs updated successfully.
+Change 'h07-multi-capability' archived as '<DATE>-h07-multi-capability'.

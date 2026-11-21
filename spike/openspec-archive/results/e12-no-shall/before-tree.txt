@@ -1,0 +1,8 @@
+openspec/changes/archive/.gitkeep
+openspec/changes/e12-no-shall/.openspec.yaml
+openspec/changes/e12-no-shall/proposal.md
+openspec/changes/e12-no-shall/specs/inventory/spec.md
+openspec/changes/e12-no-shall/tasks.md
+openspec/config.yaml
+openspec/specs/billing/spec.md
+openspec/specs/inventory/spec.md

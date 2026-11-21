@@ -1,0 +1,8 @@
+openspec/changes/archive/.gitkeep
+openspec/changes/archive/<DATE>-h05-renamed/.openspec.yaml
+openspec/changes/archive/<DATE>-h05-renamed/proposal.md
+openspec/changes/archive/<DATE>-h05-renamed/specs/inventory/spec.md
+openspec/changes/archive/<DATE>-h05-renamed/tasks.md
+openspec/config.yaml
+openspec/specs/billing/spec.md
+openspec/specs/inventory/spec.md
