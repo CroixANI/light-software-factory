@@ -1,0 +1,4 @@
+;; S5 extra rules for dotnet (appended after builder.sb by launcher.sh --extra). Each one was added after a concrete failure; see findings.
+;; 1. .NET named mutex (NuGet-Migrations, run at first use of the CLI) lives under /tmp/.dotnet. Shared by every sandbox on the host: a real cost.
+(allow file-read* file-write* (subpath "/private/tmp/.dotnet"))
+(allow file-read-metadata (literal "/private/tmp") (literal "/tmp"))

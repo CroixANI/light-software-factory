@@ -1,0 +1,3 @@
+{ "name": "s5-npm-app", "version": "1.0.0", "private": true,
+  "scripts": { "test": "node test.js" },
+  "dependencies": { "ms": "2.1.3" } }

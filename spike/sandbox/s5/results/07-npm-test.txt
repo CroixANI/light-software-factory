@@ -1,0 +1,4 @@
+npm notice run s5-npm-app@1.0.0 test
+npm notice run node test.js
+Error opening /private/var/select/sh: Operation not permitted
+npm test ok
