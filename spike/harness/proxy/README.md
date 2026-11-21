@@ -13,3 +13,5 @@ node spike/harness/proxy/connect-proxy.mjs --port 8901 --step demo --allow "exam
 - Log: JSON lines on stdout, events `listening`, `open`, `close` (`bytes_up`, `bytes_down`), `denied`, `refused`, and a
   `summary` (connections per host) on SIGINT/SIGTERM. Never logs payloads, headers or credentials. Redirect stdout to a file to keep it.
 - Closing the port = stop the process (E11).
+
+Note: `summary.connections` counts every CONNECT attempt (including denied and bad-target ones); `per_host` counts only permitted ones.

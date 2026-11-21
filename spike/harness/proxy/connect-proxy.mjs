@@ -30,7 +30,8 @@ const server = http.createServer((req, res) => {
 server.on("connect", (req, client, head) => {
   const id = ++n;
   const m = /^(\[[^\]]+\]|[^:]+):(\d+)$/.exec(req.url || "");
-  if (!m) { client.end("HTTP/1.1 400 Bad Request\r\n\r\n"); log({ ev: "refused", id, reason: "bad-target" }); return; }
+  const okPort = m && Number(m[2]) >= 1 && Number(m[2]) <= 65535;
+  if (!okPort) { client.end("HTTP/1.1 400 Bad Request\r\n\r\n"); log({ ev: "refused", id, reason: "bad-target" }); return; }
   const host = m[1].replace(/^\[|\]$/g, "").toLowerCase();
   const port = Number(m[2]);
   if (!permitted(host)) {
@@ -44,17 +45,22 @@ server.on("connect", (req, client, head) => {
     established = true;
     client.write("HTTP/1.1 200 Connection Established\r\n\r\n");
     if (head.length) upstream.write(head);
+    client.on("data", (d) => (up += d.length));
     upstream.pipe(client); client.pipe(upstream);
     log({ ev: "open", id, host, port, connections_to_host: perHost.get(host) });
   });
-  client.on("data", (d) => (up += d.length));
   upstream.on("data", (d) => (down += d.length));
-  const close = (reason) => {
+  const close = (reason, graceful = false) => {
     if (done) return; done = true;
-    client.destroy(); upstream.destroy();
+    if (graceful) client.end(); else client.destroy(); // end() flushes a pending 502 before closing
+    upstream.destroy();
     log({ ev: "close", id, host, port, bytes_up: up, bytes_down: down, reason });
   };
-  upstream.on("error", (e) => { if (!done && !established) client.end("HTTP/1.1 502 Bad Gateway\r\n\r\n"); close(e.code || "error"); });
+  upstream.on("error", (e) => { 
+    const pre = !done && !established;
+    if (pre) client.write("HTTP/1.1 502 Bad Gateway\r\n\r\n");
+    close(e.code || "error", pre);
+  });
   client.on("error", (e) => close(e.code || "error"));
   upstream.on("close", () => close("upstream-closed"));
   client.on("close", () => close("client-closed"));
