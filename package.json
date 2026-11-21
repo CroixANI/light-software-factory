@@ -1,0 +1,17 @@
+{
+  "name": "light-software-factory-tooling",
+  "private": true,
+  "description": "Repository dev tooling (OpenSpec CLI) for light-software-factory",
+  "engines": {
+    "node": ">=22.20.0"
+  },
+  "scripts": {
+    "openspec": "openspec",
+    "openspec:validate": "openspec validate --all",
+    "openspec:status": "openspec status",
+    "openspec:update": "openspec update"
+  },
+  "devDependencies": {
+    "@fission-ai/openspec": "^1.2.0"
+  }
+}

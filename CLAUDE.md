@@ -23,6 +23,10 @@ This repository holds the design (and, later, the code) of a local software fact
 - Only after acceptance, update the affected documents and cite the decision id. Superseded entries stay, marked as superseded.
 - If two values collide, name the collision in one line in the decision or PR (D-33).
 
+## OpenSpec & GitHub Issues
+- OpenSpec is installed repo-locally (`npm install`, then `npx openspec` / `npm run openspec`) and configured in [openspec/config.yaml](openspec/config.yaml) for Claude Code, Gemini CLI, Antigravity, and Codex.
+- Follow D-05, D-21, and architecture Q7: one OpenSpec change = one GitHub Parent Issue (`OpenSpec change: <change-name>` in the body); atomic items in `tasks.md` map 1:1 to GitHub Sub-Issues ordered by native `blocked by` dependencies and stamped with `#<issue>`.
+
 ## Hygiene
 - No local paths, credentials, tokens or private material in the repository; the repository is public.
 - Local factory state never goes into the repository.
