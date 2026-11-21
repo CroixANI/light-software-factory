@@ -11,7 +11,7 @@ while [ $# -gt 0 ]; do case "$1" in
       --mach) [[ "$v" =~ ^[A-Za-z0-9._-]+$ ]] || { echo "bad mach name" >&2; exit 2; }; mach+=("$v");; esac;;
   --show-profile) show=1; shift;; --) shift; break;; *) echo "bad arg $1" >&2; exit 2;;
 esac; done
-[[ "$shape" =~ ^(reviewer-readonly|builder)$ ]] && [[ "$port" =~ ^[0-9]+$ ]] && [ -f "$here/$shape.sb" ] && [ -d "$step" ] && [ -n "$port" ] && [ -n "$clidir" ] && [ $# -gt 0 ] || { echo "usage: see header" >&2; exit 2; }
+[[ "$shape" =~ ^(reviewer-readonly|builder)$ ]] && [[ "$port" =~ ^[0-9]+$ ]] && [ "${#port}" -le 5 ] && [ "$((10#$port))" -ge 1 ] && [ "$((10#$port))" -le 65535 ] && [ -f "$here/$shape.sb" ] && [ -d "$step" ] && [ -n "$port" ] && [ -n "$clidir" ] && [ $# -gt 0 ] || { echo "usage: see header" >&2; exit 2; }
 step="$(cd "$step" && pwd -P)"          # Seatbelt matches resolved paths (/private/var, not /var)
 command -v python3 >/dev/null || { echo "python3 not found on PATH" >&2; exit 2; }
 interp="$(readlink -f "$(command -v python3)")"
@@ -21,8 +21,8 @@ repo_root="$(cd "$here/../../.." && pwd -P)"
 for r in "$pyroot" "$noderoot" "$clidir" "$step"; do   # roots become read (and exec) rules: refuse broad ones
   case "$r" in /|/usr|/usr/local|/opt|/opt/homebrew|/System|/Library|/bin|/Users|/Users/Shared|/private|/private/tmp|/private/var|/tmp|/var|/Applications) echo "refusing broad root: $r" >&2; exit 2;; esac
   case "$r" in *[\"\(\)\\]*) echo "refusing path with quote/paren/backslash: $r" >&2; exit 2;; esac
-  [ "$r" = "$step" ] && continue_step=1 || continue_step=0
-  for guard in "$HOME" "$repo_root" $([ "$continue_step" = 0 ] && echo "$step"); do case "$guard/" in "$r"/*) echo "refusing root that contains $guard: $r" >&2; exit 2;; esac; done
+  guards=("$HOME" "$repo_root"); [ "$r" = "$step" ] || guards+=("$step")
+  for guard in "${guards[@]}"; do case "$guard/" in "$r"/*) echo "refusing root that contains $guard: $r" >&2; exit 2;; esac; done
 done
 prof="$(mktemp -t lsf-profile)"; trap 'rm -f "$prof"' EXIT
 { cat "$here/base.sb"
@@ -33,7 +33,7 @@ prof="$(mktemp -t lsf-profile)"; trap 'rm -f "$prof"' EXIT
   cat "$here/$shape.sb"
   for m in ${mach[@]+"${mach[@]}"}; do echo "(allow mach-lookup (global-name \"$m\"))"; done; } > "$prof"
 [ "$show" = 1 ] && cat "$prof" >&2 || true
-print_roots() { echo "roots: py=$pyroot node=$noderoot cli=$clidir" >&2; }; print_roots
+[ "$show" = 1 ] && echo "roots: py=$pyroot node=$noderoot cli=$clidir" >&2 || true
 cd "$step/repo"                          # the worker starts in its own workspace; the owner's cwd is not readable inside
 # Empty environment: nothing is inherited. PATH is curated (system dirs + the toolchain dirs the profile can read).
 set +e
@@ -43,7 +43,7 @@ set +e
   CLAUDE_CONFIG_DIR="$step/home/.claude" CODEX_HOME="$step/home/.codex" GEMINI_CLI_HOME="$step/home" \
   TMPDIR="$step/tmp" LANG=en_US.UTF-8 TERM=dumb \
   HTTPS_PROXY="http://127.0.0.1:$port" HTTP_PROXY="http://127.0.0.1:$port" \
-  FACTORY_STEP="$(basename "$step" "$(dirname "$step")")" \
+  FACTORY_STEP="$(basename "$step")" \
   /usr/bin/sandbox-exec -f "$prof" -D "STEP=$step" -D "PORT=$port" -D "PYROOT=$pyroot" -D "NODEROOT=$noderoot" -D "CLIDIR=$clidir" \
   "$@"
 rc=$?

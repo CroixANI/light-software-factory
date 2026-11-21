@@ -6,7 +6,7 @@
 
 ;; ---- Reads: system, toolchains, the Step's own folder. Nothing else (owner's home is not listed). ----
 (allow file-read*
-  (literal "/")
+  (literal "/")   ; metadata-only was tried: the process aborts at startup (Abort trap: 6); readdir of / is the accepted cost
   (subpath "/System") (subpath "/usr/lib") (subpath "/usr/share") (subpath "/usr/bin") (subpath "/bin")
   (subpath "/private/var/db/dyld") (subpath "/Library/Preferences/Logging")
   (literal "/dev/null") (literal "/dev/urandom") (literal "/dev/random") (literal "/dev/dtracehelper")
@@ -35,7 +35,9 @@
 (allow signal (target self))
 (allow signal (target same-sandbox))
 (allow process-info* (target self))
-(deny process-info* (target others))   ; blocks proc_listpids/proc_name/pidinfo of other processes (kern.procargs2 is NOT stopped by it, see MACH-SERVICES.md)
+(deny process-info* (target others))
+;; Belt-and-braces under (deny default). Measured (MACH-SERVICES.md "Known leak"): it does NOT stop proc_listallpids or
+;; sysctl(KERN_PROCARGS2) on other owner processes; it does reduce proc_name/pidinfo of others.
 
 ;; ---- Network: only this Step's gateway. ----
 (allow network-outbound (remote ip (string-append "localhost:" (param "PORT"))))

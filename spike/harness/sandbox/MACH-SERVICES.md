@@ -17,6 +17,7 @@ Ad-hoc test of a candidate without editing the profile: `run-sandboxed.sh ... --
 - Builder `/bin/sh` prints `Error opening /private/var/select/sh` (the sh trampoline) and falls back to bash; inside it only sh/bash/env/sleep are exec-able, so real build scripts are not proven here. S5 (#11) must extend exec and reads.
 - `reviewer-readonly` execs only the Python install; a real CLI (node script, native binary in the CLI dir) needs an exec rule for its install (#14/#15). The launcher also assumes a non-system `python3`.
 - `kern.hostname` is allowed because `npm --version` fails without it (`RuntimeError` in the fake CLI's probe). Cost: the worker can read the host name, which may contain the owner's name. The other names were taken from what node/Python/dotnet failed without; per-name evidence is not recorded.
+- `(literal "/")` is `file-read*`, not metadata-only: with `file-read-metadata` only, python aborts at startup (`Abort trap: 6`). Cost: the worker can list `/`.
 - Sandbox denial lines were not visible via `log show` in this session, so additions are found by failing behaviour, not by log. S5/provider tasks should try `(with report)` or a trace.
 
 ## Known leak (found in review round 3; open item for S2 #9, may need the owner)

@@ -15,10 +15,10 @@ echo "prompt" | spike/harness/sandbox/run-sandboxed.sh --shape builder --step "$
 ```
 
 `--shape reviewer-readonly|builder`, `--step <step-dir>`, `--port <gateway port>`, `--cli-dir <dir of the CLI, read-only>`,
-`--mach <service>` (repeatable, ad-hoc), `--show-profile` (prints the assembled profile on stderr).
+`--mach <service>` (repeatable, ad-hoc), `--show-profile` (prints the roots and the assembled profile on stderr; silent otherwise).
 
 Environment given to the command (nothing else is inherited): `PATH`, `HOME=<step>/home`, `XDG_*`, `CLAUDE_CONFIG_DIR`, `CODEX_HOME`, `GEMINI_CLI_HOME` (all under `<step>/home`),
-`TMPDIR=<step>/tmp`, `LANG`, `TERM=dumb`, `HTTP(S)_PROXY=http://127.0.0.1:<port>`, `FACTORY_STEP`. The working directory is `<step>/repo`.
+`TMPDIR=<step>/tmp`, `LANG`, `TERM=dumb`, `HTTP(S)_PROXY=http://127.0.0.1:<port>`, `FACTORY_STEP=<step id>` (the folder name). `fake-cli.py` treats `$FACTORY_STEP` as a path when `--step` is omitted, so always pass `--step`. The working directory is `<step>/repo`.
 Real provider variable names are confirmed in tasks 3.x; the three above are the expected ones.
 
 Rules: reads = system dirs, interpreter and node roots, the CLI dir, `<step>` (owner's home contents are unreadable; the ancestors of the allowed roots can be stat-ed, and `/` can be listed); writes = `home`, `tmp`, `io/out` (+ `repo` for builder);
