@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fake-result/1",
+  "title": "Spike fake-CLI io/out/result.json (common output envelope, architecture §4)",
+  "type": "object",
+  "required": ["schema", "status", "summary", "role_shape"],
+  "additionalProperties": false,
+  "properties": {
+    "schema": { "const": "fake-result/1" },
+    "status": { "enum": ["done", "blocked", "needs_context"] },
+    "summary": { "type": "string", "minLength": 1, "maxLength": 500 },
+    "role_shape": { "enum": ["reviewer-readonly", "builder"] },
+    "needs_context": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["kind", "ref", "why"],
+        "additionalProperties": false,
+        "properties": {
+          "kind": { "type": "string", "minLength": 1 },
+          "ref": { "type": "string", "minLength": 1 },
+          "why": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "blocked": {
+      "type": "object",
+      "required": ["reason"],
+      "additionalProperties": false,
+      "properties": { "reason": { "type": "string", "minLength": 1 } }
+    },
+    "notes": { "type": "string" },
+    "tools_used": { "type": "array", "items": { "type": "string" } }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "status": { "const": "needs_context" } } },
+      "then": { "required": ["needs_context"], "properties": { "needs_context": { "minItems": 1 } } }
+    },
+    {
+      "if": { "properties": { "status": { "const": "blocked" } } },
+      "then": { "required": ["blocked"] }
+    }
+  ]
+}
