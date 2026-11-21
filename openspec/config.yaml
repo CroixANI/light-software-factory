@@ -1,0 +1,33 @@
+schema: spec-driven
+
+context: |
+  Project: Light Software Factory — a local, single-user software factory (.NET, React, SQLite on macOS).
+  Read CLAUDE.md, docs/values.md (priority-ordered values, D-33), docs/how-it-works.md, and docs/decisions.md before proposing or changing anything.
+
+  Binding constraints:
+  - All docs, specs, code comments, and commit messages are in English (D-07).
+  - Decisions in docs/decisions.md (D-01..D-72) are binding; never change one silently. Propose changes as a new D-NN entry marked "proposed".
+  - No production code before the implementation spike findings (docs/spike/plan.md) are reviewed. Until then, only docs/, openspec/, and throwaway work in spike/.
+  - Public repository hygiene: no local paths, credentials, tokens, or private material.
+  - Entity model must fit on one page (D-33).
+
+  GitHub Issues & OpenSpec mapping (D-05, D-21, Q7):
+  - One OpenSpec change corresponds to one GitHub Parent Issue (a Group).
+  - The Parent Issue body MUST name the OpenSpec change (`OpenSpec change: <change-name>`).
+  - Each atomic deliverable in tasks.md maps to one GitHub Sub-Issue, ordered via GitHub's native "blocked by" dependencies, and references its issue number (`#<issue>`).
+
+rules:
+  proposal:
+    - Cite relevant binding decisions (D-NN) and values (docs/values.md); call out any value collision in one line (D-33).
+    - State explicitly whether this change is pre-spike (docs/spike only) or post-spike (production code).
+    - Include a "GitHub Group" note naming the change slug to link from the Parent Issue.
+  specs:
+    - Write every requirement with testable WHEN/THEN scenarios and stable scenario IDs (`<capability>/<requirement>/<scenario>` slug) so E2E tests can trace to them (D-67).
+    - Never put holdout scenarios in openspec/ (D-55).
+  design:
+    - Cite existing ADRs (docs/architecture/adr/) and architecture sections; do not silently contradict them.
+    - Keep Mermaid diagrams valid and relative links working.
+  tasks:
+    - Structure tasks as small, independently PR-able items suitable for 1:1 mapping to GitHub Sub-Issues.
+    - Include an explicit dependency note (`blocked by: ...`) where ordering matters (D-05).
+    - Leave a placeholder or stamp the GitHub issue reference (`#<issue>`) on each top-level task once issues are created (Q7).

@@ -34,14 +34,15 @@ It is built with .NET, React and SQLite, runs on the owner's Mac, and v1 stops b
 | `src/` | .NET solution: `Factory.Station`, `Factory.Core`, `Factory.Host` | planned |
 | `web/` | React UI, built into the host | planned |
 | `tests/` | Unit, Station hostile-worker and host tests | planned |
-| `openspec/` | OpenSpec specs and changes for this repository | once adopted |
+| `openspec/` | OpenSpec specs, changes, and project config for this repository | present |
 
 ## Roadmap
 
 1. **Implementation spike.** Run each provider CLI headless inside a deny-by-default sandbox with Keychain-free credentials,
    behind a proxy, and mark it supported or unsupported. See [docs/spike/plan.md](docs/spike/plan.md).
-2. **Adopt OpenSpec in this repository** to drive the implementation. Planned, not initialized yet; the first step is
-   `openspec init`, then one OpenSpec change per group of work.
+2. **Adopt OpenSpec in this repository** to drive the implementation. Initialized locally via `package.json`
+   (`npm install`, then `npx openspec` / `npm run openspec`) with tool configs for Claude Code, Gemini CLI,
+   Antigravity, and Codex; ready for one OpenSpec change per group of work.
 3. **v1 implementation**, as described in the [architecture](docs/architecture/architecture.md), starting from the spike findings.
 4. **v2** (agreed but deferred; see [architecture §17](docs/architecture/architecture.md#17-deferred-to-v2)):
    - council voting across providers, with a judge;
