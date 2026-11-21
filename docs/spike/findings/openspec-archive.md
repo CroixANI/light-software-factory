@@ -62,7 +62,7 @@ OpenSpec has a `sync` flow that merges deltas before archive, so archive tolerat
 
 ## Error cases and exact messages
 
-All exit 1. Three output shapes: spec-merge errors print `Specs to update:` ... the message ... `Aborted. No files were changed.`; the **pre-check** rows (marked so) print `Validation errors in change delta specs:` + `✗ <message>` + `Validation failed. Please fix the errors before archiving.` + the `--no-validate` hint, before any `Specs to update`. a rebuilt spec that fails validation (h08, e22) prints `Validation errors in rebuilt spec for <cap> (will not write changes):` + `✗ Spec must have at least one requirement` + `Aborted. No files were changed.`; h18 prints only the `✖ Error` line. `<cap>` is the capability folder name.
+All exit 1. Three output shapes: spec-merge errors print `Specs to update:` ... the message ... `Aborted. No files were changed.`; the **pre-check** rows (marked so) print `Validation errors in change delta specs:` + `✗ <message>` + `Validation failed. Please fix the errors before archiving.` + the `--no-validate` hint, before any `Specs to update`; a rebuilt spec that fails validation (h08, e22) prints `Validation errors in rebuilt spec for <cap> (will not write changes):` + `✗ Spec must have at least one requirement` + `Aborted. No files were changed.`; h18 prints only the `✖ Error` line. `<cap>` is the capability folder name.
 
 | Situation | Message (prefix) | Case |
 |---|---|---|
@@ -129,18 +129,19 @@ Use the `results/<id>/` folders as expected output (`specs.diff`, `after/specs/`
 11. h14 unchecked tasks with confirmation skipped: warning, still archives.
 12. e20 delta Purpose ignored for existing spec (warning).
 13. h11, h20, h21, h12 already-applied deltas (decide: reproduce as no-op or reject).
+14. h23 rename a name away and ADD the same name again; h24 case-only rename; h25 rename chain.
 
 **Must abort (expected `abort`, no file written)**
-14. e01, e24 MODIFIED not found (exact-case match); e30 RENAMED source case variant; e31 REMOVED case variant (hard error).
-15. e03, h16 MODIFIED drops or renames a scenario.
-16. e02, e10 ADDED collides (exact, and case/space variant).
-17. e04, e05 RENAMED source missing, target exists.
-18. e06, e07, e16, e26, e27, e28 cross-section conflicts; e29 duplicate FROM; e36 duplicate TO; e34 swap; e35 TO case variant; e11 duplicate in a section; e17 unpaired RENAMED.
-19. e08 MODIFIED/RENAMED on a new capability; e22 REMOVED-only on a new capability.
-20. h08 removing the last requirement without retirement.
-21. e09 empty delta; e13 ADDED without scenario; e18, e19 requirement under a non-delta header.
-22. e14b atomicity: a later failing capability discards an earlier valid one (e14 alone does not prove this, because the failing capability comes first). Also must merge: h23 rename away and ADD the same name.
-23. h18 archive folder already exists.
+15. e01, e24 MODIFIED not found (exact-case match); e30 RENAMED source case variant; e31 REMOVED case variant (hard error).
+16. e03, h16 MODIFIED drops or renames a scenario.
+17. e02, e10 ADDED collides (exact, and case/space variant).
+18. e04, e05 RENAMED source missing, target exists.
+19. e06, e07, e16, e26, e27, e28 cross-section conflicts; e29 duplicate FROM; e36 duplicate TO; e34 swap; e35 TO case variant; e11 duplicate in a section; e17 unpaired RENAMED.
+20. e08 MODIFIED/RENAMED on a new capability; e22 REMOVED-only on a new capability.
+21. h08 removing the last requirement without retirement.
+22. e09 empty delta; e13 ADDED without scenario; e18, e19 requirement under a non-delta header.
+23. e14b atomicity: a later failing capability discards an earlier valid one (e14 alone does not prove this, because the failing capability comes first).
+24. h18 archive folder already exists.
 
 **Judgement calls for the owner/adapter** (CLI accepts, but the factory could choose otherwise): e12/e25 missing SHALL/MUST (archived, later validate fails); e23 change with no deltas and no `skip_specs`.
 
@@ -151,6 +152,10 @@ Use the `results/<id>/` folders as expected output (`specs.diff`, `after/specs/`
 - Very large specs; a crash between writing specs and moving the folder.
 - Interactive mode (no `-y`): prompts are not exercised; the factory should always pass `-y` or `--json`.
 - Other OpenSpec versions.
+
+## Reviewing this PR
+
+The fixture set is about 1000 files, above GitHub's 300-file limit for the diff API, so `gh pr diff` fails with HTTP 406. That is expected; review with a local checkout and `git diff origin/main...HEAD`.
 
 ## How to reproduce
 

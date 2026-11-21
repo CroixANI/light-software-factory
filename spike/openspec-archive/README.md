@@ -10,3 +10,5 @@ Reference for the future spec adapter's unit fixtures (architecture §3, §7, Q8
   `after/specs/` (main specs after), `after/archived-change/` (the moved change folder; in h18, where archive fails, it is the pre-created fixture folder), `validate-after.txt` (`openspec validate --specs --strict` on the result).
 - `run.sh`: reruns every case (or the ids given) in a copy under a temp dir, with the repo-local CLI (`node_modules/.bin/openspec`, version in the findings). It never touches the repository's own `openspec/`. Dates and temp paths in the results are normalised to `<DATE>` / `<project>`.
 - `gen-cases.py`: regenerates `cases/` (`python3 -I gen-cases.py .` from this folder). The `cases/` files are the source of truth; the script is kept only to make the fixture set easy to extend.
+
+Note: this folder has about 1000 files, more than GitHub's diff API allows (300), so `gh pr diff` returns HTTP 406 for the PR; use a local checkout and `git diff` to review.
