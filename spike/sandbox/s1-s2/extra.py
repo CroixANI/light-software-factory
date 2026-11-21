@@ -43,7 +43,8 @@ if n <= 0: rec("proc_listallpids", "denied" if ctypes.get_errno() in (1, 13) els
 else:
     pids = (ctypes.c_int * (n + 64))()
     got = libc.proc_listallpids(pids, ctypes.sizeof(pids))
-    rec("proc_listallpids", "succeeded", f"{got} pids listed; orchestrator pid {'visible' if a.orch_pid in list(pids)[:got] else 'not visible'}")
+    if got <= 0: rec("proc_listallpids", "denied" if ctypes.get_errno() in (1, 13) else "error", errname(ctypes.get_errno()))
+    else: rec("proc_listallpids", "succeeded", f"{got} pids listed; orchestrator pid {'visible' if a.orch_pid in list(pids)[:got] else 'not visible'}")
 
 # proc_name / proc_pidpath of another process
 buf = ctypes.create_string_buffer(1024)

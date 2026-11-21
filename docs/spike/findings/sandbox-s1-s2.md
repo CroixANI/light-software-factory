@@ -54,7 +54,7 @@ Notes: targets were passed as absolute paths (`~` needs `getpwuid`, which the pr
 | `sysctl(KERN_PROCARGS2, <orchestrator pid>)` | read; env and argv canaries found | **succeeded: env canary FOUND, argv canary FOUND** (both shapes) | denied |
 | same, for the parent (the launcher; its argv carried the canary because the harness passed it on the command line) | read | succeeded | denied |
 | same, for pid 1 | EINVAL | denied (EPERM; the sandbox changes the answer) | denied |
-| `proc_listallpids` (orchestrator pid visible) | ~865 pids (862-867 across runs) | **succeeded, pid visible** | denied |
+| `proc_listallpids` (orchestrator pid visible) | 859-867 pids across runs | **succeeded, pid visible** | denied |
 | `proc_name`, `proc_pidpath` of the orchestrator | read | **succeeded** | denied |
 | `sysctl kern.proc.all` (process table) | readable | denied | denied |
 | `sysctl(KERN_PROCARGS2, self)` | read | succeeded | succeeded (control) |
