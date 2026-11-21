@@ -2,7 +2,7 @@
 
 ← Back to the [repository README](../README.md).
 
-**Status:** requirements confirmed (D-01…D-72). Architecture v1 revision 4.1 — reviewed in 3 rounds, simplified after an independent Gemini review, consistency-checked; ready for the implementation spike. New readers start with [how-it-works.md](how-it-works.md).
+**Status:** requirements confirmed (D-01…D-73). Architecture v1 revision 4.1 — reviewed in 3 rounds, simplified after an independent Gemini review, consistency-checked; ready for the implementation spike. New readers start with [how-it-works.md](how-it-works.md).
 **Purpose of this folder:** agree on *what* we build before deciding *how*. Architecture, ADRs and specs come after the requirements reach `agreed`.
 
 ## What it is

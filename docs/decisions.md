@@ -515,10 +515,10 @@ One decision per entry. Decisions are never deleted; replaced ones are marked `s
 - Why: the owner explicitly wants role configuration in a UI (R9).
 - Affects: R9, D-15, D-16
 
-## D-73 — Work organization during the build: GitHub tracks, OpenSpec specifies — `proposed`
+## D-73 — Work organization during the build: GitHub tracks, OpenSpec specifies
 - Date / round: 2026-11-21, round 10 (owner request, planning the build)
 - Question: Q73 — how is the build of the factory split across sequential LLM sessions (Claude Code, Gemini, others), and where do tasks and specifications live?
-- Decision (recommended; the owner accepts or rejects):
+- Decision (accepted by the owner, 2026-11-21):
   1. **Split of roles.** GitHub holds scheduling and status; OpenSpec holds behavior; `docs/` holds binding design.
      - Milestone = phase (M0…M6 below). Parent issue = one group = one OpenSpec change (D-05, D-21). Sub-issue = one top-level task in `tasks.md`, ordered by native "blocked by" links.
      - Links: the parent issue body says `OpenSpec change: <slug>`; each `tasks.md` task carries `#<issue>`; specs, proposals and issues cite `D-NN`. No status is copied into OpenSpec, no behavior into issues (Q7).
@@ -528,6 +528,7 @@ One decision per entry. Decisions are never deleted; replaced ones are marked `s
   5. **Handoff.** At the end of a session it leaves one comment on its issue: done, not done, surprises. No progress file in the repository; GitHub is the state.
   6. **Pre-spike rule unchanged.** Until the spike findings are reviewed (M1) only `docs/`, `openspec/` and `spike/` change. OpenSpec changes for pure-domain parts may be written during M0.
   7. **Labels.** `type:spike|spec|impl|docs|decision` and `area:station|core|host|web|process`. No Projects board; milestones and sub-issues are enough.
+  8. **One instruction file for all tools.** The rules for agents live in `AGENTS.md` (read by Codex, Copilot and others); `CLAUDE.md` and `GEMINI.md` only import it. Automation of "take the next task" (selection script, claim label) is deferred until parallel work starts (M2).
 - Why: it uses the input format the factory itself will read (D-05, D-21, Q7), so the build rehearses it. Each session starts cold; a single issue as brief keeps context minimal (value 2). Few concepts, no second tracker (value 3). Rolling-wave detail avoids specifying parts the spike may invalidate.
 - Value collision: none found; where "plan everything now" (value 1: tokens only where they change a decision) and "complete picture" compete, value 1 wins, hence rolling wave.
-- Affects: D-05, D-21, D-38 (by analogy), Q7, `CLAUDE.md` (add a short "Work organization" section after acceptance), `openspec/config.yaml` (no change needed).
+- Affects: D-05, D-21, D-38 (by analogy), Q7, `AGENTS.md` ("Work organization" section, shared by all tools), `CLAUDE.md`, `GEMINI.md`.

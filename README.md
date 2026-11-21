@@ -7,7 +7,7 @@ It is built with .NET, React and SQLite, runs on the owner's Mac, and v1 stops b
 
 ## Status
 
-- **Design: complete and reviewed.** Requirements are confirmed (decisions D-01…D-72); architecture v1 revision 4.1 went through
+- **Design: complete and reviewed.** Requirements are confirmed (decisions D-01…D-73); architecture v1 revision 4.1 went through
   three review rounds, an independent simplification review and a consistency check.
 - **Next: the implementation spike** ([plan](docs/spike/plan.md)) to settle the open questions about running provider CLIs
   inside the macOS sandbox.
@@ -20,7 +20,7 @@ It is built with .NET, React and SQLite, runs on the owner's Mac, and v1 stops b
 | [How it works](docs/how-it-works.md) | Explainer for newcomers, with diagrams |
 | [Values](docs/values.md) | The five values, in priority order; binding for every design choice |
 | [Requirements](docs/requirements.md) | What v1 must do, and what it deliberately does not |
-| [Decisions](docs/decisions.md) | Every owner decision with its rationale (D-01…D-72) |
+| [Decisions](docs/decisions.md) | Every owner decision with its rationale (D-01…D-73) |
 | [Architecture](docs/architecture/architecture.md) | Architecture v1: entity model, components, sandbox, state machines, open questions |
 | [ADRs](docs/architecture/adr/) | ADR-001…ADR-007 |
 | [Documentation index](docs/README.md) | All documents, including glossary, research notes and review history |
@@ -54,7 +54,7 @@ It is built with .NET, React and SQLite, runs on the owner's Mac, and v1 stops b
 ## Contributing
 
 This is a personal project. Decisions in [docs/decisions.md](docs/decisions.md) are made by the owner; design changes are
-proposed as new decision entries. Coding agents follow [CLAUDE.md](CLAUDE.md).
+proposed as new decision entries. Coding agents follow [AGENTS.md](AGENTS.md).
 
 ## License
 
