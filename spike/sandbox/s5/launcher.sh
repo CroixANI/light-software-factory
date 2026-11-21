@@ -10,7 +10,7 @@ while [ $# -gt 0 ]; do case "$1" in
   --shape|--step|--port|--cli-dir|--mach) [ $# -ge 2 ] || { echo "missing value for $1" >&2; exit 2; }; k=$1; v=$2; shift 2
     case $k in --shape) shape=$v;; --step) step=$v;; --port) port=$v;; --cli-dir) clidir=$(cd "$v" && pwd -P);;
       --mach) [[ "$v" =~ ^[A-Za-z0-9._-]+$ ]] || { echo "bad mach name" >&2; exit 2; }; mach+=("$v");; esac;;
-  --show-profile) show=1; shift;; --extra) extra=$2; shift 2;; --) shift; break;; *) echo "bad arg $1" >&2; exit 2;;
+  --show-profile) show=1; shift;; --extra) [ $# -ge 2 ] || { echo "missing value for --extra" >&2; exit 2; }; extra="$extra $2"; shift 2;; --) shift; break;; *) echo "bad arg $1" >&2; exit 2;;
 esac; done
 [[ "$shape" =~ ^(reviewer-readonly|builder)$ ]] && [[ "$port" =~ ^[0-9]+$ ]] && [ "${#port}" -le 5 ] && [ "$((10#$port))" -ge 1 ] && [ "$((10#$port))" -le 65535 ] && [ -f "$here/$shape.sb" ] && [ -d "$step" ] && [ -n "$port" ] && [ -n "$clidir" ] && [ $# -gt 0 ] || { echo "usage: see header" >&2; exit 2; }
 step="$(cd "$step" && pwd -P)"          # Seatbelt matches resolved paths (/private/var, not /var)
@@ -32,7 +32,7 @@ prof="$(mktemp -t lsf-profile)"; trap 'rm -f "$prof"' EXIT
     p="$(dirname "$r")"; while [ "$p" != / ]; do echo "(allow file-read-metadata (literal \"$p\"))"; p="$(dirname "$p")"; done
   done | sort -u
   cat "$here/$shape.sb"
-  [ -n "$extra" ] && cat "$extra"
+  for e in $extra; do cat "$e"; done
   for m in ${mach[@]+"${mach[@]}"}; do echo "(allow mach-lookup (global-name \"$m\"))"; done; } > "$prof"
 [ "$show" = 1 ] && cat "$prof" >&2 || true
 [ "$show" = 1 ] && echo "roots: py=$pyroot node=$noderoot cli=$clidir" >&2 || true

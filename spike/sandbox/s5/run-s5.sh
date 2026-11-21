@@ -13,8 +13,8 @@ pass=0; fail=0
 case_() { local name=$1 expect=$2 extra=$3 mach=$4; shift 5; local o=(); local f
   IFS=, read -ra fs <<<"$extra"; for f in "${fs[@]}"; do [ "$f" != - ] && o+=(--extra "$here/$f"); done
   IFS=, read -ra ms <<<"$mach"; for f in "${ms[@]}"; do [ "$f" != - ] && o+=(--mach "$f"); done
-  perl -e 'alarm 240; exec @ARGV' "$here/run.sh" "$step" ${o[@]+"${o[@]}"} -- "$@" 2>&1 | cat >"$out/$name.raw"; local rc=${PIPESTATUS[0]}   # stdout MUST be a pipe or a file inside the Step: see case 14
-  clean <"$out/$name.raw" | head -40 >"$out/$name.txt"; rm -f "$out/$name.raw"
+  perl -e 'alarm 240; exec @ARGV' "$here/run.sh" "$step" ${o[@]+"${o[@]}"} -- "$@" 2>&1 | cat >"$step/tmp/$name.raw"; local rc=${PIPESTATUS[0]}   # stdout MUST be a pipe or a file inside the Step: see case 14
+  clean <"$step/tmp/$name.raw" | head -40 >"$out/$name.txt"
   local ok=FAIL; if [ "$expect" = 0 ] && [ $rc -eq 0 ]; then ok=PASS; elif [ "$expect" != 0 ] && [ $rc -ne 0 ]; then ok=PASS; fi
   [ $ok = PASS ] && pass=$((pass+1)) || fail=$((fail+1)); printf '%-4s rc=%-3s %s\n' $ok $rc "$name" | tee -a "$out/summary.txt"; }
 D=extra-dotnet.sb; case_ 00-dotnet-restore-no-tmp-rule nonzero - - -- dotnet restore dotnet-app -p:NuGetAudit=false
@@ -33,10 +33,12 @@ case_ 13-direct-egress-denied    nonzero - - -- node -e 'require("net").connect(
 case_ 15-exec-coreutils-denied   nonzero - - -- /bin/sh -c '/bin/cat /dev/null'
 case_ 16-exec-git-denied         nonzero - - -- /usr/bin/git --version
 # the denial must come from the sandbox, not from file modes / offline flags / a dead port: check the message text
-req() { grep -q -- "$2" "$out/$1.txt" && echo "PASS text  $1 contains '$2'" || { echo "FAIL text  $1 lacks '$2'"; fail=$((fail+1)); }; }
+req() { grep -q -- "$2" "$out/$1.txt" && echo "PASS text  $1 contains '$2'" | tee -a "$out/summary.txt" || { echo "FAIL text  $1 lacks '$2'" | tee -a "$out/summary.txt"; fail=$((fail+1)); }; }
 for n in 10-cache-write-denied-nuget 11-cache-write-denied-npm 12-write-outside-denied 15-exec-coreutils-denied 16-exec-git-denied; do req $n "Operation not permitted"; done
 req 13-direct-egress-denied "code=EPERM"
 # 14: pitfall. node aborts at startup (rc 134) when its stdout is a regular file OUTSIDE the readable roots; python and dotnet do not.
 t="$(mktemp -t s5-stdout)"; "$here/run.sh" "$step" -- node -v >"$t" 2>&1; rc14=$?; "$here/run.sh" "$step" -- python3 -c 1 >"$t.p" 2>&1; rc17=$?; "$here/run.sh" "$step" -- dotnet --version >"$t.d" 2>&1; rc18=$?; "$here/run.sh" "$step" -- node -v >"$step/io/out/n.txt" 2>&1; rc19=$?; rm -f "$t.p" "$t.d"; echo "INFO python-file=$rc17 dotnet-file=$rc18 node-file-in-io/out=$rc19 (expected 0 0 0)" | tee -a "$out/summary.txt"; clean <"$t" | head -8 >"$out/14-node-stdout-file-outside-step.txt"; rm -f "$t"
 echo "INFO rc=$rc14 14-node-stdout-file-outside-step (expected 134)" | tee -a "$out/summary.txt"
-echo "pass=$pass fail=$fail"
+echo "pass=$pass fail=$fail" | tee -a "$out/summary.txt"
+echo "env: macOS $(sw_vers -productVersion), dotnet $(dotnet --version), node $(node -v), npm $(npm -v)" | tee -a "$out/summary.txt"
+exit $((fail>0))

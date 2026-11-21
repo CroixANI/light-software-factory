@@ -13,5 +13,13 @@ PASS rc=1   12-write-outside-denied
 PASS rc=1   13-direct-egress-denied
 PASS rc=126 15-exec-coreutils-denied
 PASS rc=126 16-exec-git-denied
+PASS text  10-cache-write-denied-nuget contains 'Operation not permitted'
+PASS text  11-cache-write-denied-npm contains 'Operation not permitted'
+PASS text  12-write-outside-denied contains 'Operation not permitted'
+PASS text  15-exec-coreutils-denied contains 'Operation not permitted'
+PASS text  16-exec-git-denied contains 'Operation not permitted'
+PASS text  13-direct-egress-denied contains 'code=EPERM'
 INFO python-file=0 dotnet-file=0 node-file-in-io/out=0 (expected 0 0 0)
 INFO rc=134 14-node-stdout-file-outside-step (expected 134)
+pass=15 fail=0
+env: macOS 27.2.1, dotnet 10.0.100, node v24.21.0, npm 12.0.2

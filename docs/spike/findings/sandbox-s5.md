@@ -6,9 +6,9 @@ Task 2.3 of `spike-sandbox-and-providers`, experiment S5 (plan: "Toolchain under
 - macOS 27.2.1 (arm64), .NET SDK 10.0.100 (`net10.0`, xunit 2.9.3, Microsoft.NET.Test.Sdk 17.13.0, VSTest 18.0.1), Node v24.21.0, npm 12.0.2. `sandbox-exec` with the spike profile `builder.sb` over `base.sb` (task 1.4, unchanged), empty environment, `--port 8999` (nothing listens there).
 - Caches are **read-only** inside the Step: `<step>/io/in/cache/nuget` (`NUGET_PACKAGES`) and `<step>/io/in/cache/npm` (`NPM_CONFIG_CACHE`). They sit under `io/in`, which the profile already lets the worker read and never write; nothing had to be added for them. They were filled before the run, outside the sandbox (`chmod -R a-w`). `npm`/NuGet are forced offline (`NPM_CONFIG_OFFLINE=true`; no feed is reachable).
 - Toolchain env given through `/usr/bin/env` (the launcher's empty env cannot carry it): `NUGET_PACKAGES`, `DOTNET_CLI_HOME=<step>/home`, `DOTNET_NOLOGO`, `DOTNET_CLI_TELEMETRY_OPTOUT`, `DOTNET_SKIP_FIRST_TIME_EXPERIENCE`, `DOTNET_GENERATE_ASPNET_CERTIFICATE=false`, `MSBUILDDISABLENODEREUSE=1`, `DOTNET_CLI_USE_MSBUILD_SERVER=0`, `NPM_CONFIG_{CACHE,OFFLINE,UPDATE_NOTIFIER,AUDIT,FUND}`. Also `-p:NuGetAudit=false` (the audit feed is unreachable and only warns, NU1900).
-- Method: failures were found by behaviour (denial lines are still not visible in `log show`), one rule added per concrete failure, each re-tested by removing it.
+- Method: failures were found by behaviour (denial lines are still not visible in `log show`), one rule added per concrete failure; the two fragments were re-tested as a whole by removing them (cases 00, 04), not rule by rule.
 
-## Result: S5 passes (15 cases plus 6 text checks and 2 info lines in `results/summary.txt`; no failures)
+## Result: S5 passes (15 cases, 6 sandbox-message checks and info lines, all in `results/summary.txt`; no failures)
 
 | Case | Result |
 |---|---|
@@ -19,7 +19,7 @@ Task 2.3 of `spike-sandbox-and-providers`, experiment S5 (plan: "Toolchain under
 | 04 `dotnet test` without rule 2 | fails (`SocketException (13)`), so the rule is necessary |
 | 08/09 (these show offline behaviour and the proxy variable, not a profile block) install a package that is not cached (`npm`, `dotnet add package`) | fail: `ENOTCACHED`; NuGet `Connection refused (127.0.0.1:8999)` (the tool honours `HTTPS_PROXY`, so it goes to the Step's gateway port) |
 | 10/11 write into the NuGet / npm cache | denied, message `Operation not permitted` checked (the caches are also `a-w`, so only the message proves the sandbox did it) |
-| 12 write outside `repo/`, `io/out`, `home`, `tmp` | denied |
+| 12 write to the Step root (outside `repo/`, `io/out`, `home`, `tmp`) | denied |
 | 13 direct TCP to 1.1.1.1:443 | denied, `code=EPERM` checked |
 | 15/16 exec `/bin/cat`, `/usr/bin/git` | denied at exec (`Operation not permitted`) |
 
