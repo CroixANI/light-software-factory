@@ -1,7 +1,7 @@
 # S6 findings: `sandbox-exec` status on the current macOS
 
 Task 2.4 of `spike-sandbox-and-providers`, experiment S6, question Q3 (architecture §19). Issue #12. Decisions: D-63 (no dedicated user; if the sandbox cannot hold, the provider is `unsupported`), ADR-004, ADR-005.
-Evidence is the command output below; nothing was committed besides this file. The sandboxed runs were done on the owner's machine, outside any other sandbox.
+Evidence is the command output below; nothing was committed besides this file. Runs were done from an agent session on the owner's machine; whether that session was itself sandboxed was not checked (the plain `(allow default)` run succeeded, so applying a profile was possible).
 
 ## Versions
 
