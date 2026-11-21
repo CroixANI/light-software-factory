@@ -1,0 +1,6 @@
+Task status: ✓ Complete
+
+Specs to update:
+  inventory: update
+inventory MODIFIED failed for header "### Requirement: Alpha reservation" - current spec contains scenario(s) not present in the modified block: "Reserve unavailable stock". The modified block has 1 scenario; the current spec has 2 scenarios. It adds none. Refresh the change spec before archiving to avoid dropping scenarios.
+Aborted. No files were changed.

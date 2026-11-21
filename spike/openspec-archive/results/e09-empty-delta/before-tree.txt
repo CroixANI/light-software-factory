@@ -1,0 +1,8 @@
+openspec/changes/archive/.gitkeep
+openspec/changes/e09-empty-delta/.openspec.yaml
+openspec/changes/e09-empty-delta/proposal.md
+openspec/changes/e09-empty-delta/specs/inventory/spec.md
+openspec/changes/e09-empty-delta/tasks.md
+openspec/config.yaml
+openspec/specs/billing/spec.md
+openspec/specs/inventory/spec.md

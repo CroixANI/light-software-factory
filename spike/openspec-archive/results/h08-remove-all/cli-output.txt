@@ -1,0 +1,9 @@
+Task status: ✓ Complete
+
+Specs to update:
+  billing: update
+
+Validation errors in rebuilt spec for billing (will not write changes):
+  ✗ Spec must have at least one requirement
+  → This change removes the last requirement 'billing' has. To retire the capability and delete its spec, add `retire_capabilities: true` to the change's .openspec.yaml (alongside its `schema:`, which that file requires), then rerun.
+Aborted. No files were changed.

@@ -1,0 +1,9 @@
+openspec/changes/archive/.gitkeep
+openspec/changes/h06-all-kinds/.openspec.yaml
+openspec/changes/h06-all-kinds/proposal.md
+openspec/changes/h06-all-kinds/specs/billing/spec.md
+openspec/changes/h06-all-kinds/specs/inventory/spec.md
+openspec/changes/h06-all-kinds/tasks.md
+openspec/config.yaml
+openspec/specs/billing/spec.md
+openspec/specs/inventory/spec.md

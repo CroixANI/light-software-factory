@@ -1,0 +1,4 @@
+✓ spec/billing
+✓ spec/inventory
+Totals: 2 passed, 0 failed (2 items)
+exit=0

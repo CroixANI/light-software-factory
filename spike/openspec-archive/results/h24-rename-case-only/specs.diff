@@ -1,0 +1,12 @@
+diff -ru before/specs/inventory/spec.md ./openspec/specs/inventory/spec.md
+--- before/specs/inventory/spec.md
++++ ./openspec/specs/inventory/spec.md
+@@ -5,7 +5,7 @@
+ 
+ ## Requirements
+ 
+-### Requirement: Alpha reservation
++### Requirement: Alpha Reservation
+ The system SHALL reserve stock when a reservation is requested.
+ 
+ #### Scenario: Reserve available stock

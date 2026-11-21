@@ -1,0 +1,10 @@
+Task status: ✓ Complete
+
+Specs to update:
+  inventory: update
+⚠️  Warning: inventory - delta Purpose ignored; inventory already has one. Edit <project>/openspec/specs/inventory/spec.md directly to change it.
+Applying changes to openspec/specs/inventory/spec.md:
+  + 1 added
+Totals: + 1, ~ 0, - 0, → 0
+Specs updated successfully.
+Change 'e20-purpose-on-existing' archived as '<DATE>-e20-purpose-on-existing'.

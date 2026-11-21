@@ -1,0 +1,15 @@
+diff -ru before/specs/inventory/spec.md ./openspec/specs/inventory/spec.md
+--- before/specs/inventory/spec.md
++++ ./openspec/specs/inventory/spec.md
+@@ -31,8 +31,8 @@
+ - **THEN** an audit entry with the old and new count is stored
+ 
+ ### Requirement: Delta export
+-The system SHALL export the stock table as CSV on request.
++The system exports the table.
+ 
+ #### Scenario: Export requested
+-- **WHEN** an export is requested
+-- **THEN** a CSV file with one row per item is produced
++- **WHEN** w
++- **THEN** t

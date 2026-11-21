@@ -1,0 +1,8 @@
+openspec/changes/archive/.gitkeep
+openspec/changes/archive/<DATE>-h20-idempotent-modified/.openspec.yaml
+openspec/changes/archive/<DATE>-h20-idempotent-modified/proposal.md
+openspec/changes/archive/<DATE>-h20-idempotent-modified/specs/inventory/spec.md
+openspec/changes/archive/<DATE>-h20-idempotent-modified/tasks.md
+openspec/config.yaml
+openspec/specs/billing/spec.md
+openspec/specs/inventory/spec.md

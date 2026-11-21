@@ -1,0 +1,8 @@
+openspec/changes/archive/.gitkeep
+openspec/changes/h12-removed-missing/.openspec.yaml
+openspec/changes/h12-removed-missing/proposal.md
+openspec/changes/h12-removed-missing/specs/inventory/spec.md
+openspec/changes/h12-removed-missing/tasks.md
+openspec/config.yaml
+openspec/specs/billing/spec.md
+openspec/specs/inventory/spec.md

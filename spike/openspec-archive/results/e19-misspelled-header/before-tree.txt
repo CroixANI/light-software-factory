@@ -1,0 +1,8 @@
+openspec/changes/archive/.gitkeep
+openspec/changes/e19-misspelled-header/.openspec.yaml
+openspec/changes/e19-misspelled-header/proposal.md
+openspec/changes/e19-misspelled-header/specs/inventory/spec.md
+openspec/changes/e19-misspelled-header/tasks.md
+openspec/config.yaml
+openspec/specs/billing/spec.md
+openspec/specs/inventory/spec.md

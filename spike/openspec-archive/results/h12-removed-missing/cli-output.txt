@@ -1,0 +1,10 @@
+Task status: ✓ Complete
+
+Specs to update:
+  inventory: update
+⚠️  Warning: inventory - REMOVED requirement "Zulu does not exist" is not in the current spec; treating it as already removed.
+Applying changes to openspec/specs/inventory/spec.md:
+  + 1 added
+Totals: + 1, ~ 0, - 0, → 0
+Specs updated successfully.
+Change 'h12-removed-missing' archived as '<DATE>-h12-removed-missing'.

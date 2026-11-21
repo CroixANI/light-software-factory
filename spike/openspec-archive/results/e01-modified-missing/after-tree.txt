@@ -1,0 +1,8 @@
+openspec/changes/archive/.gitkeep
+openspec/changes/e01-modified-missing/.openspec.yaml
+openspec/changes/e01-modified-missing/proposal.md
+openspec/changes/e01-modified-missing/specs/inventory/spec.md
+openspec/changes/e01-modified-missing/tasks.md
+openspec/config.yaml
+openspec/specs/billing/spec.md
+openspec/specs/inventory/spec.md

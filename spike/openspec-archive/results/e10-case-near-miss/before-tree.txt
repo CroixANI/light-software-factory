@@ -1,0 +1,8 @@
+openspec/changes/archive/.gitkeep
+openspec/changes/e10-case-near-miss/.openspec.yaml
+openspec/changes/e10-case-near-miss/proposal.md
+openspec/changes/e10-case-near-miss/specs/inventory/spec.md
+openspec/changes/e10-case-near-miss/tasks.md
+openspec/config.yaml
+openspec/specs/billing/spec.md
+openspec/specs/inventory/spec.md

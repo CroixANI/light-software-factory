@@ -1,0 +1,9 @@
+Task status: ✓ Complete
+
+Specs to update:
+  notifications: create
+Applying changes to openspec/specs/notifications/spec.md:
+  + 1 added
+Totals: + 1, ~ 0, - 0, → 0
+Specs updated successfully.
+Change 'h01-added-new-capability' archived as '<DATE>-h01-added-new-capability'.

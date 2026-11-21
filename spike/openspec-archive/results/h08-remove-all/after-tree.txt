@@ -1,0 +1,8 @@
+openspec/changes/archive/.gitkeep
+openspec/changes/h08-remove-all/.openspec.yaml
+openspec/changes/h08-remove-all/proposal.md
+openspec/changes/h08-remove-all/specs/billing/spec.md
+openspec/changes/h08-remove-all/tasks.md
+openspec/config.yaml
+openspec/specs/billing/spec.md
+openspec/specs/inventory/spec.md

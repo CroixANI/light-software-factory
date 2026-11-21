@@ -1,0 +1,8 @@
+openspec/changes/archive/.gitkeep
+openspec/changes/archive/<DATE>-h13-skip-specs/.openspec.yaml
+openspec/changes/archive/<DATE>-h13-skip-specs/proposal.md
+openspec/changes/archive/<DATE>-h13-skip-specs/specs/inventory/spec.md
+openspec/changes/archive/<DATE>-h13-skip-specs/tasks.md
+openspec/config.yaml
+openspec/specs/billing/spec.md
+openspec/specs/inventory/spec.md

@@ -1,0 +1,15 @@
+Task status: ✓ Complete
+
+Specs to update:
+  billing: update
+  inventory: update
+Applying changes to openspec/specs/billing/spec.md:
+  ~ 1 modified
+Applying changes to openspec/specs/inventory/spec.md:
+  + 2 added
+  ~ 2 modified
+  - 1 removed
+  → 1 renamed
+Totals: + 2, ~ 3, - 1, → 1
+Specs updated successfully.
+Change 'h06-all-kinds' archived as '<DATE>-h06-all-kinds'.

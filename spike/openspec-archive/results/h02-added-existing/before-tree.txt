@@ -1,0 +1,8 @@
+openspec/changes/archive/.gitkeep
+openspec/changes/h02-added-existing/.openspec.yaml
+openspec/changes/h02-added-existing/proposal.md
+openspec/changes/h02-added-existing/specs/inventory/spec.md
+openspec/changes/h02-added-existing/tasks.md
+openspec/config.yaml
+openspec/specs/billing/spec.md
+openspec/specs/inventory/spec.md

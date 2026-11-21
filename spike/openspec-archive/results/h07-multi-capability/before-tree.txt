@@ -1,0 +1,10 @@
+openspec/changes/archive/.gitkeep
+openspec/changes/h07-multi-capability/.openspec.yaml
+openspec/changes/h07-multi-capability/proposal.md
+openspec/changes/h07-multi-capability/specs/billing/spec.md
+openspec/changes/h07-multi-capability/specs/inventory/spec.md
+openspec/changes/h07-multi-capability/specs/shipping/spec.md
+openspec/changes/h07-multi-capability/tasks.md
+openspec/config.yaml
+openspec/specs/billing/spec.md
+openspec/specs/inventory/spec.md

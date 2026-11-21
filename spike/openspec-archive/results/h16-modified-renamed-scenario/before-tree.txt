@@ -1,0 +1,8 @@
+openspec/changes/archive/.gitkeep
+openspec/changes/h16-modified-renamed-scenario/.openspec.yaml
+openspec/changes/h16-modified-renamed-scenario/proposal.md
+openspec/changes/h16-modified-renamed-scenario/specs/inventory/spec.md
+openspec/changes/h16-modified-renamed-scenario/tasks.md
+openspec/config.yaml
+openspec/specs/billing/spec.md
+openspec/specs/inventory/spec.md

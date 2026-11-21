@@ -1,0 +1,8 @@
+openspec/changes/archive/.gitkeep
+openspec/changes/h23-renamed-from-reused-by-added/.openspec.yaml
+openspec/changes/h23-renamed-from-reused-by-added/proposal.md
+openspec/changes/h23-renamed-from-reused-by-added/specs/inventory/spec.md
+openspec/changes/h23-renamed-from-reused-by-added/tasks.md
+openspec/config.yaml
+openspec/specs/billing/spec.md
+openspec/specs/inventory/spec.md

@@ -1,0 +1,7 @@
+openspec/changes/archive/.gitkeep
+openspec/changes/archive/<DATE>-e23-no-specs-dir/.openspec.yaml
+openspec/changes/archive/<DATE>-e23-no-specs-dir/proposal.md
+openspec/changes/archive/<DATE>-e23-no-specs-dir/tasks.md
+openspec/config.yaml
+openspec/specs/billing/spec.md
+openspec/specs/inventory/spec.md

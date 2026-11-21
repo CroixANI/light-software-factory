@@ -1,0 +1,26 @@
+diff -ru before/specs/inventory/spec.md ./openspec/specs/inventory/spec.md
+--- before/specs/inventory/spec.md
++++ ./openspec/specs/inventory/spec.md
+@@ -5,16 +5,16 @@
+ 
+ ## Requirements
+ 
+-### Requirement: Alpha reservation
+-The system SHALL reserve stock when a reservation is requested.
++### Requirement:  Alpha reservation 
++The system SHALL reserve stock (whitespace variant header).
+ 
+ #### Scenario: Reserve available stock
+-- **WHEN** a reservation is requested for an item with enough stock
+-- **THEN** the available count is reduced by the reserved quantity
++- **WHEN** x
++- **THEN** y
+ 
+ #### Scenario: Reserve unavailable stock
+-- **WHEN** a reservation is requested for more than the available stock
+-- **THEN** the reservation is rejected
++- **WHEN** x
++- **THEN** y
+ 
+ ### Requirement: Bravo release
+ The system SHALL release a reservation when it is cancelled.

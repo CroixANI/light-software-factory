@@ -1,0 +1,65 @@
+diff -ru before/specs/billing/spec.md ./openspec/specs/billing/spec.md
+--- before/specs/billing/spec.md
++++ ./openspec/specs/billing/spec.md
+@@ -6,8 +6,8 @@
+ ## Requirements
+ 
+ ### Requirement: Invoice creation
+-The system SHALL create one invoice per completed order.
++The system SHALL create exactly one invoice per completed order and email it.
+ 
+ #### Scenario: Order completed
+ - **WHEN** an order is completed
+-- **THEN** exactly one invoice is created for it
++- **THEN** exactly one invoice is created and emailed
+diff -ru before/specs/inventory/spec.md ./openspec/specs/inventory/spec.md
+--- before/specs/inventory/spec.md
++++ ./openspec/specs/inventory/spec.md
+@@ -16,23 +16,38 @@
+ - **WHEN** a reservation is requested for more than the available stock
+ - **THEN** the reservation is rejected
+ 
+-### Requirement: Bravo release
+-The system SHALL release a reservation when it is cancelled.
++### Requirement: Bravo cancellation
++The system SHALL release a reservation when it is cancelled or expires.
+ 
+ #### Scenario: Cancel reservation
+ - **WHEN** a reservation is cancelled
+ - **THEN** the reserved quantity returns to the available count
+ 
+-### Requirement: Charlie audit log
+-The system SHALL write an audit entry for every stock change.
++#### Scenario: Expired reservation
++- **WHEN** a reservation passes its expiry time
++- **THEN** the reserved quantity returns to the available count
+ 
+-#### Scenario: Audit entry written
+-- **WHEN** the available count changes
+-- **THEN** an audit entry with the old and new count is stored
+-
+ ### Requirement: Delta export
+-The system SHALL export the stock table as CSV on request.
++The system SHALL export the stock table as CSV or JSON on request.
+ 
+ #### Scenario: Export requested
+ - **WHEN** an export is requested
+ - **THEN** a CSV file with one row per item is produced
++
++### Requirement: Echo low-stock alert
++The system SHALL raise an alert when stock falls below the threshold.
++
++#### Scenario: Below threshold
++- **WHEN** the available count drops below the threshold
++- **THEN** an alert is raised
++
++#### Scenario: At threshold
++- **WHEN** the available count equals the threshold
++- **THEN** no alert is raised
++
++### Requirement: Foxtrot stock import
++The system SHALL import stock levels from a CSV file.
++
++#### Scenario: Import file
++- **WHEN** a CSV file is imported
++- **THEN** the stock levels are replaced by the file contents

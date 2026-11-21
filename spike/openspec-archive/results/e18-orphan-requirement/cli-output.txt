@@ -1,0 +1,9 @@
+
+Proposal warnings in proposal.md (non-blocking):
+  ⚠ Change must have at least one delta. No deltas found. Ensure your change has a specs/ directory with capability folders (e.g. specs/http-server/spec.md) containing .md files that use delta headers (## ADDED/MODIFIED/REMOVED/RENAMED Requirements) and that each requirement includes at least one "#### Scenario:" block. If this change intentionally modifies no specs (pure refactor, tooling, docs), set "skip_specs: true" in the change's .openspec.yaml instead. Tip: run "openspec change show <change-id> --json --deltas-only" to inspect parsed deltas.
+Task status: ✓ Complete
+
+Specs to update:
+  inventory: update
+inventory validation failed - requirement "Echo low-stock alert" (line 3) is under "## Requirements", which is not a delta section, so it would not be applied. Move it under ADDED/MODIFIED/REMOVED/RENAMED Requirements.
+Aborted. No files were changed.

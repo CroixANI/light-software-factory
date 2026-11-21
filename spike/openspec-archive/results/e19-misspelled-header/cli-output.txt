@@ -1,0 +1,7 @@
+
+Validation errors in change delta specs:
+  ✗ Requirement "Foxtrot stock import" is under "## ADD Requirements", which is not a delta section, so it is ignored. Move it under "## ADDED Requirements", "## MODIFIED Requirements", "## REMOVED Requirements", or "## RENAMED Requirements".
+  ⚠ Section "## ADD Requirements" is not carried into the main spec by archive. Move it into a requirement, or into proposal.md or design.md.
+
+Validation failed. Please fix the errors before archiving.
+To skip validation (not recommended), use --no-validate flag.

@@ -1,0 +1,18 @@
+{
+  "archive": {
+    "change": "h19-json-output",
+    "archivedAs": "<DATE>-h19-json-output",
+    "path": "<project>/openspec/changes/archive/<DATE>-h19-json-output",
+    "specsUpdated": true,
+    "totals": {
+      "added": 1,
+      "modified": 0,
+      "removed": 0,
+      "renamed": 0
+    }
+  },
+  "root": {
+    "path": "<project>",
+    "source": "nearest"
+  }
+}

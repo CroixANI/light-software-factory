@@ -1,0 +1,8 @@
+openspec/changes/archive/.gitkeep
+openspec/changes/e17-rename-unpaired/.openspec.yaml
+openspec/changes/e17-rename-unpaired/proposal.md
+openspec/changes/e17-rename-unpaired/specs/inventory/spec.md
+openspec/changes/e17-rename-unpaired/tasks.md
+openspec/config.yaml
+openspec/specs/billing/spec.md
+openspec/specs/inventory/spec.md

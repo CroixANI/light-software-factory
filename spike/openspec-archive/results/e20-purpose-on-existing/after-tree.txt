@@ -1,0 +1,8 @@
+openspec/changes/archive/.gitkeep
+openspec/changes/archive/<DATE>-e20-purpose-on-existing/.openspec.yaml
+openspec/changes/archive/<DATE>-e20-purpose-on-existing/proposal.md
+openspec/changes/archive/<DATE>-e20-purpose-on-existing/specs/inventory/spec.md
+openspec/changes/archive/<DATE>-e20-purpose-on-existing/tasks.md
+openspec/config.yaml
+openspec/specs/billing/spec.md
+openspec/specs/inventory/spec.md
