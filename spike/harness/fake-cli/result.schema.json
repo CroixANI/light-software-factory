@@ -34,11 +34,11 @@
   },
   "allOf": [
     {
-      "if": { "properties": { "status": { "const": "needs_context" } } },
+      "if": { "required": ["status"], "properties": { "status": { "const": "needs_context" } } },
       "then": { "required": ["needs_context"], "properties": { "needs_context": { "minItems": 1 } } }
     },
     {
-      "if": { "properties": { "status": { "const": "blocked" } } },
+      "if": { "required": ["status"], "properties": { "status": { "const": "blocked" } } },
       "then": { "required": ["blocked"] }
     }
   ]

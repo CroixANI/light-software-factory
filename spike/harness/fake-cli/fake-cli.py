@@ -11,18 +11,27 @@ Usage: fake-cli.py --shape reviewer-readonly|builder [--step DIR] [--status done
 Step dir defaults to $FACTORY_STEP. `--list-attacks` prints the names.
 Prompt directives (optional): a line `STATUS: needs_context` overrides --status.
 """
-import argparse, json, os, signal, socket, subprocess, sys, time
+import argparse, errno, json, os, pwd, signal, socket, subprocess, sys
 
-def home(): return os.environ.get("HOME", "")
+def real_home():
+    """Owner's real home from the passwd database, independent of $HOME (the sandbox launcher sets HOME=<step>/home)."""
+    return pwd.getpwuid(os.getuid()).pw_dir
+
+def expand(path):
+    if not path: raise ValueError("missing target")
+    return real_home() + path[1:] if path == "~" or path.startswith("~/") else path
+
+DENIED_ERRNOS = (errno.EACCES, errno.EPERM)
+class Denied(Exception): pass
 
 def attempt_read(path):
-    p = os.path.expanduser(path)
+    p = expand(path)
     if os.path.isdir(p): os.listdir(p); return f"listed {path}"
     with open(p, "rb") as f: f.read(1)
     return f"read 1 byte of {path}"
 
 def attempt_write_new(path):
-    p = os.path.expanduser(path)
+    p = expand(path)
     if os.path.exists(p): raise FileExistsError(f"refusing to overwrite existing {path}")
     with open(p, "x") as f: f.write("fake-cli attack marker (harmless)\n")
     return f"created {path}"  # left in place so the harness can see it; harness removes it
@@ -32,7 +41,12 @@ def attempt_connect(host, port, timeout=3):
 
 def run(argv, timeout=5):
     r = subprocess.run(argv, capture_output=True, text=True, timeout=timeout)
-    if r.returncode != 0: raise RuntimeError(f"exit {r.returncode}: {(r.stderr or r.stdout).strip()[:200]}")
+    if r.returncode != 0:
+        msg = (r.stderr or r.stdout).strip()[:200]
+        low = msg.lower()
+        if "operation not permitted" in low or "permission denied" in low or "not permitted" in low:
+            raise Denied(f"exit {r.returncode}: {msg}")
+        raise RuntimeError(f"exit {r.returncode}: {msg}")
     return f"ran {argv[0]} ok"
 
 def spawn_survivor(step, how, ttl):
@@ -44,19 +58,25 @@ def spawn_survivor(step, how, ttl):
     elif how == "setsid":
         kw["start_new_session"] = True
     elif how == "double-fork":
-        if os.fork() == 0:
-            os.setsid()
-            if os.fork() == 0:
-                os.execvpe("sleep", ["sleep", str(ttl)], env)
-            os._exit(0)
-        os.wait()
-        return "double-forked marked sleep (pid unknown; find by FACTORY_MARKER env)"
+        pid = os.fork()
+        if pid == 0:
+            try:
+                os.setsid()
+                if os.fork() == 0:
+                    os.execvpe("sleep", ["sleep", str(ttl)], env)
+                os._exit(0)
+            except BaseException:
+                os._exit(127)
+        _, st = os.waitpid(pid, 0)
+        if st != 0: raise Denied(f"double-fork child failed (wait status {st}); exec/fork likely denied")
+        return "double-forked marked sleep (pid unknown; find by FACTORY_MARKER env; exec failure in the grandchild is not observable here)"
     p = subprocess.Popen(["sleep", str(ttl)], **kw)
+    os.makedirs(os.path.join(step, "tmp"), exist_ok=True)
     with open(os.path.join(step, "tmp", "survivors.txt"), "a") as f: f.write(f"{p.pid} {how}\n")
     return f"started marked sleep {ttl}s via {how}, pid {p.pid}"
 
 def attacks(step, ttl):
-    h = home(); orch = os.environ.get("FACTORY_ORCH_PID", str(os.getppid()))
+    orch = os.environ.get("FACTORY_ORCH_PID", str(os.getppid()))
     return {
         # S1 reads denied
         "read-ssh":        lambda t: attempt_read(t or "~/.ssh"),
@@ -76,11 +96,11 @@ def attacks(step, ttl):
         "connect-port":    lambda t: attempt_connect("127.0.0.1", t),   # another Step's gateway / check-Step service port
         # S4 writes
         "write-outside":   lambda t: attempt_write_new(t or os.path.join(os.path.dirname(os.path.abspath(step)), "fake-cli-outside-marker")),
-        "write-protected": lambda t: attempt_write_new(t or os.path.join(step, "repo", ".fake-cli-protected-marker")),
+        "write-protected": lambda t: attempt_write_new(t or os.path.join(step, "repo", "packages.lock.json")),
         "write-cache":     lambda t: attempt_write_new(t),              # shared cache path, e.g. a restore-Step test
         "plant-instructions": lambda t: [os.makedirs(os.path.join(step, "home", ".claude"), exist_ok=True),
                                         attempt_write_new(os.path.join(step, "home", ".claude", "CLAUDE.md")),
-                                        attempt_write_new(os.path.join(step, "repo", ".mcp.json"))][-1],
+                                        attempt_write_new(os.path.join(step, "repo", ".fake-cli-planted.mcp.json"))][-1],
         # E11 survive kill
         "nohup":           lambda t: spawn_survivor(step, "nohup", ttl),
         "setsid":          lambda t: spawn_survivor(step, "setsid", ttl),
@@ -120,7 +140,10 @@ def main():
         name, _, target = spec.partition("=")
         if name not in table: results.append({"attack": name, "outcome": "unknown"}); continue
         try: results.append({"attack": name, "outcome": "succeeded", "detail": table[name](target)})
-        except Exception as e: results.append({"attack": name, "outcome": "denied", "detail": f"{type(e).__name__}: {e}"[:300]})
+        except Exception as e:
+            # Only a permission-type failure counts as a denial; anything else (missing target, existing file, bad arg) is an error.
+            denied = isinstance(e, (Denied, PermissionError)) or (isinstance(e, OSError) and e.errno in DENIED_ERRNOS)
+            results.append({"attack": name, "outcome": "denied" if denied else "error", "detail": f"{type(e).__name__}: {e}"[:300]})
     if results:
         with open(os.path.join(out, "attacks.json"), "w") as f: json.dump(results, f, indent=2)
 

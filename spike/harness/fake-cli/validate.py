@@ -33,6 +33,7 @@ def check(v, s, path, errs):
         else: check(v, sub, path, errs)
 
 def main():
+    if len(sys.argv) < 2: print("usage: validate.py <result.json> [schema.json]"); return 2
     here = os.path.dirname(os.path.abspath(__file__))
     schema = json.load(open(sys.argv[2] if len(sys.argv) > 2 else os.path.join(here, "result.schema.json")))
     try: doc = json.load(open(sys.argv[1]))

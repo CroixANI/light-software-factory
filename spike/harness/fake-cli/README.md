@@ -12,5 +12,5 @@ spike/harness/fake-cli/fake-cli.py --list-attacks
 Hostile actions (S1-S5, E11) run only on request: `--attack NAME[=TARGET]`, repeatable. Each one only attempts; the outcome
 (`succeeded` / `denied` + exception type) goes to `io/out/attacks.json`, not into `result.json`.
 Survivor attacks (`nohup`, `setsid`, `double-fork`) start a marked `sleep` (env `FACTORY_MARKER=fake-cli-survivor`, `--marker-ttl`, default 30 s);
-pids go to `tmp/survivors.txt`. Write attacks create new files only (never overwrite); the harness removes them.
+pids go to `tmp/survivors.txt`. Write attacks create new files only (never overwrite; an existing target gives outcome `error`, only EACCES/EPERM-type failures give `denied`; `~` resolves via the passwd database, not $HOME); the harness removes them.
 `--invalid-output` writes a schema-violating result (E12); `--exit N` sets the exit code. `FACTORY_ORCH_PID` names the pid for `kill-orchestrator` / `ps-eww`.
