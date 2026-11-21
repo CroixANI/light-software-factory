@@ -1,0 +1,177 @@
+[
+  {
+    "probe": "repo-new",
+    "outcome": "succeeded",
+    "detail": "created"
+  },
+  {
+    "probe": "repo-edit-existing",
+    "outcome": "succeeded",
+    "detail": "appended"
+  },
+  {
+    "probe": "repo-lockfile-packages",
+    "outcome": "succeeded",
+    "detail": "created"
+  },
+  {
+    "probe": "repo-lockfile-npm",
+    "outcome": "succeeded",
+    "detail": "created"
+  },
+  {
+    "probe": "repo-edit-CLAUDE.md",
+    "outcome": "succeeded",
+    "detail": "appended"
+  },
+  {
+    "probe": "repo-mkdir-github",
+    "outcome": "succeeded",
+    "detail": "created directory"
+  },
+  {
+    "probe": "repo-symlink-out",
+    "outcome": "succeeded",
+    "detail": "symlink created"
+  },
+  {
+    "probe": "repo-write-through-symlink",
+    "outcome": "succeeded",
+    "detail": "created"
+  },
+  {
+    "probe": "out-io/out",
+    "outcome": "succeeded",
+    "detail": "created"
+  },
+  {
+    "probe": "out-home",
+    "outcome": "succeeded",
+    "detail": "created"
+  },
+  {
+    "probe": "out-tmp",
+    "outcome": "succeeded",
+    "detail": "created"
+  },
+  {
+    "probe": "deny-step-root",
+    "outcome": "succeeded",
+    "detail": "created"
+  },
+  {
+    "probe": "deny-io/in",
+    "outcome": "succeeded",
+    "detail": "created"
+  },
+  {
+    "probe": "deny-io-dir",
+    "outcome": "succeeded",
+    "detail": "created directory"
+  },
+  {
+    "probe": "deny-mkdir-step",
+    "outcome": "succeeded",
+    "detail": "created directory"
+  },
+  {
+    "probe": "deny-parent-dir",
+    "outcome": "succeeded",
+    "detail": "created"
+  },
+  {
+    "probe": "deny-other-step-home",
+    "outcome": "succeeded",
+    "detail": "created"
+  },
+  {
+    "probe": "deny-other-step-edit",
+    "outcome": "succeeded",
+    "detail": "appended"
+  },
+  {
+    "probe": "deny-factory-state",
+    "outcome": "succeeded",
+    "detail": "created"
+  },
+  {
+    "probe": "deny-owner-home",
+    "outcome": "succeeded",
+    "detail": "created"
+  },
+  {
+    "probe": "deny-rename-out",
+    "outcome": "succeeded",
+    "detail": "renamed"
+  },
+  {
+    "probe": "deny-symlink-at-root",
+    "outcome": "succeeded",
+    "detail": "symlink created"
+  },
+  {
+    "probe": "cache-read",
+    "outcome": "succeeded",
+    "detail": "read 1 byte"
+  },
+  {
+    "probe": "cache-new-file",
+    "outcome": "succeeded",
+    "detail": "created"
+  },
+  {
+    "probe": "cache-append",
+    "outcome": "succeeded",
+    "detail": "appended"
+  },
+  {
+    "probe": "cache-truncate",
+    "outcome": "succeeded",
+    "detail": "truncated"
+  },
+  {
+    "probe": "cache-rename-in",
+    "outcome": "succeeded",
+    "detail": "renamed"
+  },
+  {
+    "probe": "cache-chmod",
+    "outcome": "succeeded",
+    "detail": "chmod ok"
+  },
+  {
+    "probe": "cache-mkdir",
+    "outcome": "succeeded",
+    "detail": "created directory"
+  },
+  {
+    "probe": "cache-unlink",
+    "outcome": "error",
+    "detail": "FileNotFoundError: [Errno 2] No such file or directory: '<work>/caches/nuget/pkg."
+  },
+  {
+    "probe": "overlay-read",
+    "outcome": "succeeded",
+    "detail": "read 1 byte"
+  },
+  {
+    "probe": "overlay-new-file",
+    "outcome": "succeeded",
+    "detail": "created"
+  },
+  {
+    "probe": "overlay-append",
+    "outcome": "succeeded",
+    "detail": "appended"
+  },
+  {
+    "probe": "overlay-other-item",
+    "outcome": "succeeded",
+    "detail": "created"
+  },
+  {
+    "probe": "overlay-other-item-edit",
+    "outcome": "succeeded",
+    "detail": "appended"
+  }
+]

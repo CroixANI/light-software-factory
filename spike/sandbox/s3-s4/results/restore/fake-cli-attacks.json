@@ -1,0 +1,22 @@
+[
+  {
+    "attack": "reach-github",
+    "outcome": "error",
+    "detail": "gaierror: [Errno 8] nodename nor servname provided, or not known"
+  },
+  {
+    "attack": "push",
+    "outcome": "denied",
+    "detail": "PermissionError: [Errno 1] Operation not permitted: 'git'"
+  },
+  {
+    "attack": "connect-port",
+    "outcome": "denied",
+    "detail": "PermissionError: [Errno 1] Operation not permitted"
+  },
+  {
+    "attack": "connect-port",
+    "outcome": "denied",
+    "detail": "PermissionError: [Errno 1] Operation not permitted"
+  }
+]

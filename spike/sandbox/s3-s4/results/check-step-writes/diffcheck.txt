@@ -1,0 +1,8 @@
+added    .github  <- FLAGGED: protected path
+changed  CLAUDE.md  <- FLAGGED: protected path
+added    link-out  <- FLAGGED: symlink
+added    new.txt
+added    package-lock.json  <- FLAGGED: protected path
+added    packages.lock.json  <- FLAGGED: protected path
+changed  src/calc.py
+RESULT: FLAGGED 5 path(s)

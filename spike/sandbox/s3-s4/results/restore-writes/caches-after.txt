@@ -1,0 +1,4 @@
+./npm 96 drwxr-xr-x
+./npm/index.txt 11 -rw-r--r--
+./nuget 96 drwxr-xr-x
+./nuget/pkg.txt 11 -rw-r--r--

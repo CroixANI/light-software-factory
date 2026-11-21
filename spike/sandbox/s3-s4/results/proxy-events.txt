@@ -1,0 +1,16 @@
+== gateway step-a
+{"step":"step-a","ev":"listening","port":8911,"allow":["example.com"]}
+{"step":"step-a","ev":"open","id":1,"host":"example.com","port":443,"connections_to_host":1}
+{"step":"step-a","ev":"denied","id":2,"host":"github.com","port":443}
+{"step":"step-a","ev":"open","id":3,"host":"example.com","port":443,"connections_to_host":2}
+{"step":"step-a","ev":"denied","id":4,"host":"github.com","port":443}
+== gateway step-b
+{"step":"step-b","ev":"listening","port":8912,"allow":["example.com"]}
+== gateway step-restore
+{"step":"step-restore","ev":"listening","port":8916,"allow":["registry.npmjs.org","api.nuget.org"]}
+{"step":"step-restore","ev":"open","id":1,"host":"registry.npmjs.org","port":443,"connections_to_host":1}
+{"step":"step-restore","ev":"denied","id":2,"host":"example.com","port":443}
+== gateway step-c
+{"step":"step-c","ev":"listening","port":8917,"allow":["example.com"]}
+{"step":"step-c","ev":"open","id":1,"host":"example.com","port":443,"connections_to_host":1}
+{"step":"step-c","ev":"denied","id":2,"host":"github.com","port":443}

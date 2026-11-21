@@ -1,0 +1,4 @@
+changed  src/calc.py
+added    src/new_module.py
+added    src/test_new.py
+RESULT: nothing flagged
