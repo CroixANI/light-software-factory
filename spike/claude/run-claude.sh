@@ -21,7 +21,7 @@ prof="$(mktemp -t lsf-claude)"; trap 'rm -f "$prof"' EXIT
   cat "$here/claude.sb"
   for f in ${extra[@]+"${extra[@]}"}; do cat "$f"; done
   for m in ${mach[@]+"${mach[@]}"}; do echo "(allow mach-lookup (global-name \"$m\"))"; done; } > "$prof"
-tokf="${tokf:-$HOME/.factory-spike/claude-token}"; tokenv=(); fdarg=
+tokf="${tokf:-$HOME/.factory-spike/claude-token}"; case "$tokf" in /*) ;; *) tokf="$PWD/$tokf";; esac; tokenv=(); fdarg=
 if [ "$notoken" = 0 ]; then [ -s "$tokf" ] || { echo "token file missing or empty" >&2; exit 2; }
   if [ "$fdtoken" = 1 ]; then tokenv=(CLAUDE_CODE_OAUTH_TOKEN_FILE_DESCRIPTOR=3); fdarg=1; else tokenv=("CLAUDE_CODE_OAUTH_TOKEN=$(cat "$tokf")"); fi; fi
 cd "$step/repo"
