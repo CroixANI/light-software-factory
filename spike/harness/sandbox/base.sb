@@ -15,7 +15,8 @@
   (subpath (param "CLIDIR"))   ; the provider CLI install, read-only
   (subpath (param "STEP")))
 ;; path lookups walk the parent directories of allowed paths (metadata only, no contents)
-(allow file-read-metadata (subpath "/Users") (subpath "/opt") (subpath "/usr/local") (subpath "/private") (subpath "/var") (subpath "/tmp"))
+;; path lookups also stat the ancestor directories of the allowed roots; the launcher appends exactly those as literals (no sibling is stat-able).
+(allow file-read-metadata (literal "/private") (literal "/usr") (literal "/Library"))
 
 ;; ---- Writes: only home, tmp, io/out (+ repo for the builder shape, see shape file). ----
 (allow file-write*
@@ -25,7 +26,10 @@
   (literal "/dev/null"))
 
 ;; ---- Kernel info (needed by node/V8 and the dotnet host; not Mach, not IPC). ----
-(allow sysctl-read)
+(allow sysctl-read (sysctl-name-prefix "hw.") (sysctl-name-prefix "kern.os") (sysctl-name "kern.version") (sysctl-name "kern.argmax")
+  (sysctl-name "kern.maxfilesperproc") (sysctl-name "kern.maxproc") (sysctl-name "kern.hostname") (sysctl-name "kern.boottime")
+  (sysctl-name "vm.loadavg") (sysctl-name "kern.secure_kernel") (sysctl-name "kern.usrstack64") (sysctl-name "kern.osproductversion"))
+;; NOT allowed: kern.proc.* and kern.procargs2 (other processes' argv).
 
 ;; ---- Processes: own process group only (kill, ps eww on others denied). ----
 (allow process-fork)
@@ -37,6 +41,4 @@
 (allow network-outbound (remote ip (string-append "localhost:" (param "PORT"))))
 
 ;; ---- Mach: see MACH-SERVICES.md. Added one at a time, each with its reason. ----
-;; 1. com.apple.system.opendirectoryd.libinfo: getpwuid()/getpwnam() (python pwd, libc) failed with "uid not found" without it.
-;;    Cost: a worker can learn user/group names. Acceptable for the starting profile; revisit in S2 (#9).
-(allow mach-lookup (global-name "com.apple.system.opendirectoryd.libinfo"))
+;; (none in the base; MACH-SERVICES.md lists candidates tested ad hoc with --mach)
