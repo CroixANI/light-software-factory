@@ -29,5 +29,5 @@ rules:
     - Keep Mermaid diagrams valid and relative links working.
   tasks:
     - Structure tasks as small, independently PR-able items suitable for 1:1 mapping to GitHub Sub-Issues.
-    - Include an explicit dependency note (`blocked by: ...`) where ordering matters (D-05).
+    - "Include an explicit dependency note (`blocked by: ...`) where ordering matters (D-05)."
     - Leave a placeholder or stamp the GitHub issue reference (`#<issue>`) on each top-level task once issues are created (Q7).
