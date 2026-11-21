@@ -2,13 +2,13 @@
 # Spike 3.1 throwaway: run `claude -p` under base.sb + claude.sb with an allowlist-only environment.
 # Default: the token file is piped to the CLI on fd 3 (CLAUDE_CODE_OAUTH_TOKEN_FILE_DESCRIPTOR=3): never printed, in neither argv nor the environment.
 # A regular-file fd did NOT authenticate under sandbox-exec; a pipe does (see findings). --env-token passes CLAUDE_CODE_OAUTH_TOKEN instead (visible in the argv of /usr/bin/env until it execs).
-# Usage: run-claude.sh --step <dir> --port <p> [--token-file F] [--mach NAME]... [--extra-sb FILE] [--no-token] [--env-token] -- <claude args>   (prompt on stdin)
+# Usage: run-claude.sh --step <dir> --port <p> [--token-file F] [--mach NAME]... [--extra-sb FILE] [--env K=V]... [--node-root DIR] [--no-token] [--env-token] -- <claude args>   (prompt on stdin)
 set -euo pipefail
 here="$(cd "$(dirname "$0")" && pwd)"; sb="$here/../harness/sandbox"
-step=; port=; tokf=; mach=(); extra=(); notoken=0; fdtoken=1
+step=; port=; tokf=; mach=(); extra=(); envx=(); noderoot=/nonexistent; notoken=0; fdtoken=1
 while [ $# -gt 0 ]; do case "$1" in
   --step) step=$2; shift 2;; --port) port=$2; shift 2;; --token-file) tokf=$2; shift 2;;
-  --mach) mach+=("$2"); shift 2;; --extra-sb) extra+=("$2"); shift 2;; --no-token) notoken=1; shift;; --env-token) fdtoken=0; shift;; --) shift; break;; *) echo "bad arg $1" >&2; exit 2;;
+  --mach) mach+=("$2"); shift 2;; --extra-sb) extra+=("$2"); shift 2;; --node-root) noderoot=$2; shift 2;; --env) [[ "$2" =~ ^[A-Z_]+=[A-Za-z0-9._:/@-]*$ ]] || { echo "bad --env" >&2; exit 2; }; envx+=("$2"); shift 2;; --no-token) notoken=1; shift;; --env-token) fdtoken=0; shift;; --) shift; break;; *) echo "bad arg $1" >&2; exit 2;;
 esac; done
 [ -n "$step" ] && [[ "$port" =~ ^[0-9]{1,5}$ ]] || { echo "need --step and numeric --port" >&2; exit 2; }
 for v in "$step" ${mach[@]+"${mach[@]}"}; do [[ "$v" =~ ^[A-Za-z0-9._/-]+$ ]] || { echo "refusing unsafe value: $v" >&2; exit 2; }; done
@@ -29,6 +29,6 @@ set +e
 if [ -n "$fdarg" ]; then exec 3< <(cat "$tokf"); fi
 /usr/bin/env -i PATH=/usr/bin:/bin HOME="$step/home" CLAUDE_CONFIG_DIR="$step/home/.claude" TMPDIR="$step/tmp" LANG=en_US.UTF-8 TERM=dumb \
   CLAUDE_CODE_TMPDIR="$step/tmp" CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1 DISABLE_TELEMETRY=1 DISABLE_ERROR_REPORTING=1 DISABLE_AUTOUPDATER=1 \
-  HTTPS_PROXY="http://127.0.0.1:$port" HTTP_PROXY="http://127.0.0.1:$port" FACTORY_STEP="$(basename "$step")" ${tokenv[@]+"${tokenv[@]}"} \
-  /usr/bin/sandbox-exec -f "$prof" -D "STEP=$step" -D "PORT=$port" -D "PYROOT=$pyroot" -D "NODEROOT=/nonexistent" -D "CLIDIR=$clidir" "$cli" "$@"
+  HTTPS_PROXY="http://127.0.0.1:$port" HTTP_PROXY="http://127.0.0.1:$port" FACTORY_STEP="$(basename "$step")" ${tokenv[@]+"${tokenv[@]}"} ${envx[@]+"${envx[@]}"} \
+  /usr/bin/sandbox-exec -f "$prof" -D "STEP=$step" -D "PORT=$port" -D "PYROOT=$pyroot" -D "NODEROOT=$noderoot" -D "CLIDIR=$clidir" "$cli" "$@"
 rc=$?; exit $rc
