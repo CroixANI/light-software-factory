@@ -1,0 +1,2 @@
+Error opening /private/var/select/sh: Operation not permitted
+/bin/sh: /bin/cat: Operation not permitted

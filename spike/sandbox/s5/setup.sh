@@ -5,7 +5,7 @@ set -euo pipefail
 here="$(cd "$(dirname "$0")" && pwd)"
 step="$("$here/../../harness/build-step-folder.sh" "$1")"
 # Pre-seed the dotnet first-use sentinels so build/test never run the first-use code (which needs /tmp/.dotnet); restore still does (see findings).
-mkdir -p "$step/home/.dotnet"; for f in dotnetFirstUseSentinel toolpath.sentinel aspNetCertificateSentinel; do touch "$step/home/.dotnet/$(dotnet --version).$f"; done
+mkdir -p "$step/home/.dotnet"; for f in dotnetFirstUseSentinel toolpath.sentinel aspNetCertificateSentinel; do touch "$step/home/.dotnet/$(cd "$step" && dotnet --version).$f"; done
 cp -R "$here/fixtures/dotnet-app" "$here/fixtures/npm-app" "$step/repo/"
 c="$step/io/in/cache"; mkdir -p "$c/nuget" "$c/npm"
 # NuGet: restore from the local global-packages folder as a feed (no network), into the cache dir.

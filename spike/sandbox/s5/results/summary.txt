@@ -11,4 +11,7 @@ PASS rc=1   10-cache-write-denied-nuget
 PASS rc=1   11-cache-write-denied-npm
 PASS rc=1   12-write-outside-denied
 PASS rc=1   13-direct-egress-denied
+PASS rc=126 15-exec-coreutils-denied
+PASS rc=126 16-exec-git-denied
+INFO python-file=0 dotnet-file=0 node-file-in-io/out=0 (expected 0 0 0)
 INFO rc=134 14-node-stdout-file-outside-step (expected 134)

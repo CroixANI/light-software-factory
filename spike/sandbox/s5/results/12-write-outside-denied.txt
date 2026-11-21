@@ -1,2 +1,2 @@
 Error opening /private/var/select/sh: Operation not permitted
-/bin/sh: <spike>/work/s5-41914/home/../../../escape.txt: Operation not permitted
+/bin/sh: <step>/home/../escape.txt: Operation not permitted

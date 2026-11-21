@@ -1,2 +1,2 @@
 Error opening /private/var/select/sh: Operation not permitted
-/bin/sh: <spike>/work/s5-41914/io/in/cache/nuget/x: Operation not permitted
+/bin/sh: <step>/io/in/cache/nuget/x: Operation not permitted
