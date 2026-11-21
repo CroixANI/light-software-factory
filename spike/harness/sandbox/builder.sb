@@ -1,0 +1,6 @@
+;; Shape builder: write repo/, shell + toolchain exec (offline).
+(allow file-write* (subpath (string-append (param "STEP") "/repo")))
+(allow file-read* (subpath "/usr/local/share/dotnet"))
+(allow process-exec (subpath (param "PYROOT")) (literal "/bin/sh") (literal "/bin/bash") (literal "/usr/bin/env") (literal "/bin/sleep")
+  (subpath "/usr/local/share/dotnet") (subpath (param "NODEROOT")))
+(allow process-info* (target self))   ; dotnet host inspects its own process (path, rusage)

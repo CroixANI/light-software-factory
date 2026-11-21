@@ -1,0 +1,2 @@
+;; Shape reviewer-readonly: exec only the interpreter running the CLI; no shell.
+(allow process-exec (subpath (param "PYROOT")))
