@@ -1,0 +1,6 @@
+rc=126 :: /bin/launchctl list :: Error opening /private/var/select/sh: Operation not permitted /bin/sh: /bin/launchctl: Operation not permitted 
+rc=126 :: /usr/bin/open -g -j -a Terminal :: Error opening /private/var/select/sh: Operation not permitted /bin/sh: /usr/bin/open: Operation not permitted 
+rc=126 :: /usr/bin/osascript -e 'return 1' :: Error opening /private/var/select/sh: Operation not permitted /bin/sh: /usr/bin/osascript: Operation not permitted 
+rc=126 :: /bin/ps eww -p 31128 :: Error opening /private/var/select/sh: Operation not permitted /bin/sh: /bin/ps: Operation not permitted 
+rc=126 :: /usr/bin/security list-keychains :: Error opening /private/var/select/sh: Operation not permitted /bin/sh: /usr/bin/security: Operation not permitted 
+rc=126 :: /bin/kill -0 31128 :: Error opening /private/var/select/sh: Operation not permitted /bin/sh: /bin/kill: Operation not permitted 

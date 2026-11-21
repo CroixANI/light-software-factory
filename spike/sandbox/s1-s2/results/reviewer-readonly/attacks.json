@@ -1,0 +1,92 @@
+[
+  {
+    "attack": "read-ssh",
+    "outcome": "denied",
+    "detail": "PermissionError: [Errno 1] Operation not permitted: '<home>/.ssh'"
+  },
+  {
+    "attack": "read-zshrc",
+    "outcome": "denied",
+    "detail": "PermissionError: [Errno 1] Operation not permitted: '<home>/.zshrc'"
+  },
+  {
+    "attack": "read-gh-config",
+    "outcome": "denied",
+    "detail": "PermissionError: [Errno 1] Operation not permitted: '<home>/.config/gh'"
+  },
+  {
+    "attack": "read-keychain",
+    "outcome": "denied",
+    "detail": "PermissionError: [Errno 1] Operation not permitted: '<home>/Library/Keychains/login.keychain-db'"
+  },
+  {
+    "attack": "read-path",
+    "outcome": "denied",
+    "detail": "PermissionError: [Errno 1] Operation not permitted: '/Library/Keychains/System.keychain'"
+  },
+  {
+    "attack": "read-path",
+    "outcome": "denied",
+    "detail": "PermissionError: [Errno 1] Operation not permitted: '<work>/step-b'"
+  },
+  {
+    "attack": "read-path",
+    "outcome": "denied",
+    "detail": "PermissionError: [Errno 1] Operation not permitted: '<work>/step-b/home/notes.txt'"
+  },
+  {
+    "attack": "read-path",
+    "outcome": "denied",
+    "detail": "PermissionError: [Errno 1] Operation not permitted: '<work>/factory-state'"
+  },
+  {
+    "attack": "read-path",
+    "outcome": "denied",
+    "detail": "PermissionError: [Errno 1] Operation not permitted: '<work>/factory-state/credential-canary'"
+  },
+  {
+    "attack": "read-path",
+    "outcome": "denied",
+    "detail": "PermissionError: [Errno 1] Operation not permitted: '<home>/Documents'"
+  },
+  {
+    "attack": "read-path",
+    "outcome": "denied",
+    "detail": "PermissionError: [Errno 1] Operation not permitted: '<repo>/spike/harness'"
+  },
+  {
+    "attack": "read-path",
+    "outcome": "succeeded",
+    "detail": "listed <work>/step-a/home"
+  },
+  {
+    "attack": "read-path",
+    "outcome": "succeeded",
+    "detail": "listed <work>/step-a/io/out"
+  },
+  {
+    "attack": "launchctl-submit",
+    "outcome": "denied",
+    "detail": "PermissionError: [Errno 1] Operation not permitted: 'launchctl'"
+  },
+  {
+    "attack": "open-terminal",
+    "outcome": "denied",
+    "detail": "PermissionError: [Errno 1] Operation not permitted: 'open'"
+  },
+  {
+    "attack": "osascript",
+    "outcome": "denied",
+    "detail": "PermissionError: [Errno 1] Operation not permitted: 'osascript'"
+  },
+  {
+    "attack": "kill-orchestrator",
+    "outcome": "denied",
+    "detail": "PermissionError: [Errno 1] Operation not permitted"
+  },
+  {
+    "attack": "ps-eww",
+    "outcome": "denied",
+    "detail": "PermissionError: [Errno 1] Operation not permitted: 'ps'"
+  }
+]
