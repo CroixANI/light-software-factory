@@ -1,0 +1,8 @@
+openspec/changes/archive/.gitkeep
+openspec/changes/e29-renamed-duplicate-from/.openspec.yaml
+openspec/changes/e29-renamed-duplicate-from/proposal.md
+openspec/changes/e29-renamed-duplicate-from/specs/inventory/spec.md
+openspec/changes/e29-renamed-duplicate-from/tasks.md
+openspec/config.yaml
+openspec/specs/billing/spec.md
+openspec/specs/inventory/spec.md

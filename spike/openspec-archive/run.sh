@@ -14,8 +14,8 @@ cases=("$@")
 [ ${#cases[@]} -gt 0 ] || cases=($(ls "$here/cases"))
 tmp="$(mktemp -d)"
 trap 'rm -rf "$tmp"' EXIT
-today="$(date +%Y-%m-%d)"
 for c in "${cases[@]}"; do
+  today="$(date +%Y-%m-%d)"   # per case; a run that crosses midnight stays consistent within a case
   work="$tmp/$c"; mkdir -p "$work"
   cp -R "$here/base/openspec" "$work/openspec"
   cp -R "$here/cases/$c/changes/." "$work/openspec/changes/"
@@ -36,8 +36,8 @@ for c in "${cases[@]}"; do
   echo "exit=$?" >> "$out/validate-after.txt"
   diff -ru "$tmp/$c-before/specs" "$work/openspec/specs" 2>&1 | sed -E 's/^(---|\+\+\+) ([^[:space:]]+)[[:space:]]+[0-9]{4}-.*/\1 \2/; s#'"$tmp"'/'"$c"'-before#before#g; s#'"$work"'#.#g' > "$out/specs.diff"
   mkdir -p "$out/after" && [ -d "$work/openspec/specs" ] && cp -R "$work/openspec/specs" "$out/after/specs"
-  # archived change folder (only when archive succeeded), name normalised
+  # archived change folder: also present, as the pre-created fixture, in h18 where the archive fails
   if [ -d "$work/openspec/changes/archive/$today-$c" ]; then cp -R "$work/openspec/changes/archive/$today-$c" "$out/after/archived-change"; fi
-  sed -i '' "s/$today/<DATE>/g; s#$work#<project>#g; s#$tmp#<tmp>#g" "$out/cli-output.txt" "$out/validate-after.txt"
+  for f in "$out/cli-output.txt" "$out/validate-after.txt"; do sed "s/$today/<DATE>/g; s#$work#<project>#g; s#$tmp#<tmp>#g" "$f" > "$f.tmp" && mv "$f.tmp" "$f"; done
   printf '%-50s exit=%s\n' "$c" "$(cat "$out/exit-code.txt")"
 done

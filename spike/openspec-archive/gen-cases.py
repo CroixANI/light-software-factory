@@ -107,7 +107,7 @@ case("e10-case-near-miss", "ADDED name differs from existing only in case (`alph
      {"inventory": sec("ADDED", req("alpha Reservation", "The system SHALL do a different thing.", [("S", "w", "t")]))})
 case("e11-duplicate-in-section", "Two MODIFIED blocks with the same header in one delta.",
      {"inventory": sec("MODIFIED", D_NEW + "\n" + D_NEW)})
-case("e12-no-shall", "ADDED requirement text without SHALL/MUST: validation failure (archive refuses before merging).",
+case("e12-no-shall", "ADDED requirement text without SHALL/MUST: archive succeeds (exit 0); only the later strict validate warns.",
      {"inventory": sec("ADDED", req("Echo low-stock alert", "The system raises an alert when stock is low.", [("Below", "w", "t")]))})
 case("e13-no-scenario", "ADDED requirement without any scenario: validation failure.",
      {"inventory": sec("ADDED", "### Requirement: Echo low-stock alert\nThe system SHALL raise an alert when stock is low.\n")})
@@ -121,7 +121,7 @@ case("e17-rename-unpaired", "RENAMED section with a FROM but no TO.",
      {"inventory": "## RENAMED Requirements\n\n- FROM: `### Requirement: Bravo release`\n"})
 case("e18-orphan-requirement", "Requirement written under a non-delta `## Requirements` header: silently ignored or error?",
      {"inventory": "## Requirements\n\n" + E_NEW})
-case("e19-misspelled-header", "Section header `## Added Requirements` (case) and `## ADDED requirements`; plus a requirement under `## ADD Requirements`.",
+case("e19-misspelled-header", "Section header `## added requirements` (lower case) plus a requirement under `## ADD Requirements`; the second one makes the whole archive abort, so a lower-case header merging is not shown.",
      {"inventory": "## added requirements\n\n" + E_NEW + "\n## ADD Requirements\n\n" + F_NEW})
 case("e20-purpose-on-existing", "Delta contains a `## Purpose` for an existing capability, plus an ADDED requirement.",
      {"inventory": "## Purpose\nA different purpose text that is long enough to pass the validator without complaint.\n\n" + sec("ADDED", E_NEW)})
@@ -146,4 +146,16 @@ case("e24-modified-lowercase-name", "MODIFIED header differs from the existing o
      {"inventory": sec("MODIFIED", req("alpha reservation", "The system SHALL reserve stock.", [("Reserve available stock", "w", "t"), ("Reserve unavailable stock", "w", "t")]))})
 case("e25-modified-no-shall", "MODIFIED requirement text without SHALL/MUST.",
      {"inventory": sec("MODIFIED", req("Delta export", "The system exports the table.", [("Export requested", "w", "t")]))})
+case("e26-modified-and-removed-same", "Same name in MODIFIED and REMOVED.",
+     {"inventory": sec("MODIFIED", D_NEW) + "\n" + sec("REMOVED", "### Requirement: Delta export\n**Reason**: r\n**Migration**: m\n")})
+case("e27-modified-and-added-same", "Same name in MODIFIED and ADDED.",
+     {"inventory": sec("MODIFIED", D_NEW) + "\n" + sec("ADDED", D_NEW)})
+case("e28-renamed-to-collides-with-added", "RENAMED TO equals the name of an ADDED requirement.",
+     {"inventory": "## RENAMED Requirements\n\n- FROM: `### Requirement: Bravo release`\n- TO: `### Requirement: Echo low-stock alert`\n\n" + sec("ADDED", E_NEW)})
+case("e29-renamed-duplicate-from", "Two RENAMED pairs with the same FROM.",
+     {"inventory": "## RENAMED Requirements\n\n- FROM: `### Requirement: Bravo release`\n- TO: `### Requirement: Bravo one`\n- FROM: `### Requirement: Bravo release`\n- TO: `### Requirement: Bravo two`\n"})
+case("e30-renamed-source-near-miss", "RENAMED FROM differs from the existing name only in case.",
+     {"inventory": "## RENAMED Requirements\n\n- FROM: `### Requirement: bravo release`\n- TO: `### Requirement: Bravo cancellation`\n"})
+case("e31-removed-near-miss", "REMOVED name differs from the existing name only in case (hard error, unlike a totally absent name, see h12).",
+     {"inventory": sec("REMOVED", "### Requirement: charlie audit log\n**Reason**: r\n**Migration**: m\n")})
 print("cases:", len(os.listdir(cases_dir)))

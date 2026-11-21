@@ -1,0 +1,8 @@
+openspec/changes/archive/.gitkeep
+openspec/changes/e28-renamed-to-collides-with-added/.openspec.yaml
+openspec/changes/e28-renamed-to-collides-with-added/proposal.md
+openspec/changes/e28-renamed-to-collides-with-added/specs/inventory/spec.md
+openspec/changes/e28-renamed-to-collides-with-added/tasks.md
+openspec/config.yaml
+openspec/specs/billing/spec.md
+openspec/specs/inventory/spec.md

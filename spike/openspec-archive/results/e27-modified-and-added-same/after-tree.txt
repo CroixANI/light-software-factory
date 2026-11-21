@@ -1,0 +1,8 @@
+openspec/changes/archive/.gitkeep
+openspec/changes/e27-modified-and-added-same/.openspec.yaml
+openspec/changes/e27-modified-and-added-same/proposal.md
+openspec/changes/e27-modified-and-added-same/specs/inventory/spec.md
+openspec/changes/e27-modified-and-added-same/tasks.md
+openspec/config.yaml
+openspec/specs/billing/spec.md
+openspec/specs/inventory/spec.md

@@ -1,7 +1,7 @@
 # S7 findings: OpenSpec's own archive on fixture changes
 
 Task 2.5 of `spike-sandbox-and-providers`, experiment S7, question Q8 (architecture §19). Issue #13.
-Evidence: [spike/openspec-archive/](../../../spike/openspec-archive/) (47 fixture cases, `run.sh`, one `results/<case>/` folder per case with the CLI output, exit code, before/after trees and a diff of the main specs).
+Evidence: [spike/openspec-archive/](../../../spike/openspec-archive/) (53 fixture cases, `run.sh`, one `results/<case>/` folder per case with the CLI output, exit code, before/after trees and a diff of the main specs).
 Every statement below cites a case id (`h*` = merges, `e*` = error and edge cases) that you can open under `results/`.
 
 ## Setup
@@ -18,8 +18,8 @@ Every statement below cites a case id (`h*` = merges, `e*` = error and edge case
 2. Checks `tasks.md` (`Task status: ✓ Complete` or `0/1 tasks`). Unchecked tasks only warn when `-y` is given: `Warning: 1 incomplete task(s) found. Continuing due to --yes flag.` and archive continues (h14). Without `-y` it asks interactively *(source only)*.
 3. For every capability folder under `changes/<name>/specs/` (alphabetical order in the output: billing, inventory, shipping, h07) builds the **new text of the main spec in memory**. Any error here aborts the whole archive with `Aborted. No files were changed.` and exit 1 (e14: a valid inventory delta is **not** written when the billing delta fails).
 4. Validates each rebuilt main spec. A rebuilt spec with errors is not written (h08, e22). Warnings (for example a requirement without SHALL/MUST) do **not** block (e12, e25).
-5. Writes the specs, then moves the change folder to `openspec/changes/archive/<YYYY-MM-DD>-<name>/` (h02). The date is the **local** date of the machine (`formatLocalDate`, not UTC). The move is a byte-identical copy of the change folder, including the delta specs and `.openspec.yaml`, and including unchecked tasks (h14). If the target folder already exists: `✖ Error: Archive '<date>-<name>' already exists.`, exit 1, nothing changed (h18).
-6. Output ends with `Specs updated successfully.` and `Change '<name>' archived as '<date>-<name>'.` The CLI writes its output, errors included, to stdout (stderr was empty in the two error cases checked separately, e01 and e06).
+5. Writes the specs, then moves the change folder to `openspec/changes/archive/<YYYY-MM-DD>-<name>/` (h02). The date is the **local** date of the machine (`formatLocalDate`, not UTC). The move is a byte-identical copy of the change folder, including the delta specs and `.openspec.yaml`, and including unchecked tasks (h14). If the target folder already exists (checked early, right after the task status, before any spec is touched): `✖ Error: Archive '<date>-<name>' already exists.`, exit 1, nothing changed (h18).
+6. Output ends with `Specs updated successfully.` and `Change '<name>' archived as '<date>-<name>'.` The CLI writes its output, errors included, to stdout (stderr was empty in two error cases checked by hand with separate redirects, e01 and e06; `run.sh` merges the streams, so the results folders cannot show this).
 
 `--skip-specs` (or `skip_specs: true` in the change's `.openspec.yaml`) skips the spec merge (steps 3-4) and only moves the folder (h13, h22). A change with no `specs/` folder at all archives fine with only a warning on the proposal (e23). `--json` prints one JSON object (`archive.change`, `archivedAs`, `path`, `specsUpdated`, `totals{added,modified,removed,renamed}`, `root`) (h19).
 
@@ -27,7 +27,7 @@ Every statement below cites a case id (`h*` = merges, `e*` = error and edge case
 
 Delta file format: `openspec/changes/<name>/specs/<capability>/spec.md` containing any of the four sections `## ADDED Requirements`, `## MODIFIED Requirements`, `## REMOVED Requirements`, `## RENAMED Requirements` (header match is case-insensitive in the reader *(source only)*; a differently spelled header such as `## ADD Requirements` is an **error**, e19; the same for `## Requirements`, e18). Requirements are `### Requirement: <name>` blocks, scenarios `#### Scenario: <name>`. Names are matched **exactly and case-sensitively** after trimming and removing a closing `###` sequence; case or spacing variants are detected as typos and are errors (e10, e24).
 
-**Apply order is fixed: RENAMED, then REMOVED, then MODIFIED, then ADDED**, whatever the order of sections in the delta file (h06 writes them in the reverse order). All four work on a name-to-block map of the existing spec; each operation sees the result of the previous ones.
+**Apply order in the code is RENAMED, then REMOVED, then MODIFIED, then ADDED** *(source only, `specs-apply.js`)*, whatever the order of sections in the delta file (h06 writes them in the reverse order and still merges as described). All four work on a name-to-block map of the existing spec. What the fixtures can show of the order: the same requirement name cannot appear in two sections (pre-checks reject MODIFIED+REMOVED e26, MODIFIED+ADDED e27, ADDED+REMOVED e07, RENAMED+REMOVED e16, RENAMED TO + ADDED e28, MODIFIED under the old name of a rename e06), so the only observable consequences are: MODIFIED sees the NEW name of a renamed block (h06), and ADDED blocks come last.
 
 | Kind | What it does to the main spec | Case |
 |---|---|---|
@@ -54,7 +54,7 @@ Removing the **last** requirement of a spec aborts: `Spec must have at least one
 
 ### Idempotence ("early sync")
 
-OpenSpec has a `sync` flow that merges deltas before archive, so archive tolerates already-applied deltas: ADDED with byte-identical block (after trim and line-ending normalisation), MODIFIED with identical block, RENAMED where FROM is gone and TO exists, and REMOVED of an absent requirement are no-ops (`Specs already in sync; no files changed.` h11, h20, h21; REMOVED absent gives a warning, h12). Only **differing** content is an error. The factory has no sync step, so the adapter can choose to reject these; but if a human ran `openspec sync` on the branch, the closing PR would hit this case.
+OpenSpec has a `sync` flow that merges deltas before archive, so archive tolerates already-applied deltas: ADDED with byte-identical block (after trim and line-ending normalisation), MODIFIED with identical block, RENAMED where FROM is gone and TO exists, and REMOVED of a completely absent requirement are no-ops (`Specs already in sync; no files changed.` h11, h20, h21; REMOVED absent gives a warning, h12). A REMOVED whose name differs from an existing one only in case or spacing is a hard error, not a no-op (e31). Only **differing** content is an error. The factory has no sync step, so the adapter can choose to reject these; but if a human ran `openspec sync` on the branch, the closing PR would hit this case.
 
 ## Error cases and exact messages
 
@@ -69,6 +69,11 @@ All exit 1 and print `Aborted. No files were changed.` unless noted. `<cap>` is 
 | RENAMED FROM missing (and TO missing) | `<cap> RENAMED failed for header "### Requirement: X" - source not found` | e04 |
 | RENAMED TO already exists | `... RENAMED failed for header "### Requirement: <TO>" - target already exists` | e05 |
 | MODIFIED uses the old name of a renamed requirement | pre-check: `MODIFIED references old name from RENAMED. Use new header for "<TO>"` | e06 |
+| Same name in MODIFIED and REMOVED / MODIFIED and ADDED | pre-check: `Requirement present in both MODIFIED and REMOVED: "X"` / `... MODIFIED and ADDED ...` | e26, e27 |
+| RENAMED TO equals an ADDED name | pre-check: `RENAMED TO collides with ADDED for "X"` | e28 |
+| Same FROM twice in RENAMED | pre-check: `Duplicate FROM in RENAMED: "X"` | e29 |
+| RENAMED FROM differs by case | `RENAMED failed ... - source not found` (no near-miss hint when TO is absent) | e30 |
+| REMOVED name differs by case | `REMOVED failed for header "### Requirement: charlie audit log" - not found, but "### Requirement: Charlie audit log" exists; fix the header to match it exactly` | e31 |
 | Same name in ADDED and REMOVED | pre-check: `Requirement present in both ADDED and REMOVED: "X"` | e07 |
 | Same name in RENAMED(FROM) and REMOVED | pre-check: `Requirement present in both RENAMED and REMOVED: "X"` | e16 |
 | Duplicate header inside one section | pre-check: `Duplicate requirement in MODIFIED: "X"` | e11 |
@@ -86,17 +91,17 @@ Not an error, only a later validate warning: a requirement text **without SHALL/
 
 | Assumption (architecture §3, §7, Q8, A20) | Observed |
 |---|---|
-| "Facts show only `ADDED`", the other kinds are guesses | All four kinds behave as above; the four-way order RENAMED, REMOVED, MODIFIED, ADDED is the main thing nobody would guess. |
+| "Facts show only `ADDED`", the other kinds are guesses | All four kinds behave as above; MODIFIED-as-full-replace and the strict name conflicts are the things nobody would guess; the apply order itself is only visible through the source. |
 | "Delta sections merged into `openspec/specs/`" | True, but MODIFIED is a **full replace** of the block (not a field-level merge) and ADDED always appends at the end. |
 | "Change folder moved to `openspec/changes/archive/<date>-<change>/`" | Confirmed. The date is the **local** date `YYYY-MM-DD`; the folder is a byte copy of the change (deltas, `proposal.md`, `tasks.md`, `.openspec.yaml`). |
 | Archive is deterministic | Yes for a given CLI version and input, apart from the date. All-or-nothing across capabilities for the spec writes. The folder move happens after the writes; a failure in between is not exercised. |
 | (not in the architecture) | Archive also **validates** (change deltas, rebuilt specs) and refuses; creates new capability specs with a placeholder Purpose; can retire a capability via `retire_capabilities`; tolerates already-synced deltas; warns on unchecked tasks only with `-y`. |
-| (not in the architecture) | The Purpose of a new capability is a `TBD` placeholder unless the delta carries a `## Purpose`. The planner/spec role should write one, otherwise the closing PR leaves a main spec that a strict `validate` may flag (the placeholder is reported as a warning, see e22). |
+| (not in the architecture) | The Purpose of a new capability is a `TBD` placeholder unless the delta carries a `## Purpose`. With the placeholder the archive succeeds but `openspec validate --specs --strict` then **fails** (`results/h01-added-new-capability/validate-after.txt`, exit 1). Every new-capability delta must therefore carry a `## Purpose` (e21 passes), or the closing PR leaves main red under strict validate. |
 
-Consequences for the design, as proposals and not decisions:
+Consequences for the design, as proposals and not decisions (the factory should never pass `--no-validate`, which the CLI suggests on every validation failure):
 - The adapter should reproduce OpenSpec's results exactly rather than "improve" them (the owner can still run `openspec validate` on main). Differences would show up as diffs in the closing PR.
 - The factory's own checks should refuse before the closing PR what OpenSpec refuses at archive time (MODIFIED that drops scenarios, MODIFIED of a missing header, rename collisions). A deterministic `spec validate` step in plan critique would turn an archive-time abort (end of the group) into an early error. This is a design suggestion for the owner; no decision is changed here.
-- Because the CLI is Node, the adapter has two options: shell out to `openspec archive` (exact semantics, but a Node dependency on the factory's critical path, D-21's "behind an adapter" still holds) or re-implement in C# against the fixtures below. The fixtures make either testable.
+- Because the CLI is Node, the adapter has two options: shell out to `openspec archive` (exact semantics, but a Node dependency on the factory's critical path; this conflicts with Q8/A20, which assume re-implementation in the adapter, so it would need its own D- entry) or re-implement in C# against the fixtures below. The fixtures make either testable.
 
 ## Cases the spec adapter must reproduce
 
@@ -104,7 +109,7 @@ Use the `results/<id>/` folders as expected output (`specs.diff`, `after/specs/`
 
 **Must merge (expected `ok`)**
 1. h02 ADDED to existing spec appends at end, multiple in delta order.
-2. h01, e21 ADDED to a new capability creates the spec skeleton; Purpose placeholder or delta Purpose.
+2. h01, e21 ADDED to a new capability creates the spec skeleton; Purpose placeholder (h01: result fails strict validate) or delta Purpose (e21: passes).
 3. h03 MODIFIED replaces in place; may add scenarios; h15 header whitespace tolerated, block copied verbatim.
 4. h04, e15 REMOVED (name form with Reason/Migration, and full block form).
 5. h05, h10 RENAMED keeps position, body and scenarios; two renames in one delta.
@@ -118,11 +123,11 @@ Use the `results/<id>/` folders as expected output (`specs.diff`, `after/specs/`
 13. h11, h20, h21, h12 already-applied deltas (decide: reproduce as no-op or reject).
 
 **Must abort (expected `abort`, no file written)**
-14. e01, e24 MODIFIED not found (exact-case match).
+14. e01, e24 MODIFIED not found (exact-case match); e30 RENAMED source case variant; e31 REMOVED case variant (hard error).
 15. e03, h16 MODIFIED drops or renames a scenario.
 16. e02, e10 ADDED collides (exact, and case/space variant).
 17. e04, e05 RENAMED source missing, target exists.
-18. e06, e07, e16 cross-section conflicts; e11 duplicate in a section; e17 unpaired RENAMED.
+18. e06, e07, e16, e26, e27, e28 cross-section conflicts; e29 duplicate FROM; e11 duplicate in a section; e17 unpaired RENAMED.
 19. e08 MODIFIED/RENAMED on a new capability; e22 REMOVED-only on a new capability.
 20. h08 removing the last requirement without retirement.
 21. e09 empty delta; e13 ADDED without scenario; e18, e19 requirement under a non-delta header.
