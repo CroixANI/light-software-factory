@@ -1,0 +1,46 @@
+;; Spike throwaway starting profile (task 1.4), architecture §5 layer 1. Parameters (sandbox-exec -D):
+;;   STEP = absolute step folder, PORT = the Step's gateway port on 127.0.0.1,
+;;   CLIDIR = directory of the CLI under test (read-only), PYROOT = interpreter install root (python framework), NODEROOT = node install root.
+(version 1)
+(deny default)
+
+;; ---- Reads: system, toolchains, the Step's own folder. Nothing else (owner's home is not listed). ----
+(allow file-read*
+  (literal "/")   ; metadata-only was tried: the process aborts at startup (Abort trap: 6); readdir of / is the accepted cost
+  (subpath "/System") (subpath "/usr/lib") (subpath "/usr/share") (subpath "/usr/bin") (subpath "/bin")
+  (subpath "/private/var/db/dyld") (subpath "/Library/Preferences/Logging")
+  (literal "/dev/null") (literal "/dev/urandom") (literal "/dev/random") (literal "/dev/dtracehelper")
+  (subpath (param "PYROOT"))
+  (subpath (param "NODEROOT"))
+  (subpath (param "CLIDIR"))   ; the provider CLI install, read-only
+  (subpath (param "STEP")))
+;; path lookups also stat the ancestor directories of the allowed roots; the launcher appends exactly those as literals (no sibling is stat-able).
+(allow file-read-metadata (literal "/private") (literal "/usr") (literal "/Library"))
+
+;; ---- Writes: only home, tmp, io/out (+ repo for the builder shape, see shape file). ----
+(allow file-write*
+  (subpath (string-append (param "STEP") "/home"))
+  (subpath (string-append (param "STEP") "/tmp"))
+  (subpath (string-append (param "STEP") "/io/out"))
+  (literal "/dev/null"))
+
+;; ---- Kernel info (needed by node/V8 and the dotnet host; not Mach, not IPC). ----
+(allow sysctl-read (sysctl-name-prefix "hw.") (sysctl-name-prefix "kern.os") (sysctl-name "kern.version") (sysctl-name "kern.argmax")
+  (sysctl-name "kern.maxfilesperproc") (sysctl-name "kern.maxproc") (sysctl-name "kern.hostname") (sysctl-name "kern.boottime")
+  (sysctl-name "vm.loadavg") (sysctl-name "kern.secure_kernel") (sysctl-name "kern.usrstack64"))
+;; KNOWN LEAK (open item for S2/#9): KERN_PROCARGS2 on other owner processes (argv + environment) is still readable despite this list.
+
+;; ---- Processes: signals only within the sandbox; process-info of others denied (but see KNOWN LEAK above). ----
+(allow process-fork)
+(allow signal (target self))
+(allow signal (target same-sandbox))
+(allow process-info* (target self))
+(deny process-info* (target others))
+;; Belt-and-braces under (deny default). Measured (MACH-SERVICES.md "Known leak"): it does NOT stop proc_listallpids or
+;; sysctl(KERN_PROCARGS2) on other owner processes; it does reduce proc_name/pidinfo of others.
+
+;; ---- Network: only this Step's gateway. ----
+(allow network-outbound (remote ip (string-append "localhost:" (param "PORT"))))
+
+;; ---- Mach: see MACH-SERVICES.md. Added one at a time, each with its reason. ----
+;; (none in the base; MACH-SERVICES.md lists candidates tested ad hoc with --mach)
