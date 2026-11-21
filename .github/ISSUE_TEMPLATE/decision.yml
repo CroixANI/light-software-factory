@@ -1,0 +1,24 @@
+name: Decision proposal
+description: A design question for the owner. Result is a new D-NN entry marked "proposed" in docs/decisions.md.
+title: "Decision: <question>"
+labels: ["type:decision"]
+body:
+  - type: textarea
+    id: question
+    attributes:
+      label: Question
+    validations:
+      required: true
+  - type: textarea
+    id: options
+    attributes:
+      label: Options considered and recommendation
+    validations:
+      required: true
+  - type: textarea
+    id: collision
+    attributes:
+      label: Value collision (one line, or "none")
+      description: See docs/values.md and D-33.
+    validations:
+      required: true

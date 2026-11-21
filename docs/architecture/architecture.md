@@ -1,6 +1,6 @@
 # Software Factory v1 — Architecture
 
-**Status:** proposed, revision 4 (2026-11-21). **Inputs:** README, requirements (R1–R13, P1–P20), decisions D-02…D-72 (D-25 replaces D-01; D-63 supersedes D-61; D-64…D-72 are the owner's simplification decisions), values, glossary, facts.
+**Status:** proposed, revision 4.1 (2026-11-21). **Inputs:** README, requirements (R1–R13, P1–P20), decisions D-02…D-72 (D-25 replaces D-01; D-63 supersedes D-61; D-64…D-72 are the owner's simplification decisions), values, glossary, facts.
 **Scope:** v1 only. Everything deferred is listed once, in §17. The body describes only what v1 builds.
 **Vocabulary:** glossary terms are used as defined. New names introduced here are few and each is listed in §2.
 

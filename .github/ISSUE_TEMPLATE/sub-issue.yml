@@ -1,0 +1,44 @@
+name: Sub-issue (one session, one PR)
+description: One top-level task from tasks.md. This issue is the complete brief for one LLM session.
+title: "<task title>"
+body:
+  - type: input
+    id: change
+    attributes:
+      label: OpenSpec change
+      placeholder: core-domain-and-store
+    validations:
+      required: true
+  - type: textarea
+    id: task
+    attributes:
+      label: Task
+      description: What to deliver, as in tasks.md. Link scenario ids (<capability>/<requirement>/<scenario>) if any.
+    validations:
+      required: true
+  - type: textarea
+    id: refs
+    attributes:
+      label: Read first
+      description: D-NN, architecture sections, ADRs this session needs. Nothing else is required reading.
+    validations:
+      required: true
+  - type: textarea
+    id: files
+    attributes:
+      label: Declared files
+      description: Paths this session may touch. Sessions run in parallel only if these do not overlap (D-38).
+    validations:
+      required: true
+  - type: textarea
+    id: done
+    attributes:
+      label: Done when
+      description: Checks that must pass (tests, validate, docs links). Mark pre-spike work explicitly.
+    validations:
+      required: true
+  - type: markdown
+    attributes:
+      value: |
+        Set the "blocked by" links natively. End the session with one handoff comment: done / not done / surprises.
+        PR body: `Closes #<this issue>`. A reviewer session uses a different provider than the author (D-10).
