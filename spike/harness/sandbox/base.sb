@@ -28,13 +28,14 @@
 (allow sysctl-read (sysctl-name-prefix "hw.") (sysctl-name-prefix "kern.os") (sysctl-name "kern.version") (sysctl-name "kern.argmax")
   (sysctl-name "kern.maxfilesperproc") (sysctl-name "kern.maxproc") (sysctl-name "kern.hostname") (sysctl-name "kern.boottime")
   (sysctl-name "vm.loadavg") (sysctl-name "kern.secure_kernel") (sysctl-name "kern.usrstack64"))
-;; NOT allowed: kern.proc.* and kern.procargs2 (other processes' argv).
+;; KNOWN LEAK (open item for S2/#9): KERN_PROCARGS2 on other owner processes (argv + environment) is still readable despite this list.
 
-;; ---- Processes: own process group only (kill, ps eww on others denied). ----
+;; ---- Processes: signals only within the sandbox; process-info of others denied (but see KNOWN LEAK above). ----
 (allow process-fork)
 (allow signal (target self))
 (allow signal (target same-sandbox))
-(allow process-info-pidinfo (target self))
+(allow process-info* (target self))
+(deny process-info* (target others))   ; blocks proc_listpids/proc_name/pidinfo of other processes (kern.procargs2 is NOT stopped by it, see MACH-SERVICES.md)
 
 ;; ---- Network: only this Step's gateway. ----
 (allow network-outbound (remote ip (string-append "localhost:" (param "PORT"))))

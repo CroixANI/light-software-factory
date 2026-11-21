@@ -13,14 +13,16 @@ while [ $# -gt 0 ]; do case "$1" in
 esac; done
 [[ "$shape" =~ ^(reviewer-readonly|builder)$ ]] && [[ "$port" =~ ^[0-9]+$ ]] && [ -f "$here/$shape.sb" ] && [ -d "$step" ] && [ -n "$port" ] && [ -n "$clidir" ] && [ $# -gt 0 ] || { echo "usage: see header" >&2; exit 2; }
 step="$(cd "$step" && pwd -P)"          # Seatbelt matches resolved paths (/private/var, not /var)
+command -v python3 >/dev/null || { echo "python3 not found on PATH" >&2; exit 2; }
 interp="$(readlink -f "$(command -v python3)")"
 pyroot="${interp%/bin/*}"                # .../Python.framework/Versions/3.x
 nodebin="$(command -v node || true)"; noderoot=/nonexistent; [ -n "$nodebin" ] && noderoot="$(dirname "$(dirname "$(readlink -f "$nodebin")")")"
 repo_root="$(cd "$here/../../.." && pwd -P)"
 for r in "$pyroot" "$noderoot" "$clidir" "$step"; do   # roots become read (and exec) rules: refuse broad ones
-  case "$r" in /|/usr|/usr/local|/opt|/opt/homebrew|/System|/Library|/bin|/Users|/private|/Applications) echo "refusing broad root: $r" >&2; exit 2;; esac
+  case "$r" in /|/usr|/usr/local|/opt|/opt/homebrew|/System|/Library|/bin|/Users|/Users/Shared|/private|/private/tmp|/private/var|/tmp|/var|/Applications) echo "refusing broad root: $r" >&2; exit 2;; esac
   case "$r" in *[\"\(\)\\]*) echo "refusing path with quote/paren/backslash: $r" >&2; exit 2;; esac
-  for guard in "$HOME" "$repo_root"; do case "$guard/" in "$r"/*) echo "refusing root that contains $guard: $r" >&2; exit 2;; esac; done
+  [ "$r" = "$step" ] && continue_step=1 || continue_step=0
+  for guard in "$HOME" "$repo_root" $([ "$continue_step" = 0 ] && echo "$step"); do case "$guard/" in "$r"/*) echo "refusing root that contains $guard: $r" >&2; exit 2;; esac; done
 done
 prof="$(mktemp -t lsf-profile)"; trap 'rm -f "$prof"' EXIT
 { cat "$here/base.sb"
@@ -41,7 +43,7 @@ set +e
   CLAUDE_CONFIG_DIR="$step/home/.claude" CODEX_HOME="$step/home/.codex" GEMINI_CLI_HOME="$step/home" \
   TMPDIR="$step/tmp" LANG=en_US.UTF-8 TERM=dumb \
   HTTPS_PROXY="http://127.0.0.1:$port" HTTP_PROXY="http://127.0.0.1:$port" \
-  FACTORY_STEP="$(basename "$step")" \
+  FACTORY_STEP="$(basename "$step" "$(dirname "$step")")" \
   /usr/bin/sandbox-exec -f "$prof" -D "STEP=$step" -D "PORT=$port" -D "PYROOT=$pyroot" -D "NODEROOT=$noderoot" -D "CLIDIR=$clidir" \
   "$@"
 rc=$?
