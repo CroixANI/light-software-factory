@@ -514,3 +514,20 @@ One decision per entry. Decisions are never deleted; replaced ones are marked `s
 - Decision: roles (models, effort, counts), budgets and tools remain editable in the web UI; the UI opens a PR to the target repo (D-27 unchanged). Providers and `machine.yaml` are edited in the UI directly.
 - Why: the owner explicitly wants role configuration in a UI (R9).
 - Affects: R9, D-15, D-16
+
+## D-73 — Work organization during the build: GitHub tracks, OpenSpec specifies — `proposed`
+- Date / round: 2026-11-21, round 10 (owner request, planning the build)
+- Question: Q73 — how is the build of the factory split across sequential LLM sessions (Claude Code, Gemini, others), and where do tasks and specifications live?
+- Decision (recommended; the owner accepts or rejects):
+  1. **Split of roles.** GitHub holds scheduling and status; OpenSpec holds behavior; `docs/` holds binding design.
+     - Milestone = phase (M0…M6 below). Parent issue = one group = one OpenSpec change (D-05, D-21). Sub-issue = one top-level task in `tasks.md`, ordered by native "blocked by" links.
+     - Links: the parent issue body says `OpenSpec change: <slug>`; each `tasks.md` task carries `#<issue>`; specs, proposals and issues cite `D-NN`. No status is copied into OpenSpec, no behavior into issues (Q7).
+  2. **Milestones.** M0 Spike · M1 Spike review (owner gate) · M2 Foundation (domain, store, board, config, spec adapter) · M3 Station (sandbox, gateway, provider adapters, hostile-worker tests) · M4 Pipeline (GitHub/git, plan, dispatcher, gates, critique, review) · M5 Surface (CLI, API, five screens) · M6 Dogfood (`init`, `doctor`, first real group, calibration of caps). Only the next milestone is specified in detail; later ones stay a list of change slugs until the previous gate passes.
+  3. **Session unit.** One sub-issue = one session = one PR (`Closes #n`), in its own worktree. The issue is the session's brief; it names the change, the relevant `D-NN`/architecture sections and the files it may touch. Two sessions run in parallel only if their declared files do not overlap (as D-38).
+  4. **Session kinds.** Decision (grill-me → `D-NN proposed`), Spec (`/opsx:explore`, `/opsx:propose`, then parent issue and sub-issues from `tasks.md`), Apply (`/opsx:apply` on one sub-issue), Review (a different provider than the author, D-10 applied by hand), Spike (on the owner's Mac, one provider CLI).
+  5. **Handoff.** At the end of a session it leaves one comment on its issue: done, not done, surprises. No progress file in the repository; GitHub is the state.
+  6. **Pre-spike rule unchanged.** Until the spike findings are reviewed (M1) only `docs/`, `openspec/` and `spike/` change. OpenSpec changes for pure-domain parts may be written during M0.
+  7. **Labels.** `type:spike|spec|impl|docs|decision` and `area:station|core|host|web|process`. No Projects board; milestones and sub-issues are enough.
+- Why: it uses the input format the factory itself will read (D-05, D-21, Q7), so the build rehearses it. Each session starts cold; a single issue as brief keeps context minimal (value 2). Few concepts, no second tracker (value 3). Rolling-wave detail avoids specifying parts the spike may invalidate.
+- Value collision: none found; where "plan everything now" (value 1: tokens only where they change a decision) and "complete picture" compete, value 1 wins, hence rolling wave.
+- Affects: D-05, D-21, D-38 (by analogy), Q7, `CLAUDE.md` (add a short "Work organization" section after acceptance), `openspec/config.yaml` (no change needed).

@@ -40,9 +40,8 @@ It is built with .NET, React and SQLite, runs on the owner's Mac, and v1 stops b
 
 1. **Implementation spike.** Run each provider CLI headless inside a deny-by-default sandbox with Keychain-free credentials,
    behind a proxy, and mark it supported or unsupported. See [docs/spike/plan.md](docs/spike/plan.md).
-2. **Adopt OpenSpec in this repository** to drive the implementation. Initialized locally via `package.json`
-   (`npm install`, then `npx openspec` / `npm run openspec`) with tool configs for Claude Code, Gemini CLI,
-   Antigravity, and Codex; ready for one OpenSpec change per group of work.
+2. **OpenSpec** drives the implementation (done: initialized locally via `package.json`, with tool configs for Claude Code,
+   Gemini CLI, Antigravity and Codex). One OpenSpec change per group of work; GitHub milestones and issues track it (D-73, proposed).
 3. **v1 implementation**, as described in the [architecture](docs/architecture/architecture.md), starting from the spike findings.
 4. **v2** (agreed but deferred; see [architecture §17](docs/architecture/architecture.md#17-deferred-to-v2)):
    - council voting across providers, with a judge;

@@ -1,0 +1,40 @@
+name: Parent issue (group = one OpenSpec change)
+description: One OpenSpec change. Its sub-issues map 1:1 to top-level tasks in tasks.md (D-05, D-21, Q7).
+title: "Group: <change-slug>"
+labels: ["type:spec"]
+body:
+  - type: input
+    id: change
+    attributes:
+      label: OpenSpec change
+      description: Slug of the change folder under openspec/changes/.
+      placeholder: core-domain-and-store
+    validations:
+      required: true
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal and done criteria
+      description: Outcome in 2-4 lines. Done = all sub-issues merged and the change archived.
+    validations:
+      required: true
+  - type: textarea
+    id: refs
+    attributes:
+      label: Binding references
+      description: Relevant D-NN decisions, ADRs and architecture sections.
+      placeholder: "D-05, D-21, architecture §3, ADR-002"
+    validations:
+      required: true
+  - type: dropdown
+    id: phase
+    attributes:
+      label: Phase
+      options: ["pre-spike (docs/openspec/spike only)", "post-spike (production code)"]
+    validations:
+      required: true
+  - type: markdown
+    attributes:
+      value: |
+        Body line required by the factory: `OpenSpec change: <slug>` (the field above is rendered into the issue body).
+        Add sub-issues with native "blocked by" dependencies; do not track status in OpenSpec.
