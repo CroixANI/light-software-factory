@@ -21,13 +21,17 @@ run() { if [ "${DRY_RUN:-0}" = 1 ]; then echo "DRY_RUN: $*" >&2; else "$@"; fi; 
 repo=$(gh repo view --json nameWithOwner -q .nameWithOwner)
 all=$(gh api "repos/$repo/issues?state=open&per_page=100" --paginate | jq -s 'add')
 prs=$(gh pr list --state open --json number,headRefName,body --limit 100)
-branches=$(git ls-remote --heads origin 2>/dev/null | sed 's#.*refs/heads/##' | jq -R . | jq -s .)
+branches=$(git ls-remote --heads origin | sed 's#.*refs/heads/##' | jq -R . | jq -s .)
 
 report=$(jq -n --argjson all "$all" --argjson prs "$prs" --argjson br "$branches" '
-  def prefixes: (. // "") | split(",")
-    | map(gsub("\\s*\\(.*$";"") | gsub("^\\s+|\\s+$";"") | gsub("\\*.*$";"")) | map(select(length > 0));
+  # Declared files -> normalized prefixes: directories end with "/", files are exact; "" = repository root.
+  def prefixes: (. // "") | gsub("\\([^)]*\\)"; "") | gsub("`"; "") | [splits("[,;\\n]")]
+    | map(gsub("^\\s+|\\s+$"; "") | gsub("^[-*]\\s+"; "")) | map(select(length > 0 and (test("\\s") | not)))
+    | map(if test("\\*") then (sub("\\*.*$"; "") | sub("[^/]*$"; "")) else . end);
   def overlap($a; $b): any($a[]; . as $x | any($b[]; . as $y | ($x | startswith($y)) or ($y | startswith($x))));
-  def files: ((.body // "") | capture("## Declared files\\s*\\n(?<f>[^\\n]*)"; "") | .f) // "";
+  # Works for GitHub issue-form bodies ("### Declared files") and plain "## Declared files" / "Key: value" bodies.
+  def files: ((.body // "") | capture("#{2,3} Declared files\\s*\\n(?<f>[\\s\\S]*?)(?=\\n#{2,3} |$)"; null) | .f) // "";
+  def attended: (.body // "") | test("(Attended:\\s*yes|#{2,3}\\s*Attended\\s*\\n+\\s*yes\\b)"; "i");
   def tasknum: ((.title | capture("^(?<a>[0-9]+)\\.(?<b>[0-9]+)")) | [(.a | tonumber), (.b | tonumber)]) // [999, 999];
   ($all | map(select(.pull_request == null))) as $issues
   | ($issues | map(.number)) as $open
@@ -41,18 +45,18 @@ report=$(jq -n --argjson all "$all" --argjson prs "$prs" --argjson br "$branches
       or any($prs[]; (.body // "") | test("(?i)closes\\s+#" + ($n.number | tostring) + "\\b"));
   ($tasks | map(select(claimed(.)))) as $cl
   | ($tasks | map(select(claimed(.) | not))) as $free
-  | ($free | map(select(.issue_dependencies_summary.blocked_by > 0))) as $blocked
-  | ($free | map(select(.issue_dependencies_summary.blocked_by == 0))) as $ready0
+  | ($free | map(select((.issue_dependencies_summary.blocked_by // 0) > 0))) as $blocked
+  | ($free | map(select((.issue_dependencies_summary.blocked_by // 0) == 0))) as $ready0
   | ($ready0 | map(select(. as $t | (($t | files | prefixes) as $tf
         | any($cl[]; overlap($tf; (. | files | prefixes))) | not)))) as $ready1
   | ($ready0 | map(select(. as $t | $ready1 | map(.number) | index($t.number) | not))) as $dropped
   | {
       ready: ($ready1 | map({number, title, milestone: .milestone.title, milestone_no: (.milestone.number // 999),
-                attended: ((.body // "") | test("Attended:\\s*yes"; "i")), declared_files: files, task: tasknum})
+                attended: attended, declared_files: files, task: tasknum})
               | sort_by([.attended, .milestone_no, .task]) | map(del(.milestone_no, .task))),
       claimed: ($cl | map({number, title, assignee: .assignee.login, updated_at,
                 stale: ((now - (.updated_at | fromdateiso8601)) > 86400)})),
-      blocked: ($blocked | map({number, title, open_blockers: .issue_dependencies_summary.blocked_by})),
+      blocked: ($blocked | map({number, title, open_blockers: (.issue_dependencies_summary.blocked_by // 0)})),
       dropped_for_file_overlap: ($dropped | map({number, title}))
     }')
 
@@ -67,10 +71,10 @@ if [ "$mode" = claim ]; then
   echo "$report" | jq -e --argjson n "$target" '.ready | any(.number == $n)' >/dev/null \
     || { echo "task #$target is not ready (blocked, claimed, overlapping, or not a task); run without arguments to see why" >&2; exit 3; }
   issue=$(echo "$all" | jq --argjson n "$target" '.[] | select(.number == $n)')
-  change=$(echo "$issue" | jq -r '(.body // "") | capture("OpenSpec change:\\s*(?<c>[a-z0-9-]+)") | .c')
+  change=$(echo "$issue" | jq -r '((.body // "") | capture("OpenSpec change(?::|\\s*\\n+)\\s*(?<c>[a-z0-9-]+)"; "i") | .c) // empty')
   kind=$(echo "$issue" | jq -r '[.labels[].name | select(startswith("type:")) | sub("type:";"")][0]')
   case "$kind" in impl) kind=feat;; decision) kind=docs;; esac
-  [ -n "$change" ] || { echo "issue #$target has no 'OpenSpec change: <slug>' line" >&2; exit 3; }
+  [ -n "$change" ] || { echo "issue #$target has no OpenSpec change slug (expected 'OpenSpec change: <slug>' or the form field)" >&2; exit 3; }
   branch="$kind/$change-$target"
   sha=$(gh api "repos/$repo/git/ref/heads/main" -q .object.sha)
   # Creating the ref is the lock: HTTP 422 if another session already has it.

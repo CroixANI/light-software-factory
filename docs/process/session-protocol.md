@@ -21,13 +21,13 @@ Anything else: ask once what is meant.
 ## Apply (one sub-issue)
 1. Run `scripts/next-task.sh` (or `scripts/next-task.sh <N>`). It lists ready tasks as JSON (open, sub-issue of an open parent, no open blockers, not claimed, declared files not overlapping a claimed task). Take the first and say in one line which and why. If several are ready, take the first without asking. If it is `attended: true`, ask the owner first (it needs their presence, e.g. a provider login). If nothing is ready, print the blockers and stop.
 2. Claim: `scripts/next-task.sh --claim <N>`. It creates the branch `<type>/<change>-<N>` (the lock), assigns you and comments. If it fails, run the selection once more, then stop. To abort later: `--release <N>`.
-3. Work in a git worktree on that branch (`git fetch origin <branch>`, `git worktree add`).
+3. Work in a git worktree on that branch, outside the repository root so `git status` stays clean (`git fetch origin <branch>`, then `git worktree add ../<repo>-task-<N> <branch>`).
 4. Read the OpenSpec change the issue names (proposal, design, the specs the task cites), using the status/instructions/context steps of `openspec-apply-change`. Do ONLY this task; do not continue to other tasks. Do not tick `tasks.md` checkboxes (status lives on GitHub, D-73) unless a decision says otherwise.
 5. Touch only the declared files. Run the task's verification. Commit in English, push, open a PR whose body contains `Closes #N`.
 6. Run the review loop, then write the handoff comment.
 
 ## Review loop (after every PR)
-Up to 3 rounds. In each: start a sub-agent with a **clean context** (not a fork) on a **more capable model** than yours. Give it only the PR number, the issue brief and `AGENTS.md`, and ask for findings labelled Important / Nit with `file:line` and a concrete failure scenario; it edits nothing. Verify each finding yourself, fix the valid ones, reject wrong ones with a reason, push. Post one PR comment per round (findings, fixed, rejected). Stop early when a round has no Important findings. If your tool has no sub-agent facility, say so in the handoff and ask the owner. The handoff states the number of rounds and every unresolved finding. Long fixture sets can exceed the diff API limit (HTTP 406 on `gh pr diff`); review those with a local `git diff`.
+Up to 3 rounds. In each: start a sub-agent with a **clean context** (not a fork) on a **more capable model** than yours; if you already run on the provider's most capable model, use a different model or effort profile than your own and say so in the handoff (D-10: a reviewer must not share the author's exact profile). Give it only the PR number, the issue brief and `AGENTS.md`, and ask for findings labelled Important / Nit with `file:line` and a concrete failure scenario; it edits nothing. Verify each finding yourself, fix the valid ones, reject wrong ones with a reason, push. Post one PR comment per round (findings, fixed, rejected). Stop early when a round has no Important findings. If your tool has no sub-agent facility, say so in the handoff and ask the owner. The handoff states the number of rounds and every unresolved finding. Long fixture sets can exceed the diff API limit (HTTP 406 on `gh pr diff`); review those with a local `git diff`.
 
 ## Spec
 1. Use `openspec-explore`, then `openspec-propose` for `<slug>` (the rules in `openspec/config.yaml` apply).
@@ -41,4 +41,4 @@ Fetch the PR and its issue; check against the specs and the declared files; post
 Only when every sub-issue of the parent is closed and the owner said so: `openspec-archive-change`, then a PR, then close the parent issue.
 
 ## Decision
-Interview the owner (`grill-me`), then append `D-NN` marked "proposed" to `docs/decisions.md` in the existing format, on a branch `docs/decision-<nn>`; PR with label `type:decision`. Never edit accepted decisions except to mark them superseded.
+Interview the owner (`grill-me`), then append `D-NN` marked "proposed" to `docs/decisions.md` in the existing format, on a branch `docs/d<nn>-<slug>` (never a name ending in `-<number>`, which `scripts/next-task.sh` reads as a claimed issue); PR with label `type:decision`. Never edit accepted decisions except to mark them superseded.
