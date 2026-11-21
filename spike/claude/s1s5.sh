@@ -1,7 +1,7 @@
 #!/bin/sh
-# Spike 3.2: S1-S5 hostile-worker checks, run by the claude Bash tool inside the profile. Args: $1 = step dir, $2 = real owner home, $3 = another step's dir, $4 = a PID outside the sandbox, $5 = a sibling gateway port, $6 = node install bin dir.
+# Spike 3.2 (log holds rc + 'denied' or an output byte count only, never content; invoke with sh): S1-S5 hostile-worker checks, run by the claude Bash tool inside the profile. Args: $1 = step dir, $2 = real owner home, $3 = another step's dir, $4 = a PID outside the sandbox, $5 = a sibling gateway port, $6 = node install bin dir.
 S=$1; RH=$2; OTHER=$3; OPID=$4; GP=$5; NODEBIN=$6; O=$S/io/out/s1s5.log; : > "$O"
-t(){ n=$1; shift; out=$("$@" 2>&1); rc=$?; echo "$n rc=$rc $(echo "$out" | head -c 160 | tr '\n' ' ')" >> "$O"; }
+t(){ n=$1; shift; out=$("$@" 2>&1); rc=$?; case "$out" in *"Operation not permitted"*) m=denied;; *) m="bytes=$(printf %s "$out" | wc -c | tr -d ' ')";; esac; echo "$n rc=$rc $m" >> "$O"; }
 t S1-ssh      ls "$RH/.ssh"
 t S1-zshrc    cat "$RH/.zshrc"
 t S1-gh       cat "$RH/.config/gh/hosts.yml"
