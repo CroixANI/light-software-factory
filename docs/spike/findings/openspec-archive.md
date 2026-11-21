@@ -1,8 +1,8 @@
 # S7 findings: OpenSpec's own archive on fixture changes
 
 Task 2.5 of `spike-sandbox-and-providers`, experiment S7, question Q8 (architecture §19). Issue #13.
-Evidence: [spike/openspec-archive/](../../../spike/openspec-archive/) (57 fixture cases, `run.sh`, one `results/<case>/` folder per case with the CLI output, exit code, before/after trees and a diff of the main specs).
-Every statement below cites a case id (`h*` = merges, `e*` = error and edge cases) that you can open under `results/`.
+Evidence: [spike/openspec-archive/](../../../spike/openspec-archive/) (62 fixture cases, `run.sh`, one `results/<case>/` folder per case with the CLI output, exit code, before/after trees and a diff of the main specs).
+Every statement below cites a case id (`h*` = mostly merges, with the exceptions h08, h16, h18 which abort; `e*` = error and edge cases; the expected result is in `exit-code.txt`, not in the prefix) that you can open under `results/`.
 
 ## Setup
 
@@ -25,9 +25,9 @@ Every statement below cites a case id (`h*` = merges, `e*` = error and edge case
 
 ## Merge semantics per delta kind
 
-Delta file format: `openspec/changes/<name>/specs/<capability>/spec.md` containing any of the four sections `## ADDED Requirements`, `## MODIFIED Requirements`, `## REMOVED Requirements`, `## RENAMED Requirements` (header match is case-insensitive in the reader *(source only)*; a differently spelled header such as `## ADD Requirements` is an **error**, e19; the same for `## Requirements`, e18). Requirements are `### Requirement: <name>` blocks, scenarios `#### Scenario: <name>`. Names are matched **exactly and case-sensitively** after trimming and removing a closing `###` sequence; case or spacing variants are detected as typos and are errors (e10, e24).
+Delta file format: `openspec/changes/<name>/specs/<capability>/spec.md` containing any of the four sections `## ADDED Requirements`, `## MODIFIED Requirements`, `## REMOVED Requirements`, `## RENAMED Requirements` (header match is case-insensitive in the reader *(source only)*; a differently spelled header such as `## ADD Requirements` is an **error**, e19; the same for `## Requirements`, e18). Requirements are `### Requirement: <name>` blocks, scenarios `#### Scenario: <name>`. Names are matched **exactly and case-sensitively** after trimming and removing a closing `###` sequence; case or spacing variants are detected as typos and are errors (e10, e24), **except that RENAMED may change only the capitalisation of a name** (h24).
 
-**Apply order in the code is RENAMED, then REMOVED, then MODIFIED, then ADDED** *(source only, `specs-apply.js`)*, whatever the order of sections in the delta file (h06 writes them in the reverse order and still merges as described). All four work on a name-to-block map of the existing spec. What the fixtures can show of the order: the same requirement name cannot appear in two sections (pre-checks reject MODIFIED+REMOVED e26, MODIFIED+ADDED e27, ADDED+REMOVED e07, RENAMED+REMOVED e16, RENAMED TO + ADDED e28, MODIFIED under the old name of a rename e06), so the observable consequences are: MODIFIED sees the NEW name of a renamed block (h06); ADDED blocks come last; and RENAMED is applied **before** ADDED, so a delta may rename `X` away and ADD a new `X` in the same change (h23: the renamed block keeps its slot, the new `X` goes at the end). An adapter that adds first, or rejects a name that is both a RENAMED FROM and an ADDED name, would abort on h23.
+**Apply order in the code is RENAMED, then REMOVED, then MODIFIED, then ADDED** *(source only, `specs-apply.js`)*, whatever the order of sections in the delta file (h06 writes them in the reverse order and still merges as described). All four work on a name-to-block map of the existing spec. What the fixtures can show of the order: the same requirement name cannot appear in two sections (pre-checks reject MODIFIED+REMOVED e26, MODIFIED+ADDED e27, ADDED+REMOVED e07, RENAMED+REMOVED e16, RENAMED TO + ADDED e28, MODIFIED under the old name of a rename e06), (exception: a RENAMED FROM name may be reused by ADDED, h23) so the observable consequences are: MODIFIED sees the NEW name of a renamed block (h06); ADDED blocks come last; and RENAMED is applied **before** ADDED, so a delta may rename `X` away and ADD a new `X` in the same change (h23: the renamed block keeps its slot, the new `X` goes at the end). An adapter that adds first, or rejects a name that is both a RENAMED FROM and an ADDED name, would abort on h23.
 
 | Kind | What it does to the main spec | Case |
 |---|---|---|
@@ -35,6 +35,10 @@ Delta file format: `openspec/changes/<name>/specs/<capability>/spec.md` containi
 | **MODIFIED** | **Replaces the whole block** (requirement text and all scenarios) by the delta's block, at the **same position**. It is not a patch: anything not repeated is gone, and a block with identical text is a no-op. The block is written verbatim (header whitespace of the delta is kept, h15). The delta block must contain every scenario name the current block has; it may add scenarios (h03). | h03, h15, h20 |
 | **REMOVED** | Deletes the block. The delta lists the header plus `**Reason**`/`**Migration**` text, which is **not** merged anywhere (the only trace is the archived change folder). A full requirement block is accepted too (e15). Removing from a middle position leaves the others in order. | h04, h09, e15 |
 | **RENAMED** | Changes only the header line (`- FROM: \`### Requirement: A\`` then `- TO: \`### Requirement: B\``); body and scenarios stay; the block **keeps its position** (h05, h10: first and last renamed, positions unchanged). | h05, h10 |
+
+Rename details: renames are applied in file order against the evolving map, so a chain `A to B`, `B to C` works (h25) while a swap does not (e34); a case-only rename is allowed (h24).
+
+A scenario can never be deleted by itself: MODIFIED must keep every existing scenario name (e03, h16) and ADDED+REMOVED of one name is rejected (e07), so dropping a scenario means REMOVED of the requirement and ADDED under a new name in a later change.
 
 Combined (h06): RENAMED `Bravo release` to `Bravo cancellation` + MODIFIED under the **new** name + REMOVED `Charlie` + MODIFIED `Delta` + ADDED `Echo`, `Foxtrot` in one capability and a MODIFIED in a second capability. Result order in the main spec: Alpha, Bravo cancellation, Delta export, Echo, Foxtrot (Charlie gone, new blocks at the end in delta order). Totals line: `Totals: + 2, ~ 3, - 1, → 1`.
 
@@ -58,7 +62,7 @@ OpenSpec has a `sync` flow that merges deltas before archive, so archive tolerat
 
 ## Error cases and exact messages
 
-All exit 1. Two output shapes: spec-merge errors print `Specs to update:` ... the message ... `Aborted. No files were changed.`; the **pre-check** rows (marked so) print `Validation errors in change delta specs:` + `✗ <message>` + `Validation failed. Please fix the errors before archiving.` + the `--no-validate` hint, before any `Specs to update`. h18 prints only the `✖ Error` line. `<cap>` is the capability folder name.
+All exit 1. Three output shapes: spec-merge errors print `Specs to update:` ... the message ... `Aborted. No files were changed.`; the **pre-check** rows (marked so) print `Validation errors in change delta specs:` + `✗ <message>` + `Validation failed. Please fix the errors before archiving.` + the `--no-validate` hint, before any `Specs to update`. a rebuilt spec that fails validation (h08, e22) prints `Validation errors in rebuilt spec for <cap> (will not write changes):` + `✗ Spec must have at least one requirement` + `Aborted. No files were changed.`; h18 prints only the `✖ Error` line. `<cap>` is the capability folder name.
 
 | Situation | Message (prefix) | Case |
 |---|---|---|
@@ -71,6 +75,10 @@ All exit 1. Two output shapes: spec-merge errors print `Specs to update:` ... th
 | MODIFIED uses the old name of a renamed requirement | pre-check: `MODIFIED references old name from RENAMED. Use new header for "<TO>"` | e06 |
 | Same name in MODIFIED and REMOVED / MODIFIED and ADDED | pre-check: `Requirement present in both MODIFIED and REMOVED: "X"` / `... MODIFIED and ADDED ...` | e26, e27 |
 | RENAMED TO equals an ADDED name | pre-check: `RENAMED TO collides with ADDED for "X"` | e28 |
+| RENAMED TO is a case variant of ANOTHER existing requirement | `RENAMED failed for header "### Requirement: bravo release" - "### Requirement: Bravo release" already exists and differs only in case or spacing; choose a distinct name` | e35 |
+| Same TO twice in RENAMED | pre-check: `Duplicate TO in RENAMED: "Zed"` | e36 |
+| Rename swap `A to B, B to A` | `RENAMED failed ... - target already exists` | e34 |
+| Last requirement removed without retirement | `Spec must have at least one requirement` + `retire_capabilities` hint (third output shape) | h08 |
 | Same FROM twice in RENAMED | pre-check: `Duplicate FROM in RENAMED: "X"` | e29 |
 | RENAMED FROM differs by case | `RENAMED failed ... - source not found` (no near-miss hint when TO is absent) | e30 |
 | REMOVED name differs by case | `REMOVED failed for header "### Requirement: charlie audit log" - not found, but "### Requirement: Charlie audit log" exists; fix the header to match it exactly` | e31 |
@@ -109,10 +117,10 @@ Use the `results/<id>/` folders as expected output (`specs.diff`, `after/specs/`
 
 **Must merge (expected `ok`)**
 1. h02 ADDED to existing spec appends at end, multiple in delta order.
-2. h01, e21 ADDED to a new capability creates the spec skeleton; Purpose placeholder (h01: result fails strict validate) or delta Purpose (e21: passes).
+2. h01, e21 ADDED to a new capability (h07 too: its new `shipping` spec has the placeholder Purpose, so h07 also fails strict validate) creates the spec skeleton; Purpose placeholder (h01: result fails strict validate) or delta Purpose (e21: passes).
 3. h03 MODIFIED replaces in place; may add scenarios; h15 header whitespace tolerated, block copied verbatim.
 4. h04, e15 REMOVED (name form with Reason/Migration, and full block form).
-5. h05, h10 RENAMED keeps position, body and scenarios; two renames in one delta.
+5. h05, h10 RENAMED keeps position, body and scenarios; two independent renames in one delta (h10); h25 true chain; h24 case-only rename.
 6. h06 all kinds together, sections out of order in the file, MODIFIED under the new name of a rename, two capabilities.
 7. h07 three capabilities, one of them new.
 8. h09 ADDED goes after survivors even when the first requirement is REMOVED.
@@ -127,7 +135,7 @@ Use the `results/<id>/` folders as expected output (`specs.diff`, `after/specs/`
 15. e03, h16 MODIFIED drops or renames a scenario.
 16. e02, e10 ADDED collides (exact, and case/space variant).
 17. e04, e05 RENAMED source missing, target exists.
-18. e06, e07, e16, e26, e27, e28 cross-section conflicts; e29 duplicate FROM; e11 duplicate in a section; e17 unpaired RENAMED.
+18. e06, e07, e16, e26, e27, e28 cross-section conflicts; e29 duplicate FROM; e36 duplicate TO; e34 swap; e35 TO case variant; e11 duplicate in a section; e17 unpaired RENAMED.
 19. e08 MODIFIED/RENAMED on a new capability; e22 REMOVED-only on a new capability.
 20. h08 removing the last requirement without retirement.
 21. e09 empty delta; e13 ADDED without scenario; e18, e19 requirement under a non-delta header.

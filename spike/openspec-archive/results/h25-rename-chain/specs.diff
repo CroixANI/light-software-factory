@@ -1,0 +1,12 @@
+diff -ru before/specs/inventory/spec.md ./openspec/specs/inventory/spec.md
+--- before/specs/inventory/spec.md
++++ ./openspec/specs/inventory/spec.md
+@@ -16,7 +16,7 @@
+ - **WHEN** a reservation is requested for more than the available stock
+ - **THEN** the reservation is rejected
+ 
+-### Requirement: Bravo release
++### Requirement: Bravo three
+ The system SHALL release a reservation when it is cancelled.
+ 
+ #### Scenario: Cancel reservation

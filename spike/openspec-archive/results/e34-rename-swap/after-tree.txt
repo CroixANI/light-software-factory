@@ -1,0 +1,8 @@
+openspec/changes/archive/.gitkeep
+openspec/changes/e34-rename-swap/.openspec.yaml
+openspec/changes/e34-rename-swap/proposal.md
+openspec/changes/e34-rename-swap/specs/inventory/spec.md
+openspec/changes/e34-rename-swap/tasks.md
+openspec/config.yaml
+openspec/specs/billing/spec.md
+openspec/specs/inventory/spec.md

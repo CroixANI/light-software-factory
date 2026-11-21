@@ -1,0 +1,8 @@
+openspec/changes/archive/.gitkeep
+openspec/changes/h24-rename-case-only/.openspec.yaml
+openspec/changes/h24-rename-case-only/proposal.md
+openspec/changes/h24-rename-case-only/specs/inventory/spec.md
+openspec/changes/h24-rename-case-only/tasks.md
+openspec/config.yaml
+openspec/specs/billing/spec.md
+openspec/specs/inventory/spec.md

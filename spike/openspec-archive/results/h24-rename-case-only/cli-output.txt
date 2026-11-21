@@ -1,0 +1,9 @@
+Task status: ✓ Complete
+
+Specs to update:
+  inventory: update
+Applying changes to openspec/specs/inventory/spec.md:
+  → 1 renamed
+Totals: + 0, ~ 0, - 0, → 1
+Specs updated successfully.
+Change 'h24-rename-case-only' archived as '<DATE>-h24-rename-case-only'.

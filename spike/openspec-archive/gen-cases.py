@@ -167,4 +167,14 @@ case("e32-modified-no-scenario", "MODIFIED block without any scenario.",
      {"inventory": sec("MODIFIED", "### Requirement: Delta export\nThe system SHALL export the stock table as CSV on request.\n")})
 case("e33-renamed-on-new-spec", "RENAMED against a capability that has no spec yet.",
      {"notifications": "## RENAMED Requirements\n\n- FROM: `### Requirement: Email notice`\n- TO: `### Requirement: Mail notice`\n"})
+case("h24-rename-case-only", "RENAMED that only changes the capitalisation (`Alpha reservation` to `Alpha Reservation`): allowed, unlike a case-variant ADDED.",
+     {"inventory": "## RENAMED Requirements\n\n- FROM: `### Requirement: Alpha reservation`\n- TO: `### Requirement: Alpha Reservation`\n"})
+case("h25-rename-chain", "True rename chain in one delta: Bravo release to Bravo two, then Bravo two to Bravo three (applied in file order).",
+     {"inventory": "## RENAMED Requirements\n\n- FROM: `### Requirement: Bravo release`\n- TO: `### Requirement: Bravo two`\n- FROM: `### Requirement: Bravo two`\n- TO: `### Requirement: Bravo three`\n"})
+case("e34-rename-swap", "Swap: Alpha to Bravo-name and Bravo to Alpha-name in one delta.",
+     {"inventory": "## RENAMED Requirements\n\n- FROM: `### Requirement: Alpha reservation`\n- TO: `### Requirement: Bravo release`\n- FROM: `### Requirement: Bravo release`\n- TO: `### Requirement: Alpha reservation`\n"})
+case("e35-renamed-to-near-miss", "RENAMED TO differs only in case from ANOTHER existing requirement (`bravo release`).",
+     {"inventory": "## RENAMED Requirements\n\n- FROM: `### Requirement: Alpha reservation`\n- TO: `### Requirement: bravo release`\n"})
+case("e36-renamed-duplicate-to", "Two RENAMED pairs with the same TO.",
+     {"inventory": "## RENAMED Requirements\n\n- FROM: `### Requirement: Alpha reservation`\n- TO: `### Requirement: Zed`\n- FROM: `### Requirement: Bravo release`\n- TO: `### Requirement: Zed`\n"})
 print("cases:", len(os.listdir(cases_dir)))
