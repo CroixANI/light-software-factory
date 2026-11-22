@@ -1,7 +1,8 @@
 ;; Spike 3.3 fragment appended after spike/harness/sandbox/base.sb: the codex CLI is a native binary in CLIDIR.
 ;; reviewer-readonly shape: exec only the CLI binary (no shell). Mach list stays empty here; extra services are added by --mach, one at a time.
 (allow process-exec (subpath (param "CLIDIR")))
-;; the credential copy is read-only for the CLI: a refresh must not be able to rewrite it (E2). Later rule wins over the home write rule in base.sb.
+;; the credential copy is write-protected against IN-PLACE writes only (E2): this rule matches that one path. base.sb still allows writes in home/, so a process could
+;; rename/replace home/.codex or the file itself. A subpath deny on home/.codex was not used: the CLI keeps its state (sqlite, sessions, caches) there. Open question for the owner.
 (deny file-write* (literal (string-append (param "STEP") "/home/.codex/auth.json")))
 ;; managed-requirements file (admin policy). Codex reads it at startup and aborts on EPERM, so reads must be allowed (absent file = ENOENT is fine). Read-only.
 (allow file-read* (literal "/private/etc/codex/requirements.toml") (literal "/private/etc/codex"))

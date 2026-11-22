@@ -9,7 +9,9 @@ here="$(cd "$(dirname "$0")" && pwd)"; export LSF_CODEX_DIR="$here"; H="$here/..
 # refuse anything that is not new or ours: the trap below deletes $SP/work
 if [ -e "$SP" ] && [ ! -f "$SP/.lsf-codex-scratch" ]; then echo "SP exists and is not a scratch dir made by this script: $SP" >&2; exit 2; fi
 mkdir -p "$SP"; chmod 700 "$SP"; : > "$SP/.lsf-codex-scratch"
-trap 'rm -rf "$SP/work"' EXIT
+gp=; g5=   # PIDs of the background gateways; killed on any exit, including SIGINT/SIGTERM, so ports 8941-8952 are never left bound
+cleanup() { for p in $gp $g5; do kill -INT "$p" 2>/dev/null; done; rm -rf "$SP/work"; }
+trap cleanup EXIT; trap 'exit 130' INT; trap 'exit 143' TERM
 . "$here/lib.sh"
 CA=/private/etc/ssl/cert.pem; LI=com.apple.system.opendirectoryd.libinfo
 echo 'Reply with the single word: pong' > "$SP/p-pong.txt"

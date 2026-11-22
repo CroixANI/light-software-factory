@@ -6,7 +6,7 @@
 # Usage: min-mach.sh <step-dir> <gateway-port> <candidates-file> <prompt-file>
 set -u
 step=$1; port=$2; cands=$3; prompt=$4; 
-cli="$(readlink -f "$(command -v codex)")"; tmp="$(mktemp -d "${TMPDIR:-/tmp}/minmach.XXXXXX")"
+cli="$(readlink -f "$(command -v codex)")"; tmp="$(mktemp -d "${TMPDIR:-/tmp}/minmach.XXXXXX")"; trap 'rm -rf "$tmp"' EXIT   # holds raw codex output
 run() {
   { printf '(version 1)\n(allow default)\n(deny mach-lookup)\n'
     for m in "$@"; do printf '(allow mach-lookup (global-name "%s"))\n' "$m"; done; } > "$tmp/p.sb"
