@@ -1,4 +1,4 @@
-===== part-b-e6.sh output (final run) =====
+===== part-b-e6.sh output =====
 -- E6 model and effort flags; effective values from the rollout:
 e6-flags rc=0
  msg: pong
@@ -25,7 +25,7 @@ e10 rc=0
   default:  msg: apply_patch,create_goal,exec_command,get_goal,list_mcp_resource_templates,list_mcp_resources,multi_agent_v1__close_agent,multi_agent_v1__resume_agent,multi_agent_v1__send_input,multi_agent_v1__spawn_agent,multi_agent_v1__wait_agent,read_mcp_resource,update_goal,view_image,web__run,write_stdin
   noshell:  msg: apply_patch,create_goal,get_goal,list_mcp_resource_templates,list_mcp_resources,multi_agent_v1__close_agent,multi_agent_v1__resume_agent,multi_agent_v1__send_input,multi_agent_v1__spawn_agent,multi_agent_v1__wait_agent,read_mcp_resource,update_goal,view_image,web__run
 
-===== part-b-e8.sh output (final run) =====
+===== part-b-e8.sh output =====
 V0 default: context canaries = ['CANARY-AGENTS-SKILL', 'CANARY-HOME-CONFIG', 'CANARY-HOME-OVERRIDE', 'CANARY-HOME-SKILL', 'CANARY-REPO-OVERRIDE', 'CANARY-REPO-SKILL'] | effective effort = high
 V1 --ignore-user-config --ignore-rules: context canaries = ['CANARY-AGENTS-SKILL', 'CANARY-HOME-OVERRIDE', 'CANARY-HOME-SKILL', 'CANARY-REPO-OVERRIDE', 'CANARY-REPO-SKILL'] | effective effort = None
 V2 V1 + -c project_doc_max_bytes=0: context canaries = ['CANARY-AGENTS-SKILL', 'CANARY-HOME-OVERRIDE', 'CANARY-HOME-SKILL', 'CANARY-REPO-SKILL'] | effective effort = None
@@ -35,7 +35,7 @@ R0 rule in CODEX_HOME/rules, default flags: 0 successful shell command(s); 1 ref
 R1 rule in CODEX_HOME/rules, --ignore-rules: 1 successful shell command(s); 0 refusal message(s)
 R2 rule only in repo/.codex/rules, default flags: 1 successful shell command(s); 0 refusal message(s)
 
-===== part-b-e9.sh output (final run) =====
+===== part-b-e9.sh output =====
 call 1: result.json VALID; marker in calc.py: 1
 state left in home/.codex after call 1: auth.json goals_1.sqlite goals_1.sqlite-shm goals_1.sqlite-wal installation_id logs_2.sqlite memories_1.sqlite memories_1.sqlite-wal models_cache.json queue_1.sqlite sessions shell_snapshots skills state_5.sqlite state_5.sqlite-shm state_5.sqlite-wal thread-writer-locks thread_history_1.sqlite tmp 
 state in tmp/ after call 1: lsf-codex.sb 
@@ -43,52 +43,51 @@ call 2 (fresh Step, --ephemeral): VALID; marker in calc.py: 0; notes=NO-MEMORY
   call 2 home/.codex has sessions: 0 rollout file(s)
 call 2b (call 1's home/ reused): VALID; notes=NO-MEMORY; rollout files in home now: 2
 
-===== part-b-e11.sh output (final run) =====
+===== part-b-e11.sh output =====
 process tree before the kill (pid ppid pgid, marker or binary name):
-  41503 41500 41500 bash HOME/.t3/worktrees/light-software-factory/t3-5fe6d09c-bba95a7ffd691c
-  41570 41503 41570 codex exec
-  41753 41570 41753 codex-code-mode-host --listen
-  41754 41570 41754 sh SP/work/e11/tmp/e11-spawn.sh
-  41755 41754 41754 perl -e
-  41756 41754 41756 perl -e
-  41759 1 41754 perl -e
-  41761 1 41760 perl -e
-probe lines before the kill: 38
-tracked pids: 41570 41753 41754 41755 41756 41762 | groups: 41570 41753 41754 41756 
+  51185 51136 51185 codex exec
+  51368 51185 51368 codex-code-mode-host --listen
+  51369 51185 51369 sh SP/work/e11/tmp/e11-spawn.sh
+  51370 51369 51369 perl -e
+  51371 51369 51371 perl -e
+  51373 1 51369 perl -e
+  51376 1 51375 perl -e
+probe lines before the kill: 37
+tracked pids: 51185 51368 51369 51370 51371 51377 | groups: 51185 51368 51369 51371 
 marker scan before kill:
-41755 41754 41754 perl -e sleep 600 LSFMARK_A
-41756 41754 41756 /usr/bin/perl -e sleep 600 LSFMARK_B
-41759     1 41754 perl -e sleep 600 LSFMARK_C
-41761     1 41760 perl -e use POSIX; use IO::Socket::INET; $SIG{PIPE}="IGNORE"; 
+51370 51369 51369 perl -e sleep 600 LSFMARK_A
+51371 51369 51371 /usr/bin/perl -e sleep 600 LSFMARK_B
+51373     1 51369 perl -e sleep 600 LSFMARK_C
+51376     1 51375 perl -e use POSIX; use IO::Socket::INET; $SIG{PIPE}="IGNORE"; 
 after TERM+10 s, marker scan:
-41761     1 41760 perl -e use POSIX; use IO::Socket::INET; $SIG{PIPE}="IGNORE"; 
+51376     1 51375 perl -e use POSIX; use IO::Socket::INET; $SIG{PIPE}="IGNORE"; 
 after KILL of tracked set (group+pid), marker survivors:
-41761     1 41760 perl -e use POSIX; use IO::Socket::INET; $SIG{PIPE}="IGNORE"; 
-gateway closed at 1795353967
+51376     1 51375 perl -e use POSIX; use IO::Socket::INET; $SIG{PIPE}="IGNORE"; 
+gateway closed at 1795354370
 marker survivors still alive 3 s after gateway close:
-41761     1 41760 perl -e use POSIX; use IO::Socket::INET; $SIG{PIPE}="IGNORE"; 
+51376     1 51375 perl -e use POSIX; use IO::Socket::INET; $SIG{PIPE}="IGNORE"; 
 probe log tail:
-1795353966 no-reply
-1795353967 no-reply
-1795353968 no-reply
-1795353969 no-reply
+1795354370 no-reply
+1795354371 no-reply
+1795354372 no-reply
+1795354373 no-reply
 after marker-scan KILL:
 (end)
-REPO/spike/codex/part-b-e11.sh: line 18: 41570 Terminated: 15          perl -e 'setpgrp(0,0); alarm 200; exec @ARGV' "$R" --step "$s" --port 8971 --env CODEX_CA_CERTIFICATE=$CA --mach $LI --extra-sb "$C/shell.sb" --extra-sb "$C/kill.sb" -- exec --json --skip-git-repo-check -s danger-full-access -c 'approval_policy="never"' -m gpt-5.6-luna -c model_reasoning_effort=low "${HYG[@]}" --disable multi_agent < "$SP/p-e11.txt" > "$SP/e11.out" 2> "$SP/e11.err"
+REPO/spike/codex/part-b-e11.sh: line 19: 51185 Terminated: 15          perl -e 'setpgrp(0,0); alarm 200; exec @ARGV' "$R" --step "$s" --port 8971 --env CODEX_CA_CERTIFICATE=$CA --mach $LI --extra-sb "$C/shell.sb" --extra-sb "$C/kill.sb" -- exec --json --skip-git-repo-check -s danger-full-access -c 'approval_policy="never"' -m gpt-5.6-luna -c model_reasoning_effort=low "${HYG[@]}" --disable multi_agent < "$SP/p-e11.txt" > "$SP/e11.out" 2> "$SP/e11.err"
 launcher exit after the kill: 143
 leftover LSFMARK processes: 0
 
-===== part-b-e12.sh output (final run) =====
+===== part-b-e12.sh output =====
 -- API errors forced with mock-api.mjs (profile port = mock port):
 e12-429-usage rc=1 mock=429/usage secs=0 mock-requests=3 events=['thread.started', 'turn.started', 'error', 'turn.failed']
- err: You’ve hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/settings/usage to purchase more credits or try again at 2:2
-e12-429-rate rc=1 mock=429/rate secs=0 mock-requests=3 events=['thread.started', 'turn.started', 'error', 'turn.failed']
+ err: You’ve hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/settings/usage to purchase more credits or try again at 2:3
+e12-429-rate rc=1 mock=429/rate secs=1 mock-requests=3 events=['thread.started', 'turn.started', 'error', 'turn.failed']
  err: exceeded retry limit, last status: 429 Too Many Requests, request id: req_mock
 e12-500-plain rc=1 mock=500/plain secs=27 mock-requests=40 events=['thread.started', 'turn.started', 'error', 'error', 'error', 'error', 'error', 'error', 'turn.failed']
  err: We’re currently experiencing high demand, which may cause temporary errors.
 e12-503-plain rc=1 mock=503/plain secs=28 mock-requests=40 events=['thread.started', 'turn.started', 'error', 'error', 'error', 'error', 'error', 'error', 'turn.failed']
  err: unexpected status 503 Service Unavailable: mock 503, url: http://127.0.0.1:8963/v1/responses, request id: req_mock
-e12-401-plain rc=1 mock=401/plain secs=6 mock-requests=14 events=['thread.started', 'turn.started', 'error', 'error', 'error', 'error', 'error', 'error', 'turn.failed']
+e12-401-plain rc=1 mock=401/plain secs=7 mock-requests=14 events=['thread.started', 'turn.started', 'error', 'error', 'error', 'error', 'error', 'error', 'turn.failed']
  err: error sending request for url (https://auth.openai.com/oauth/token)
 e12-400-plain rc=1 mock=400/plain secs=0 mock-requests=3 events=['thread.started', 'turn.started', 'error', 'turn.failed']
  err: {"error":{"type":"api_error","message":"mock 400"}}
@@ -106,14 +105,20 @@ Reading prompt from stdin...
 -- sandbox denial through the shell tool (write outside repo/):
 e12-denial rc=0
  cmd: /bin/zsh -lc "sh -c 'echo x > ../OUTSIDE-TEST'" | status: failed | exit: 1 | out: Error opening /private/var/select/sh: Operation not permitted\nsh: ../OUTSIDE-TEST: Operation not permitted\n
+-- sandbox denial through apply_patch (write into repo/ without shell.sb):
+e12-den-patch rc=0
+ item: file_change {"id": "item_0", "type": "file_change", "changes": [{"path": "SP/work/e12-den-patch/repo/denied-test.txt", "kind": "add"}], "status": "in_progress"}
+ item: file_change {"id": "item_0", "type": "file_change", "changes": [{"path": "SP/work/e12-den-patch/repo/denied-test.txt", "kind": "add"}], "status": "failed"}
+ msg: Failed to write file SP/work/e12-den-patch/repo/denied-test.txt
+  file created: no; stderr: 0 line(s) with Operation not permitted
 -- invalid output: the worker is asked for prose, the harness expects JSON in -o:
 e12-invalid rc=0
   -o file content is JSON: no; result.json present: no
 -- timeout (wall clock 25 s, shell tool sleeps 60 s):
-REPO/spike/codex/part-b-e12.sh: line 35: 36338 Alarm clock: 14         perl -e 'alarm 25; exec @ARGV' "$R" --step "$s" --port 8961 --env CODEX_CA_CERTIFICATE=$CA --mach $LI --extra-sb "$C/shell.sb" --extra-sb "$C/kill.sb" -- exec --json --skip-git-repo-check -s danger-full-access -c 'approval_policy="never"' -m gpt-5.6-luna -c model_reasoning_effort=low "${HYG[@]}" --disable multi_agent < "$SP/p-sleep.txt" > "$SP/$id.out" 2> "$SP/$id.err"
-  rc=142 secs=25 events=['thread.started', 'turn.started', 'item.completed', 'item.started']
+REPO/spike/codex/part-b-e12.sh: line 40: 56234 Alarm clock: 14         perl -e 'alarm 25; exec @ARGV' "$R" --step "$s" --port 8961 --env CODEX_CA_CERTIFICATE=$CA --mach $LI --extra-sb "$C/shell.sb" --extra-sb "$C/kill.sb" -- exec --json --skip-git-repo-check -s danger-full-access -c 'approval_policy="never"' -m gpt-5.6-luna -c model_reasoning_effort=low "${HYG[@]}" --disable multi_agent < "$SP/p-sleep.txt" > "$SP/$id.out" 2> "$SP/$id.err"
+  rc=142 secs=26 events=['thread.started', 'turn.started', 'item.completed', 'item.started']
 
-===== part-b-s1s5.sh output (final run; log written by the codex shell tool) =====
+===== part-b-s1s5.sh output (log written by the codex shell tool) =====
 S1-ssh rc=1 denied
 S1-zshrc rc=1 denied
 S1-gh rc=1 denied
