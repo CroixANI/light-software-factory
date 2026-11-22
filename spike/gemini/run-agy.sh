@@ -18,13 +18,17 @@ step="$(cd "$step" && pwd -P)"
 [[ "$step" =~ ^/[A-Za-z0-9._/-]+$ ]] || { echo "unsafe resolved step path" >&2; exit 2; }
 agy="$(readlink -f "$(command -v agy)")"
 [[ "$agy" =~ ^/[A-Za-z0-9._/-]+$ ]] && [ -f "$agy" ] || { echo "unsafe agy path: $agy" >&2; exit 2; }
-if [ -n "$rotok" ]; then [ -f "$rotok" ] || { echo "--ro-token: no such file" >&2; exit 2; }; rotok="$(cd "$(dirname "$rotok")" && pwd -P)/$(basename "$rotok")"
+if [ -n "$rotok" ]; then [ -f "$rotok" ] || { echo "--ro-token: no such file" >&2; exit 2; }
+  [ ! -L "$rotok" ] || { echo "--ro-token must not be a symlink (Seatbelt matches the real path)" >&2; exit 2; }
+  rotok="$(cd "$(dirname "$rotok")" && pwd -P)/$(basename "$rotok")"
   [[ "$rotok" =~ ^/[A-Za-z0-9._/-]+$ ]] || { echo "unsafe --ro-token path" >&2; exit 2; }
-  [ "$rotok" = "$step/home/.gemini/antigravity-cli/antigravity-oauth-token" ] || { echo "--ro-token must be <step>/home/.gemini/antigravity-cli/antigravity-oauth-token" >&2; exit 2; }; fi
+  # the directory part is resolved with pwd -P, so a symlinked parent directory changes the path and is refused here (fail-safe)
+  [ "$rotok" = "$step/home/.gemini/antigravity-cli/antigravity-oauth-token" ] || { echo "--ro-token must be <step>/home/.gemini/antigravity-cli/antigravity-oauth-token (no symlinks)" >&2; exit 2; }; fi
 if [ "$unsb" = 1 ]; then
   case " ${envx[*]-} " in *" GEMINI_API_KEY="*) ;; *) echo "--unsandboxed needs a fake GEMINI_API_KEY in --env (otherwise agy opens a browser login)" >&2; exit 2;; esac
   [ ! -e "$step/home/.gemini/antigravity-cli/antigravity-oauth-token" ] || { echo "--unsandboxed refused: this Step holds a real token file" >&2; exit 2; }
-  case " $* " in *'"modelProvider":"gemini"'*) ;; *) echo "--unsandboxed needs --settings '{\"modelProvider\":\"gemini\"}' so the fake key is used" >&2; exit 2;; esac
+  nospace="$(printf '%s' "$*" | tr -d '[:space:]')"   # accept { "modelProvider": "gemini" } with any spacing (inline JSON only, not a settings file)
+  case "$nospace" in *'"modelProvider":"gemini"'*) ;; *) echo "--unsandboxed needs --settings '{\"modelProvider\":\"gemini\"}' so the fake key is used (inline JSON; spaces are ignored)" >&2; exit 2;; esac
 fi
 prof="$step/tmp/lsf-agy.sb"
 { cat "$sb/base.sb"
