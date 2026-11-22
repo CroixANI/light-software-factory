@@ -9,3 +9,11 @@ Throwaway. The issue says "gemini", but the owner reported that Google no longer
 - Step folders: `../harness/build-step-folder.sh <id> <work-root>` with `<work-root>` outside the repo; gateway: `../harness/proxy/connect-proxy.mjs`. The token file and all raw logs stay outside the repository.
 
 Commands and results: [docs/spike/findings/gemini.md](../../docs/spike/findings/gemini.md).
+
+## Part B (spike task 3.6, issue #19)
+Throwaway scripts for E6–E12 and S1–S5 with `agy`; results and method in [docs/spike/findings/gemini.md](../../docs/spike/findings/gemini.md), output in `logs-part-b.txt`.
+- `mock-api.mjs`: a fake model endpoint for agy's enterprise-gateway route (`AGY_LLM_GATEWAY_URL`, no login, no quota); scripted turns, HTTP errors, a hang, request-body dumps into a private scratch dir. `bodyinfo.py` summarises a dumped body (tools, canaries, last turns).
+- `part-b-lib.sh` (helpers), `part-b-e6.sh`, `part-b-perm.sh`, `part-b-e8.sh`, `part-b-e9.sh`, `part-b-e10.sh`, `part-b-e11.sh` (+ `e11-spawn.sh`, `e11-kill.sh`, `kill.sb`), `part-b-e12.sh`, `part-b-s1s5.sh` (+ `s1s5.sh`, `s5.sb`), `part-b-all.sh` (runs them all, redacted log).
+- `part-b-real.sh` + `part-b-real-lib.sh`: the only runs against the real model (3 calls); need a login made by `login.sh` (`LOGIN_HOME`), token copied read-only into neutral-path Steps. `SUMMARY_ONLY=1` re-prints the summary of an earlier run without any call.
+- `with-timeout.pl`: TERM-then-KILL wall-clock limit (agy ignores SIGALRM, so `perl -e 'alarm'` does not work).
+- Scratch directories (`SP`) must be outside the repository; request dumps, token copies and raw logs never go into it.
