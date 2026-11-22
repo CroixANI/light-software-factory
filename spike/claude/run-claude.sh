@@ -13,16 +13,17 @@ esac; done
 if [ "$noderoot" != /nonexistent ]; then
   [[ "$noderoot" =~ ^/[A-Za-z0-9._/-]+$ ]] && [ -d "$noderoot" ] || { echo "unsafe --node-root" >&2; exit 2; }
   noderoot="$(cd "$noderoot" && pwd -P)"
+  [[ "$noderoot" =~ ^/[A-Za-z0-9._/-]+$ ]] || { echo "unsafe resolved --node-root" >&2; exit 2; }
   case "$noderoot" in /|/usr|/usr/local|/opt|/opt/homebrew|/System|/Library|/bin|/Users|/Users/Shared|/private|/private/tmp|/private/var|/tmp|/var|/Applications|"$HOME") echo "refusing broad --node-root: $noderoot" >&2; exit 2;; esac
   case "$HOME/" in "$noderoot"/*) echo "refusing --node-root that contains HOME" >&2; exit 2;; esac
 fi
-for e in ${envx[@]+"${envx[@]}"}; do case "${e%%=*}" in HOME|PATH|HTTPS_PROXY|HTTP_PROXY|CLAUDE_CONFIG_DIR|CLAUDE_CODE_OAUTH_TOKEN*|TMPDIR|FACTORY_STEP) echo "--env may not override ${e%%=*}" >&2; exit 2;; esac; done
+for e in ${envx[@]+"${envx[@]}"}; do case "${e%%=*}" in HOME|PATH|HTTPS_PROXY|HTTP_PROXY|NO_PROXY|ALL_PROXY|CLAUDE_CODE_TMPDIR|CLAUDE_CODE_DISABLE_*|DISABLE_*|CLAUDE_CONFIG_DIR|CLAUDE_CODE_OAUTH_TOKEN*|TMPDIR|FACTORY_STEP) echo "--env may not override ${e%%=*}" >&2; exit 2;; esac; done
 [ -n "$step" ] && [[ "$port" =~ ^[0-9]{1,5}$ ]] || { echo "need --step and numeric --port" >&2; exit 2; }
 for v in "$step" ${mach[@]+"${mach[@]}"}; do [[ "$v" =~ ^[A-Za-z0-9._/-]+$ ]] || { echo "refusing unsafe value: $v" >&2; exit 2; }; done
 step="$(cd "$step" && pwd -P)"
 cli="$(readlink -f "$(command -v claude)")"; clidir="$(dirname "$cli")"
 pyroot=/nonexistent   # claude is a native binary; no interpreter root is granted
-prof="$(mktemp -t lsf-claude)"; trap 'rm -f "$prof"' EXIT
+prof="$step/tmp/lsf-claude.sb"   # inside the Step (exec below skips an EXIT trap); removed with the Step folder
 { cat "$sb/base.sb"
   for r in "$step" "$clidir" "$noderoot" /usr/local/share/dotnet; do p="$(dirname "$r")"; while [ "$p" != / ]; do echo "(allow file-read-metadata (literal \"$p\"))"; p="$(dirname "$p")"; done; done | sort -u
   cat "$here/claude.sb"
