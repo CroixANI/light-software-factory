@@ -1,0 +1,5 @@
+;; E5: let the agy terminal tool run (shell + a few coreutils) so nesting of agy's own terminal sandbox can be observed. Copied from spike/claude/shell.sb.
+(allow process-exec (literal "/bin/sh") (literal "/bin/bash") (literal "/bin/echo") (literal "/usr/bin/id") (literal "/bin/cat"))
+(allow file-write* (subpath (string-append (param "STEP") "/repo")))
+;; agy's terminal tool execs /bin/zsh (not $SHELL): "fork/exec /bin/zsh: operation not permitted" without it (SHELL=/bin/sh did not change that).
+(allow process-exec (literal "/bin/zsh"))

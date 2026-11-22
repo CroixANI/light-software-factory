@@ -1,0 +1,4 @@
+;; Spike 3.5 fragment appended after spike/harness/sandbox/base.sb: the agy CLI is ONE native binary (param AGY), not a directory.
+;; reviewer-readonly shape: exec only that binary (no shell). Mach list stays empty here; extra services are added by --mach, one at a time.
+(allow process-exec (literal (param "AGY")))
+(allow file-read* (literal (param "AGY")))
