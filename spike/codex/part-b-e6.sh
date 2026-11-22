@@ -3,7 +3,7 @@
 # Usage: SP=<existing scratch dir> LSF_CODEX_DIR=... H=... R=...  part-b-e6.sh   (starts its own gateway on 8961 allowing chatgpt.com)
 set -u
 . "$LSF_CODEX_DIR/part-b-lib.sh"; C=$LSF_CODEX_DIR
-gwstart 8961 chatgpt.com; trap 'gwstop 8961' EXIT
+gwstart 8961 chatgpt.com; trap gwcleanup EXIT
 echo 'Reply with the single word: pong' > "$SP/p-pong.txt"
 rollout(){ find "$SP/work/$1/home/.codex/sessions" -name '*.jsonl' 2>/dev/null | head -1; }
 echo "-- E6 model and effort flags; effective values from the rollout:"

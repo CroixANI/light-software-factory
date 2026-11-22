@@ -45,43 +45,43 @@ call 2b (call 1's home/ reused): VALID; notes=NO-MEMORY; rollout files in home n
 
 ===== part-b-e11.sh output =====
 process tree before the kill (pid ppid pgid, marker or binary name):
-  51185 51136 51185 codex exec
-  51368 51185 51368 codex-code-mode-host --listen
-  51369 51185 51369 sh SP/work/e11/tmp/e11-spawn.sh
-  51370 51369 51369 perl -e
-  51371 51369 51371 perl -e
-  51373 1 51369 perl -e
-  51376 1 51375 perl -e
-probe lines before the kill: 37
-tracked pids: 51185 51368 51369 51370 51371 51377 | groups: 51185 51368 51369 51371 
+  64362 64313 64362 codex exec
+  64818 64362 64818 codex-code-mode-host --listen
+  64819 64362 64819 sh SP/work/e11/tmp/e11-spawn.sh
+  64820 64819 64819 perl -e
+  64821 64819 64821 perl -e
+  64823 1 64819 perl -e
+  64826 1 64825 perl -e
+probe lines before the kill: 39
+tracked pids: 64362 64818 64819 64820 64821 64827 | groups: 64362 64818 64819 64821 
 marker scan before kill:
-51370 51369 51369 perl -e sleep 600 LSFMARK_A
-51371 51369 51371 /usr/bin/perl -e sleep 600 LSFMARK_B
-51373     1 51369 perl -e sleep 600 LSFMARK_C
-51376     1 51375 perl -e use POSIX; use IO::Socket::INET; $SIG{PIPE}="IGNORE"; 
+64820 64819 64819 perl -e sleep 600 LSFMARK_64313_A
+64821 64819 64821 /usr/bin/perl -e sleep 600 LSFMARK_64313_B
+64823     1 64819 perl -e sleep 600 LSFMARK_64313_C
+64826     1 64825 perl -e use POSIX; use IO::Socket::INET; $SIG{PIPE}="IGNORE"; 
 after TERM+10 s, marker scan:
-51376     1 51375 perl -e use POSIX; use IO::Socket::INET; $SIG{PIPE}="IGNORE"; 
+64826     1 64825 perl -e use POSIX; use IO::Socket::INET; $SIG{PIPE}="IGNORE"; 
 after KILL of tracked set (group+pid), marker survivors:
-51376     1 51375 perl -e use POSIX; use IO::Socket::INET; $SIG{PIPE}="IGNORE"; 
-gateway closed at 1795354370
+64826     1 64825 perl -e use POSIX; use IO::Socket::INET; $SIG{PIPE}="IGNORE"; 
+gateway closed at 1795354812
 marker survivors still alive 3 s after gateway close:
-51376     1 51375 perl -e use POSIX; use IO::Socket::INET; $SIG{PIPE}="IGNORE"; 
+64826     1 64825 perl -e use POSIX; use IO::Socket::INET; $SIG{PIPE}="IGNORE"; 
 probe log tail:
-1795354370 no-reply
-1795354371 no-reply
-1795354372 no-reply
-1795354373 no-reply
+1795354812 no-reply
+1795354813 no-reply
+1795354814 no-reply
+1795354815 no-reply
 after marker-scan KILL:
 (end)
-REPO/spike/codex/part-b-e11.sh: line 19: 51185 Terminated: 15          perl -e 'setpgrp(0,0); alarm 200; exec @ARGV' "$R" --step "$s" --port 8971 --env CODEX_CA_CERTIFICATE=$CA --mach $LI --extra-sb "$C/shell.sb" --extra-sb "$C/kill.sb" -- exec --json --skip-git-repo-check -s danger-full-access -c 'approval_policy="never"' -m gpt-5.6-luna -c model_reasoning_effort=low "${HYG[@]}" --disable multi_agent < "$SP/p-e11.txt" > "$SP/e11.out" 2> "$SP/e11.err"
+REPO/spike/codex/part-b-e11.sh: line 19: 64362 Terminated: 15          perl -e 'setpgrp(0,0); alarm 200; exec @ARGV' "$R" --step "$s" --port 8971 --env CODEX_CA_CERTIFICATE=$CA --mach $LI --extra-sb "$C/shell.sb" --extra-sb "$C/kill.sb" -- exec --json --skip-git-repo-check -s danger-full-access -c 'approval_policy="never"' -m gpt-5.6-luna -c model_reasoning_effort=low "${HYG[@]}" --disable multi_agent < "$SP/p-e11.txt" > "$SP/e11.out" 2> "$SP/e11.err"
 launcher exit after the kill: 143
 leftover LSFMARK processes: 0
 
 ===== part-b-e12.sh output =====
 -- API errors forced with mock-api.mjs (profile port = mock port):
-e12-429-usage rc=1 mock=429/usage secs=0 mock-requests=3 events=['thread.started', 'turn.started', 'error', 'turn.failed']
- err: You’ve hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/settings/usage to purchase more credits or try again at 2:3
-e12-429-rate rc=1 mock=429/rate secs=1 mock-requests=3 events=['thread.started', 'turn.started', 'error', 'turn.failed']
+e12-429-usage rc=1 mock=429/usage secs=1 mock-requests=3 events=['thread.started', 'turn.started', 'error', 'turn.failed']
+ err: You’ve hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/settings/usage to purchase more credits or try again at 2:4
+e12-429-rate rc=1 mock=429/rate secs=0 mock-requests=3 events=['thread.started', 'turn.started', 'error', 'turn.failed']
  err: exceeded retry limit, last status: 429 Too Many Requests, request id: req_mock
 e12-500-plain rc=1 mock=500/plain secs=27 mock-requests=40 events=['thread.started', 'turn.started', 'error', 'error', 'error', 'error', 'error', 'error', 'turn.failed']
  err: We’re currently experiencing high demand, which may cause temporary errors.
@@ -107,16 +107,17 @@ e12-denial rc=0
  cmd: /bin/zsh -lc "sh -c 'echo x > ../OUTSIDE-TEST'" | status: failed | exit: 1 | out: Error opening /private/var/select/sh: Operation not permitted\nsh: ../OUTSIDE-TEST: Operation not permitted\n
 -- sandbox denial through apply_patch (write into repo/ without shell.sb):
 e12-den-patch rc=0
- item: file_change {"id": "item_0", "type": "file_change", "changes": [{"path": "SP/work/e12-den-patch/repo/denied-test.txt", "kind": "add"}], "status": "in_progress"}
- item: file_change {"id": "item_0", "type": "file_change", "changes": [{"path": "SP/work/e12-den-patch/repo/denied-test.txt", "kind": "add"}], "status": "failed"}
+ msg: CANARY-AGENTS-MD.
+ item: file_change {"id": "item_1", "type": "file_change", "changes": [{"path": "SP/work/e12-den-patch/repo/denied-test.txt", "kind": "add"}], "status": "in_progress"}
+ item: file_change {"id": "item_1", "type": "file_change", "changes": [{"path": "SP/work/e12-den-patch/repo/denied-test.txt", "kind": "add"}], "status": "failed"}
  msg: Failed to write file SP/work/e12-den-patch/repo/denied-test.txt
   file created: no; stderr: 0 line(s) with Operation not permitted
 -- invalid output: the worker is asked for prose, the harness expects JSON in -o:
 e12-invalid rc=0
   -o file content is JSON: no; result.json present: no
 -- timeout (wall clock 25 s, shell tool sleeps 60 s):
-REPO/spike/codex/part-b-e12.sh: line 40: 56234 Alarm clock: 14         perl -e 'alarm 25; exec @ARGV' "$R" --step "$s" --port 8961 --env CODEX_CA_CERTIFICATE=$CA --mach $LI --extra-sb "$C/shell.sb" --extra-sb "$C/kill.sb" -- exec --json --skip-git-repo-check -s danger-full-access -c 'approval_policy="never"' -m gpt-5.6-luna -c model_reasoning_effort=low "${HYG[@]}" --disable multi_agent < "$SP/p-sleep.txt" > "$SP/$id.out" 2> "$SP/$id.err"
-  rc=142 secs=26 events=['thread.started', 'turn.started', 'item.completed', 'item.started']
+REPO/spike/codex/part-b-e12.sh: line 43: 72183 Alarm clock: 14         perl -e 'setpgrp(0,0); alarm 25; exec @ARGV' "$R" --step "$s" --port 8961 --env CODEX_CA_CERTIFICATE=$CA --mach $LI --extra-sb "$C/shell.sb" --extra-sb "$C/kill.sb" -- exec --json --skip-git-repo-check -s danger-full-access -c 'approval_policy="never"' -m gpt-5.6-luna -c model_reasoning_effort=low "${HYG[@]}" --disable multi_agent < "$SP/p-sleep.txt" > "$SP/$id.out" 2> "$SP/$id.err"
+  rc=142 secs=25 events=['thread.started', 'turn.started', 'item.started']
 
 ===== part-b-s1s5.sh output (log written by the codex shell tool) =====
 S1-ssh rc=1 denied

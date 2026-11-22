@@ -16,7 +16,7 @@ for c in "429 usage" "429 rate" "500 plain" "503 plain" "401 plain" "400 plain" 
   echo "$r mock=$st/$kd secs=$(( $(date +%s)-t0 )) mock-requests=$(grep -c '"n"' "$SP/mock.log") events=$(types "$SP/$id.out")"
   python3 -I "$C/summarize.py" "$SP/$id.out" | grep ' err:' | tail -1 | cut -c1-170; done
 echo "-- unknown model (real backend):"
-id=e12-model; rm -rf "$SP/work/$id"; step "$id"; gwstart 8961 chatgpt.com; trap 'gwstop 8961' EXIT
+id=e12-model; rm -rf "$SP/work/$id"; step "$id"; gwstart 8961 chatgpt.com; trap gwcleanup EXIT
 runx "$id" "$SP/p-pong.txt" 8961 exec --json --skip-git-repo-check -s read-only -m no-such-model-xyz "${HYG[@]}"; python3 -I "$C/summarize.py" "$SP/$id.out" | grep ' err:' | tail -1 | cut -c1-200
 echo "-- unsupported effort for the model (real backend):"
 id=e12-effort; rm -rf "$SP/work/$id"; step "$id"
@@ -37,5 +37,9 @@ runx "$id" "$SP/p-pong.txt" 8961 "${EX[@]}" -o "$s/io/out/last.txt"; echo "  -o 
 echo "-- timeout (wall clock 25 s, shell tool sleeps 60 s):"
 id=e12-timeout; rm -rf "$SP/work/$id"; step "$id"; s=$SP/work/$id
 echo "Use your shell tool to run exactly: sh -c 'sleep 60' LSFMARK_E12T_$$ ; then reply with the single word: finished" > "$SP/p-sleep.txt"
-t0=$(date +%s); perl -e 'alarm 25; exec @ARGV' "$R" --step "$s" --port 8961 --env CODEX_CA_CERTIFICATE=$CA --mach $LI --extra-sb "$C/shell.sb" --extra-sb "$C/kill.sb" -- exec --json --skip-git-repo-check -s danger-full-access -c 'approval_policy="never"' -m gpt-5.6-luna -c model_reasoning_effort=low "${HYG[@]}" --disable multi_agent < "$SP/p-sleep.txt" > "$SP/$id.out" 2> "$SP/$id.err"
-echo "  rc=$? secs=$(( $(date +%s)-t0 )) events=$(types "$SP/$id.out")"; pkill -f "LSFMARK_E12T_$$" 2>/dev/null   # kills only this run's marked sh; a stray `sleep 60` child ends by itself after 60 s
+desc(){ local out=$1; for p in $(ps -axo pid=,ppid= | awk -v r="$1" '$2==r{print $1}'); do out="$out $(desc $p)"; done; echo $out; }
+t0=$(date +%s); perl -e 'setpgrp(0,0); alarm 25; exec @ARGV' "$R" --step "$s" --port 8961 --env CODEX_CA_CERTIFICATE=$CA --mach $LI --extra-sb "$C/shell.sb" --extra-sb "$C/kill.sb" -- exec --json --skip-git-repo-check -s danger-full-access -c 'approval_policy="never"' -m gpt-5.6-luna -c model_reasoning_effort=low "${HYG[@]}" --disable multi_agent < "$SP/p-sleep.txt" > "$SP/$id.out" 2> "$SP/$id.err" &
+root=$!; sleep 18; tracked=$(desc "$root")   # snapshot of the launcher's descendants (CLI, helper, tool shell) before the alarm fires
+wait $root; echo "  rc=$? secs=$(( $(date +%s)-t0 )) events=$(types "$SP/$id.out")"
+for p in $tracked; do g=$(ps -o pgid= -p "$p" 2>/dev/null | tr -d ' '); [ -n "$g" ] && kill -TERM -- "-$g" 2>/dev/null; kill -TERM "$p" 2>/dev/null; done   # only pids and groups derived from this run; a stray `sleep 60` ends by itself
+pkill -f "LSFMARK_E12T_$$" 2>/dev/null

@@ -7,11 +7,11 @@ NODEBIN=$(dirname "$(readlink -f "$(command -v node)")"); NODEROOT=$(dirname "$N
 gwstart 8972 chatgpt.com
 id=s1s5; rm -rf "$SP/work/$id" "$SP/work/s1s5-other"; step "$id"; step s1s5-other; s=$SP/work/$id; cp "$C/s1s5.sh" "$s/tmp/s1s5.sh"
 sleep 400 & OPID=$!
+trap 'kill $OPID 2>/dev/null; gwcleanup' EXIT
 cat > "$SP/p-s1s5.txt" <<E2
 Use your shell tool to run exactly this one command: sh $s/tmp/s1s5.sh $s $HOME $SP/work/s1s5-other $OPID 8961 $NODEBIN
 Then reply with the single word: finished
 E2
 XENV=(--env OWNP=8972 --node-root "$NODEROOT")
 XSB="$C/shell.sb $C/kill.sb $C/s5.sb" runx "$id" "$SP/p-s1s5.txt" 8972 exec --json --skip-git-repo-check -s danger-full-access -c 'approval_policy="never"' -m gpt-5.6-luna -c model_reasoning_effort=low "${HYG[@]}" --disable multi_agent --ignore-user-config --ignore-rules -c project_doc_max_bytes=0 -c skills.include_instructions=false
-kill $OPID 2>/dev/null; gwstop 8972
 sed "s#$SP#SP#g; s#$HOME#HOME#g" "$s/io/out/s1s5.log"
