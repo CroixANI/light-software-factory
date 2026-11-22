@@ -15,5 +15,5 @@ echo "url_saved_bytes=$(wc -c < "$step/tmp/login.url") agy_alive=$(kill -0 $pid 
 for i in $(seq 1 "$waits"); do kill -0 $pid 2>/dev/null || break; sleep 1; done
 kill -0 $pid 2>/dev/null && { kill $pid; echo "agy_killed_after_wait"; }
 wait $pid 2>/dev/null; echo "agy_rc=$?"
-for f in out err; do echo "--- $f (token-like strings and URL redacted)"; sed -E 's/(ya29\.|1\/\/)[A-Za-z0-9._-]+/<r>/g; s#https://accounts[^ ]*#<url>#' "$step/tmp/login.$f" | head -c 1200; done
+for f in out err; do echo "--- $f (token-like strings and URL redacted)"; sed -E 's/(ya29\.|1\/\/|eyJ)[A-Za-z0-9._-]+/<r>/g; s/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+/<email>/g; s#https://accounts[^ ]*#<url>#' "$step/tmp/login.$f" | head -c 1200; done
 rm -f "$fifo"

@@ -16,6 +16,10 @@ for e in ${envx[@]+"${envx[@]}"}; do case "${e%%=*}" in HOME|PATH|HTTPS_PROXY|HT
 for v in "$step" ${mach[@]+"${mach[@]}"}; do [[ "$v" =~ ^[A-Za-z0-9._/-]+$ ]] || { echo "refusing unsafe value: $v" >&2; exit 2; }; done
 step="$(cd "$step" && pwd -P)"
 agy="$(readlink -f "$(command -v agy)")"
+[[ "$agy" =~ ^/[A-Za-z0-9._/-]+$ ]] && [ -f "$agy" ] || { echo "unsafe agy path: $agy" >&2; exit 2; }
+if [ -n "$rotok" ]; then [ -f "$rotok" ] || { echo "--ro-token: no such file" >&2; exit 2; }; rotok="$(cd "$(dirname "$rotok")" && pwd -P)/$(basename "$rotok")"
+  [[ "$rotok" =~ ^/[A-Za-z0-9._/-]+$ ]] && case "$rotok" in "$step"/home/*) ;; *) echo "--ro-token must lie under <step>/home" >&2; exit 2;; esac; fi
+if [ "$unsb" = 1 ]; then case " ${envx[*]-} " in *" GEMINI_API_KEY="*) ;; *) echo "--unsandboxed needs a fake GEMINI_API_KEY in --env (otherwise agy opens a browser login)" >&2; exit 2;; esac; fi
 prof="$step/tmp/lsf-agy.sb"
 { cat "$sb/base.sb"
   p="$(dirname "$agy")"; while [ "$p" != / ]; do echo "(allow file-read-metadata (literal \"$p\"))"; p="$(dirname "$p")"; done
