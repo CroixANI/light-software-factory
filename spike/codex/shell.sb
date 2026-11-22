@@ -1,0 +1,3 @@
+;; Spike 3.3: builder-like extras so codex's shell tool can run (shell + a few coreutils) and write repo/.
+(allow process-exec (literal "/bin/sh") (literal "/bin/bash") (literal "/bin/zsh") (literal "/bin/echo") (literal "/usr/bin/id") (literal "/bin/cat") (literal "/bin/ls") (literal "/usr/bin/env"))
+(allow file-write* (subpath (string-append (param "STEP") "/repo")))

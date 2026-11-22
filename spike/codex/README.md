@@ -1,0 +1,16 @@
+# codex spike, part A (task 3.3, issue #16)
+
+Throwaway. Runs `codex exec` under the starting Seatbelt profile (`../harness/sandbox/base.sb` + `codex.sb`) with an allowlist-only environment. Results and exact commands: [docs/spike/findings/codex.md](../../docs/spike/findings/codex.md).
+
+| File | What |
+|---|---|
+| `run-codex.sh` | launcher: builds the profile (`base.sb` + ancestor stat rules + `codex.sb` + extras + one `--mach` rule per service), empty environment + allowlist, `sandbox-exec` |
+| `codex.sb` | CLI exec grant, write-protection of the credential copy, `requirements.toml` and CA-bundle reads |
+| `shell.sb` | extras for the shell tool (`/bin/zsh`, `sh`, `bash`, a few coreutils; write to `repo/`) |
+| `lib.sh` | `step <id>` (fresh Step folder + 0400 copy of `~/.codex/auth.json` with a **dummy refresh token**), `step_nocred`, `plant` |
+| `part-a.sh` | re-runs E1-E5 (incl. the mutated-credential E2 runs) with fresh Steps and removes them on exit; its output is `logs-part-a.txt` |
+| `min-mach.sh` | greedy Mach allowlist minimisation (allow-default + deny mach-lookup + allowlist); a weaker proxy than the full profile |
+| `shell-probe.sh`, `summarize.py`, `hosts.py` | one shell-tool run summarised from `--json`; gateway-log host counter |
+| `mutate-auth.py` | credential copy with a dummy refresh token (modes `dummy-refresh`, `old-last-refresh`, `bad-access-token`, `both`) and `show-exp` (token lifetimes, no values); never touches the owner's real file |
+
+Needs: the owner's file login in `~/.codex/auth.json`, `codex`, `node` >= 22, a NEW scratch directory outside the repository (`SP`; `part-a.sh` refuses an existing directory it did not create). The credential copy is mode 0400 inside the Step folder; `part-a.sh` removes the Step folders on exit (other helpers do not: remove `$SP/work` yourself). It is never printed or committed.
