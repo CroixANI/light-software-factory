@@ -8,6 +8,6 @@ nohup perl -e 'sleep 600' LSFMARK_A >/dev/null 2>&1 </dev/null &
 perl -e 'use POSIX; POSIX::setsid(); exec "/usr/bin/perl","-e","sleep 600","LSFMARK_B"' >/dev/null 2>&1 </dev/null &
 # c) double fork (reparented to launchd)
 ( perl -e 'sleep 600' LSFMARK_C >/dev/null 2>&1 </dev/null & ) &
-# d) setsid + double fork + network probe against the Step's gateway port (logs ok/fail every second)
-perl -e 'use POSIX; use IO::Socket::INET; if(fork){exit} POSIX::setsid(); if(fork){exit} for(1..600){ my $s=IO::Socket::INET->new(PeerAddr=>"127.0.0.1",PeerPort=>$ENV{PROBEPORT},Timeout=>1); open(L,">>","$ENV{PROBET}/probe.log"); print L time()," ",($s?"connect-ok":"connect-fail"),"\n"; close L; sleep 1 }' LSFMARK_D >/dev/null 2>&1 </dev/null
+# d) setsid + double fork + network probe against the Step's gateway port (CONNECT probe against the gateway every second: only a `reply:HTTP/1.1 200` counts as network; a bare connect() succeeds even with the port closed when run under the desktop app)
+perl -e 'use POSIX; use IO::Socket::INET; if(fork){exit} POSIX::setsid(); if(fork){exit} for(1..600){ my $so=IO::Socket::INET->new(PeerAddr=>"127.0.0.1",PeerPort=>$ENV{PROBEPORT},Timeout=>1); my $r="connect-fail"; if($so){ print $so "CONNECT example.com:443 HTTP/1.1\r\nHost: example.com:443\r\n\r\n"; $so->timeout(2); my $l=<$so>; $r=defined $l ? "reply:".substr($l,0,20) : "no-reply"; } open(L,">>","$ENV{PROBET}/probe.log"); print L time()," $r\n"; close L; sleep 1 }' LSFMARK_D >/dev/null 2>&1 </dev/null
 sleep 60
