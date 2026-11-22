@@ -26,7 +26,7 @@ mockstart 8913 "$SP/sc-hang.json"; stepnew e12-hang; s=$(date +%s); runa e12-han
 # --- invalid output: --json-schema and the model never calls finish; missing result.json
 echo '[{"text":"no tool call"},{"text":"no tool call"},{"text":"no tool call"},{"text":"no tool call"},{"text":"no tool call"}]' > "$SP/sc-nofinish.json"
 mockstart 8913 "$SP/sc-nofinish.json"; stepnew e12-nofinish; cp "$H/fake-cli/result.schema.json" "$SP/work/e12-nofinish/io/in/"; runa e12-nofinish 8913 60 "$SP/p.txt" -- --output-format json --json-schema "$SP/work/e12-nofinish/io/in/result.schema.json" --model $MODEL; fields e12-nofinish; echo "  io/out files: $(ls "$SP/work/e12-nofinish/io/out" | wc -l | tr -d ' ')"; mockstop 8913
-# --- agy's own argument errors: unknown model, unsupported effort, empty prompt, no credential at all
+# --- agy's own argument/input errors: unknown model, empty stdin without -p, no credential at all
 stepnew e12-model; echo '[{"text":"x"}]' > "$SP/sc-x.json"; mockstart 8913 "$SP/sc-x.json"; runa e12-model 8913 30 "$SP/p.txt" -- --output-format json --model not-a-model; fields e12-model; echo "  mock requests: $(reqs 8913)"; mockstop 8913
 stepnew e12-empty; mockstart 8913 "$SP/sc-x.json"; runa e12-empty 8913 30 - -- --output-format json --model $MODEL; fields e12-empty; mockstop 8913
 stepnew e12-nocred; gwstart 8920 "oauth2.googleapis.com"   # no gateway env, no token: what does `agy -p` do when nobody is logged in? (login needs the browser: open is denied; the gateway allows only the OAuth host)

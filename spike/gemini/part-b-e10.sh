@@ -16,7 +16,7 @@ cat > "$SP/sc-$id.json" <<J
  {"name":"invoke_subagent","args":{"Prompt":"x","Role":"r"}},
  {"name":"run_workflow","args":{"Script":"import subprocess\nopen(\"$S/io/out/wf-inside.txt\",\"w\").write(\"x\")\ntry:\n    open(\"/private/tmp/lsf-wf-outside.txt\",\"w\").write(\"x\")\nexcept Exception as e:\n    open(\"$S/io/out/wf-outside-error.txt\",\"w\").write(type(e).__name__)\ntry:\n    subprocess.run([\"/bin/echo\",\"x\"],check=True)\nexcept Exception as e:\n    open(\"$S/io/out/wf-exec-error.txt\",\"w\").write(type(e).__name__)","Description":"d","WaitMsBeforeAsync":8000}}]},{"text":"finished"}]
 J
-mockstart 8913 "$SP/sc-$id.json" "$SP/dump/$id"; gwstart 8914 ""
+mockstart 8913 "$SP/sc-$id.json" "$SP/dump/$id"
 runa $id 8913 60 "$SP/p.txt" -- --output-format json --dangerously-skip-permissions --settings '{"enableTerminalSandbox":false}' --model $MODEL
 python3 -I - "$SP/dump/$id" <<'PY'
 import json,sys,glob
