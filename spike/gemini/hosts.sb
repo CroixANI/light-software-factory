@@ -1,0 +1,3 @@
+;; Added by spike 3.5, step 1: Go resolves "localhost" from /etc/hosts (agy's language server listens on localhost). Reason: "lookup localhost: no such host" without it.
+(allow file-read* (literal "/private/etc/hosts") (literal "/private/etc/resolv.conf") (literal "/private/etc/nsswitch.conf"))
+(allow file-read-metadata (literal "/etc") (literal "/private/etc"))

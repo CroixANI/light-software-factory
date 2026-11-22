@@ -1,0 +1,3 @@
+;; E5 finding: agy's terminal tool allocates a PTY for every command ("failed to create PTY: operation not permitted" without this).
+;; Minimal: these file rules alone suffice; `(allow pseudo-tty)` alone does not. Only needed in the builder shape (shell); the reviewer-readonly shape has no shell and so no PTY.
+(allow file-read* file-write* file-ioctl (literal "/dev/ptmx") (regex #"^/dev/ttys[0-9]+$"))

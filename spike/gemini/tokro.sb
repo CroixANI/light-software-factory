@@ -1,0 +1,3 @@
+;; E2: the credential is a read-only copy inside the Step. Later rule wins in SBPL, so this deny overrides the allow of base.sb for home/.
+;; The path is passed as -D TOKEN=<abs path> by run-agy.sh --ro-token.
+(deny file-write* (literal (param "TOKEN")))
