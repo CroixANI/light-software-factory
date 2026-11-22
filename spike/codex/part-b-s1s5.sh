@@ -7,7 +7,7 @@ NODEBIN=$(dirname "$(readlink -f "$(command -v node)")"); NODEROOT=$(dirname "$N
 gwstart 8972 chatgpt.com
 id=s1s5; rm -rf "$SP/work/$id" "$SP/work/s1s5-other"; step "$id"; step s1s5-other; s=$SP/work/$id; cp "$C/s1s5.sh" "$s/tmp/s1s5.sh"
 sleep 400 & OPID=$!
-trap 'kill $OPID 2>/dev/null; gwcleanup' EXIT
+trap 'kill $OPID 2>/dev/null; /bin/launchctl remove lsf.spike 2>/dev/null; gwcleanup' EXIT   # launchctl remove runs OUTSIDE the sandbox and only removes the label s1s5.sh submits (a leftover job if the profile ever failed to block `launchctl submit`)
 cat > "$SP/p-s1s5.txt" <<E2
 Use your shell tool to run exactly this one command: sh $s/tmp/s1s5.sh $s $HOME $SP/work/s1s5-other $OPID 8961 $NODEBIN
 Then reply with the single word: finished

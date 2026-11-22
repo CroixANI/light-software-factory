@@ -33,6 +33,7 @@ PY
 BASE=(exec --json --skip-git-repo-check -s danger-full-access -c 'approval_policy="never"' -m gpt-5.6-luna "${HYG[@]}")
 run(){ id=$1; lbl=$2; shift 2; rm -rf "$SP/work/$id"; step "$id"; plant_all "$id"; XSB="$LSF_CODEX_DIR/shell.sb"; runx "$id" "$SP/p-pong.txt" 8961 "${BASE[@]}" "$@" >/dev/null; report "$id" "$lbl"; }
 run e8-def   "V0 default"
+echo "   V0 stderr: untrusted-project warning lines = $(grep -c 'Untrusted project-local configuration is disabled' "$SP/e8-def.err")"
 run e8-ign   "V1 --ignore-user-config --ignore-rules" --ignore-user-config --ignore-rules
 run e8-pdoc  "V2 V1 + -c project_doc_max_bytes=0" --ignore-user-config --ignore-rules -c project_doc_max_bytes=0
 run e8-skinc "V4 V2 + -c skills.include_instructions=false" --ignore-user-config --ignore-rules -c project_doc_max_bytes=0 -c skills.include_instructions=false
