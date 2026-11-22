@@ -15,11 +15,17 @@ for e in ${envx[@]+"${envx[@]}"}; do case "${e%%=*}" in HOME|PATH|HTTPS_PROXY|HT
 [ -n "$step" ] && [[ "$port" =~ ^[0-9]{1,5}$ ]] || { echo "need --step and numeric --port" >&2; exit 2; }
 for v in "$step" ${mach[@]+"${mach[@]}"}; do [[ "$v" =~ ^[A-Za-z0-9._/-]+$ ]] || { echo "refusing unsafe value: $v" >&2; exit 2; }; done
 step="$(cd "$step" && pwd -P)"
+[[ "$step" =~ ^/[A-Za-z0-9._/-]+$ ]] || { echo "unsafe resolved step path" >&2; exit 2; }
 agy="$(readlink -f "$(command -v agy)")"
 [[ "$agy" =~ ^/[A-Za-z0-9._/-]+$ ]] && [ -f "$agy" ] || { echo "unsafe agy path: $agy" >&2; exit 2; }
 if [ -n "$rotok" ]; then [ -f "$rotok" ] || { echo "--ro-token: no such file" >&2; exit 2; }; rotok="$(cd "$(dirname "$rotok")" && pwd -P)/$(basename "$rotok")"
-  [[ "$rotok" =~ ^/[A-Za-z0-9._/-]+$ ]] && case "$rotok" in "$step"/home/*) ;; *) echo "--ro-token must lie under <step>/home" >&2; exit 2;; esac; fi
-if [ "$unsb" = 1 ]; then case " ${envx[*]-} " in *" GEMINI_API_KEY="*) ;; *) echo "--unsandboxed needs a fake GEMINI_API_KEY in --env (otherwise agy opens a browser login)" >&2; exit 2;; esac; fi
+  [[ "$rotok" =~ ^/[A-Za-z0-9._/-]+$ ]] || { echo "unsafe --ro-token path" >&2; exit 2; }
+  [ "$rotok" = "$step/home/.gemini/antigravity-cli/antigravity-oauth-token" ] || { echo "--ro-token must be <step>/home/.gemini/antigravity-cli/antigravity-oauth-token" >&2; exit 2; }; fi
+if [ "$unsb" = 1 ]; then
+  case " ${envx[*]-} " in *" GEMINI_API_KEY="*) ;; *) echo "--unsandboxed needs a fake GEMINI_API_KEY in --env (otherwise agy opens a browser login)" >&2; exit 2;; esac
+  [ ! -e "$step/home/.gemini/antigravity-cli/antigravity-oauth-token" ] || { echo "--unsandboxed refused: this Step holds a real token file" >&2; exit 2; }
+  case " $* " in *'"modelProvider":"gemini"'*) ;; *) echo "--unsandboxed needs --settings '{\"modelProvider\":\"gemini\"}' so the fake key is used" >&2; exit 2;; esac
+fi
 prof="$step/tmp/lsf-agy.sb"
 { cat "$sb/base.sb"
   p="$(dirname "$agy")"; while [ "$p" != / ]; do echo "(allow file-read-metadata (literal \"$p\"))"; p="$(dirname "$p")"; done

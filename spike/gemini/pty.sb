@@ -1,4 +1,4 @@
 ;; E5 finding: agy's terminal tool allocates a PTY for every command ("failed to create PTY: operation not permitted" without this).
-;; Minimal: these file rules alone suffice; `(allow pseudo-tty)` alone does not. COST: the regex covers every pseudo-terminal of the machine, including the owner's own terminals (owner-owned, mode 620): a builder worker could read or write another terminal. Not narrowed in the spike (the Step cannot know its ttys in advance); open for the adapter.
+;; Measured: these file rules together suffice; `(allow pseudo-tty)` alone does not (each of read/write/ioctl was not tested separately). COST: the regex covers every pseudo-terminal of the machine, including the owner's own terminals (owner-owned, mode 620): a builder worker could read or write another terminal. Not narrowed in the spike (the Step cannot know its ttys in advance); open for the adapter.
 ;; Only needed in the builder shape (shell); the reviewer-readonly shape has no shell and so no PTY.
 (allow file-read* file-write* file-ioctl (literal "/dev/ptmx") (regex #"^/dev/ttys[0-9]+$"))
