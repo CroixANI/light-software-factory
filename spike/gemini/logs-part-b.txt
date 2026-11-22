@@ -1,0 +1,339 @@
+##### part-b-e6.sh
+--- E6/E7 a: prompt on stdin (no -p), --output-format json; mock API usage = prompt 100, candidates 7, cached 40, thoughts 5
+e6-json rc=0
+{"status":"SUCCESS","response":"mock says hi\n","duration_seconds":0.029796,"num_turns":1,"usage":{"input_tokens":60,"output_tokens":12,"thinking_tokens":5,"cache_read_tokens":40,"total_tokens":72}}
+(note, checked by hand, output not kept: -p takes the prompt as its VALUE: '-p' followed by a flag gives '-p took --output-format as its prompt' (rc 2), '-p' last gives 'flag needs an argument: -p' (rc 2); the prompt goes on stdin WITHOUT -p; -p "" gave 'empty prompt', rc 1: manual; e12-empty is a different case, an empty stdin WITHOUT -p)
+--- b: default text output
+e6-text rc=0
+stdout: mock says hi
+--- c: stream-json: event names and the keys of the last event
+e6-stream rc=0
+  events: ['init', 'step_update', 'step_update', 'step_update', 'result']
+  init keys: ['cwd', 'model', 'permission_mode', 'tools'] tools declared in init: 60
+  result keys: ['conversation_id', 'duration_seconds', 'num_turns', 'response', 'status', 'usage'] usage: {'input_tokens': 60, 'output_tokens': 12, 'thinking_tokens': 5, 'cache_read_tokens': 40, 'total_tokens': 72}
+--- d: --effort on a model the CLI does not know / an invalid level (validated by the CLI before any request)
+e6-eff-unsup rc=1
+  invalid model selection (--model "mock-model" --effort "low"): --effort is not supported for model "mock-model"
+e6-eff-bad rc=1
+  invalid model selection (--model "mock-model" --effort "ultra"): invalid --effort "ultra" (valid: low, medium, high, xhigh, max)
+--- d2: real model ids served by the mock (the CLI believes it talks to a known model family): the tools declared to the model, and what --model/--effort do to the request
+e6-m-gemini-3-8-flash-low rc=0
+  [gemini-3.8-flash-low ] {"maxOutputTokens": 65536, "thinkingConfig": {"includeThoughts": true, "thinkingLevel": "LOW"}}; declared tools: 14; list/search tool among them: 0
+e6-m-gemini-3-8-flash rc=0
+  [gemini-3.8-flash ] {"maxOutputTokens": 65536, "thinkingConfig": {"includeThoughts": true, "thinkingLevel": "MEDIUM"}}; declared tools: 14; list/search tool among them: 0
+e6-m-gemini-3-8-flash--effort-high rc=0
+  [gemini-3.8-flash --effort high] {"maxOutputTokens": 65536, "thinkingConfig": {"includeThoughts": true, "thinkingLevel": "HIGH"}}; declared tools: 14; list/search tool among them: 0
+e6-m-gemini-3-8-flash--effort-low rc=0
+  [gemini-3.8-flash --effort low] {"maxOutputTokens": 65536, "thinkingConfig": {"includeThoughts": true, "thinkingLevel": "LOW"}}; declared tools: 14; list/search tool among them: 0
+e6-m-gemini-3-8-flash-low--effort-high rc=0
+  [gemini-3.8-flash-low --effort high] {"maxOutputTokens": 65536, "thinkingConfig": {"includeThoughts": true, "thinkingLevel": "HIGH"}}; declared tools: 14; list/search tool among them: 0
+--- e: --json-schema with the common envelope (schema file inside the Step): the model calls finish(args)
+e6-schema-ok rc=0
+  finish(ok): status=SUCCESS turns=1 structured_output=present
+  validate.py on structured_output: VALID
+  what the model is shown as the finish() schema: schema={} additionalProperties=False allOf=False status={'enum': ['done', 'blocked', 'needs_context']}
+e6-schema-bad rc=0
+  finish(bad): status=SUCCESS turns=4 structured_output=ABSENT
+e6-schema-none rc=0
+  finish(none): status=SUCCESS turns=4 structured_output=ABSENT
+  tool error the model gets for the invalid finish call: user ['functionResponse']: '{"name": "finish", "response": {"error": "Encountered error in tool validation: invalid arguments:\\n- at \'/status\': value must be one of \'done\', \'blocked\', \'needs_context\'"}}'
+--- exit codes: see the rc= lines of this script and of part-b-e12.sh (the summary in the findings is written from them; the empty -p prompt rc 1 is the manual run above)
+
+##### part-b-perm.sh
+V1 no flag, no rules
+v1 rc=0
+  status=SUCCESS response='' denied_actions=['write_file']
+  stderr: jetski: no output produced — a tool required the "write_file" permission that headless mode cannot prompt for, so it was auto-denied. Add an allow-rule under permissions.allow in settings.json (e.g. write_file(<target>)). Alternat
+  tool results: [('run ended at the first denied call: no second model request', '')]
+  files: a.txt=False b.txt=False
+V2 no flag, allow write_file(<exact io/out/a.txt>)
+v2 rc=0
+  status=SUCCESS response='' denied_actions=['write_file']
+  stderr: jetski: no output produced — a tool required the "write_file" permission that headless mode cannot prompt for, so it was auto-denied. Add an allow-rule under permissions.allow in settings.json (e.g. write_file(<target>)). Alternat
+  tool results: [('run ended at the first denied call: no second model request', '')]
+  files: a.txt=True b.txt=False
+V3a no flag, allow with * globs (write_file(STEP/io/out/*), command(echo *))
+v3a rc=0
+  status=SUCCESS response='' denied_actions=['write_file']
+  stderr: jetski: no output produced — a tool required the "write_file" permission that headless mode cannot prompt for, so it was auto-denied. Add an allow-rule under permissions.allow in settings.json (e.g. write_file(<target>)). Alternat
+  tool results: [('run ended at the first denied call: no second model request', '')]
+  files: a.txt=False b.txt=False
+V3b no flag, allow by directory / prefix (write_file(STEP/io/out), command(echo))
+v3b rc=0
+  status=SUCCESS response='' denied_actions=['write_file']
+  stderr: jetski: no output produced — a tool required the "write_file" permission that headless mode cannot prompt for, so it was auto-denied. Add an allow-rule under permissions.allow in settings.json (e.g. write_file(<target>)). Alternat
+  tool results: [('run ended at the first denied call: no second model request', '')]
+  files: a.txt=True b.txt=False
+V4 no flag, allow dir + deny exact file (deny must win)
+v4 rc=0
+  status=SUCCESS response='' denied_actions=['write_file']
+  stderr: jetski: no output produced — a tool required the "write_file" permission that headless mode cannot prompt for, so it was auto-denied. Add an allow-rule under permissions.allow in settings.json (e.g. write_file(<target>)). Alternat
+  tool results: [('run ended at the first denied call: no second model request', '')]
+  files: a.txt=False b.txt=False
+V5 --mode accept-edits, no rules
+v5 rc=0
+  status=SUCCESS response='' denied_actions=['write_file']
+  stderr: jetski: no output produced — a tool required the "write_file" permission that headless mode cannot prompt for, so it was auto-denied. Add an allow-rule under permissions.allow in settings.json (e.g. write_file(<target>)). Alternat
+  tool results: [('run ended at the first denied call: no second model request', '')]
+  files: a.txt=False b.txt=False
+V6a --dangerously-skip-permissions, deny with * globs
+v6a rc=0
+  status=SUCCESS response='finished\n' denied_actions=[]
+  stderr: 
+  tool results: [('write_file', 'ok'), ('write_file', 'ok'), ('run_command', 'ok'), ('read_file', 'error:{"error": "Encountered error in tool execution: failed to access file:')]
+  files: a.txt=True b.txt=True
+V6b --dangerously-skip-permissions, deny by directory / prefix (write_file(STEP/repo), command(echo))
+v6b rc=0
+  status=SUCCESS response='finished\n' denied_actions=[]
+  stderr: 
+  tool results: [('write_file', 'ok'), ('write_file', 'denied'), ('run_command', 'denied'), ('read_file', 'error:{"error": "Encountered error in tool execution: failed to access file:')]
+  files: a.txt=True b.txt=False
+V7 --dangerously-skip-permissions, no rules
+v7 rc=0
+  status=SUCCESS response='finished\n' denied_actions=[]
+  stderr: 
+  tool results: [('write_file', 'ok'), ('write_file', 'ok'), ('run_command', 'ok'), ('read_file', 'error:{"error": "Encountered error in tool execution: failed to access file:')]
+  files: a.txt=True b.txt=True
+C1 no flag, allow command(touch) (prefix) for touch <file>
+c1 rc=0
+  status=SUCCESS denied_actions=['command'] first call ran (t.txt)=True second call ran (mkdir d)=False
+C2 no flag, allow command(touch *) (glob)
+c2 rc=0
+  status=SUCCESS denied_actions=['command'] first call ran (t.txt)=False second call ran (mkdir d)=False
+C3 no flag, allow the exact command line
+c3 rc=0
+  status=SUCCESS denied_actions=['command'] first call ran (t.txt)=True second call ran (mkdir d)=False
+C4 no flag, allow command(touch) and command(mkdir) (both prefixes)
+c4 rc=0
+  status=SUCCESS denied_actions=[] first call ran (t.txt)=True second call ran (mkdir d)=True
+C5 no flag, allow command(echo) (prefix) for a command line with a redirect (echo hi > file)
+c5 rc=0
+  status=SUCCESS denied_actions=['command'] first call ran (t.txt)=False second call ran (mkdir d)=False
+C6 no flag, allow the exact command line with the redirect
+c6 rc=0
+  status=SUCCESS denied_actions=['command'] first call ran (t.txt)=True second call ran (mkdir d)=False
+
+##### part-b-e8.sh
+V0 default flags, planted files in home/ and repo/
+e8-v0 rc=0
+  first request: canaries: {"CANARY-AGENTS-MD": 1, "CANARY-GEMINI-MD": 1, "CANARY-HOME-AGENTS-MD": 1, "CANARY-HOME-CFG-SKILL": 2, "CANARY-HOME-GEMINI-MD": 1, "CANARY-HOME-SKILL": 2, "CANARY-REPO-AGENTS-RULE": 1, "CANARY-REPO-AGENTS-SKILL": 2}
+  second request (after read_file src/calc.py): canaries: {"CANARY-AGENTS-MD": 1, "CANARY-GEMINI-MD": 1, "CANARY-HOME-AGENTS-MD": 1, "CANARY-HOME-CFG-SKILL": 2, "CANARY-HOME-GEMINI-MD": 1, "CANARY-HOME-SKILL": 2, "CANARY-REPO-AGENTS-RULE": 1, "CANARY-REPO-AGENTS-SKILL": 2}
+  tool results: [('read_file', 'ok'), ('run_command', 'ok'), ('run_command', 'denied-by-rule'), ('run_command', 'ok'), ('run_command', 'ok')]
+  marker files in tmp/: hook-home-ran hook-repo-ran mcp-home-ran mcp-repo-ran 
+  status=SUCCESS denied=[]
+V1 --disable-slash-commands
+e8-v1 rc=0
+  first request: canaries: {"CANARY-AGENTS-MD": 1, "CANARY-GEMINI-MD": 1, "CANARY-HOME-AGENTS-MD": 1, "CANARY-HOME-CFG-SKILL": 2, "CANARY-HOME-GEMINI-MD": 1, "CANARY-HOME-SKILL": 2, "CANARY-REPO-AGENTS-RULE": 1, "CANARY-REPO-AGENTS-SKILL": 2}
+  second request (after read_file src/calc.py): canaries: {"CANARY-AGENTS-MD": 1, "CANARY-GEMINI-MD": 1, "CANARY-HOME-AGENTS-MD": 1, "CANARY-HOME-CFG-SKILL": 2, "CANARY-HOME-GEMINI-MD": 1, "CANARY-HOME-SKILL": 2, "CANARY-REPO-AGENTS-RULE": 1, "CANARY-REPO-AGENTS-SKILL": 2}
+  tool results: [('read_file', 'ok'), ('run_command', 'ok'), ('run_command', 'denied-by-rule'), ('run_command', 'ok'), ('run_command', 'ok')]
+  marker files in tmp/: hook-home-ran hook-repo-ran mcp-home-ran mcp-repo-ran 
+  status=SUCCESS denied=[]
+V2 excluded from the copy (home/.gemini emptied; repo has none of the listed files), default flags
+e8-v2 rc=0
+  first request: canaries: {}
+  second request (after read_file src/calc.py): canaries: {}
+  tool results: [('read_file', 'ok'), ('run_command', 'ok'), ('run_command', 'ok'), ('run_command', 'ok'), ('run_command', 'ok')]
+  marker files in tmp/: 
+  status=SUCCESS denied=[]
+V3 settings workspaceTrust:true (a key name seen in the binary; --settings rejects it)
+e8-v3 rc=1
+  no model request made; stderr: Error: --settings: unknown setting "workspaceTrust"
+V4 settings workspaceTrust:false
+e8-v4 rc=1
+  no model request made; stderr: Error: --settings: unknown setting "workspaceTrust"
+
+##### part-b-e9.sh
+e9-c1 rc=0
+call 1: {"status":"SUCCESS","response":"needs context\n","duration_seconds":0.046148,"num_turns":1,"usage":{"input_tokens":22,"output_tokens":6,"thinking_tokens":0,"cache_read_tokens":0,"total_tokens":28}}
+call 1 result.json: {"schema":"fake-result/1","status":"needs_context","summary":"need more","role_shape":"builder","needs_context":[{"kind":"file","ref":"io/in/more.txt","why":"missing detail"}]}
+VALID
+marker in call-1 calc.py: 1
+state left in home/ after call 1 (names, depth 3):
+.
+.gemini
+.gemini/antigravity-cli
+.gemini/antigravity-cli/brain
+.gemini/antigravity-cli/builtin
+.gemini/antigravity-cli/cache
+.gemini/antigravity-cli/conversation_summaries.db
+.gemini/antigravity-cli/conversations
+.gemini/antigravity-cli/crashes
+.gemini/antigravity-cli/implicit
+.gemini/antigravity-cli/installation_id
+.gemini/antigravity-cli/jetbox_summaries_proto.pb
+.gemini/antigravity-cli/jetski_state.pbtxt
+.gemini/antigravity-cli/log
+.gemini/antigravity-cli/presence
+.gemini/config
+.gemini/config/.migrated
+.gemini/config/config.json
+.gemini/config/mcp_config.json
+.gemini/config/projects
+tmp/ after call 1: lsf-agy.sb 
+e9-c2 rc=0
+call 2: {"status":"SUCCESS","response":"done\n","duration_seconds":0.04079,"num_turns":1,"usage":{"input_tokens":22,"output_tokens":6,"thinking_tokens":0,"cache_read_tokens":0,"total_tokens":28}}
+VALID
+status in call-2 result: done
+call-2 request 1: contents: 1 bytes: 39726; marker strings in all call-2 requests: 0
+call-2 read of more.txt reached the model: 1
+marker in call-2 calc.py: 0
+e9-2b-plain rc=0
+2b-plain: contents in request 1 = contents: 1 ; marker strings = 0
+e9-2b-continue rc=0
+2b-continue: contents in request 1 = contents: 1 ; marker strings = 0
+e9-2c rc=0
+2c (same path+home, --continue): contents in request 1 = contents: 6 ; marker strings = 1
+
+##### part-b-e10.sh
+e10 rc=0
+  model requests made: 3 (one per scripted turn; invoke_subagent adds its own)
+  run_command echo     ok: :28:45Z Command failed to run: failed to create PTY: operation not permitted.  No output from the command.
+  read_file calc.py    ok: :28:45Z Showing lines 1-2 of 2 1: def add(a, b): 2:     return a + b
+  read_file dir src    ERROR Encountered error in tool execution: path is a directory, not a file
+  write_file io/out    ok: :28:45Z Created file.
+  write_file repo/     ERROR Encountered error in tool execution: open <step>/repo/r.txt: operation not permitted
+  edit_file repo       ERROR Encountered error in tool execution: open <step>/repo/src/calc.py: operation not permitted
+  search_web           ERROR Encountered error in tool execution: proto: syntax error (line 1:1): unexpected token [
+  invoke_subagent      ERROR Encountered error in tool validation: invalid arguments: - missing property 'TypeName'
+  run_workflow         ERROR ools). Install the Xcode Command Line Tools (xcode-select --install), or Python from https://www.python.org/downloads/ or Homebrew
+repo/src/calc.py unchanged: yes
+io/out: r.txt 
+run_workflow (model-supplied Python script run by the CLI; reviewer-readonly profile): wrote inside io/out: no; write outside the Step: not created (); exec of /bin/echo from the script: no error recorded
+tools declared to the model (request 1): tools: read_file run_command manage_task send_message schedule invoke_subagent define_subagent manage_subagents write_file edit_file search_web run_workflow swarm ask_question
+e10-init rc=0
+stream-json init lists 60 tool names, the model request declares 14; init-only names: ask_custom_permission ask_permission browser_click_element browser_drag_pixel_to_pixel browser_get_dom browser_get_network_request browser_input browser_list_network_requests browser_mouse_down browser_mouse_up browser_move_mouse browser_press_key browser_refresh_page browser_resize_window browser_scroll browser_scroll_dom browser_select_option browser_subagent call_mcp_tool capture_browser_console_logs capture_browser_screenshot click_browser_pixel command_status delete_knowledge execute_browser_javascript find_by_name finish generate_image grep_search list_browser_pages list_dir list_permissions list_plugin_accounts list_resources manage_inbox multi_replace_file_content notebook_edit notebook_execution open_browser_url read_browser_page read_resource read_url_content replace_file_content search_marketplace sed_file send_command_input view_file wait wait_5_seconds write_to_file
+declared to the model but NOT in init.tools (init is not a superset): read_file write_file edit_file swarm
+
+##### part-b-e11.sh
+process tree before the kill (pid ppid pgid sid-leader?, marker or binary name):
+  90238 90187 90238 tty=?? agy --output-format
+  90274 90272 90274 tty=?? perl -e
+  90279 1 90278 tty=?? perl -e
+  90272 90238 90272 tty=ttys005 sh e11-spawn.sh
+  90273 90272 90272 tty=ttys005 perl -e
+  90277 1 90272 tty=ttys005 perl -e
+probe lines before the kill: 40
+tracked pids: 90238 90272 90274 90273 90280 | groups: 90238 90272 90274 
+marker scan before kill:
+90274 90272 90274 /usr/bin/perl -e sleep 600 LSFMARK_90187_B
+90279     1 90278 perl -e use POSIX; use IO::Socket::INET; $SIG{PIPE}="IGNORE"; 
+90273 90272 90272 perl -e sleep 600 LSFMARK_90187_A
+90277     1 90272 perl -e sleep 600 LSFMARK_90187_C
+after TERM+10 s, marker scan:
+90279     1 90278 perl -e use POSIX; use IO::Socket::INET; $SIG{PIPE}="IGNORE"; 
+after KILL of tracked set (group+pid), marker survivors:
+90279     1 90278 perl -e use POSIX; use IO::Socket::INET; $SIG{PIPE}="IGNORE"; 
+gateway closed at 1795367986
+marker survivors still alive 3 s after gateway close:
+90279     1 90278 perl -e use POSIX; use IO::Socket::INET; $SIG{PIPE}="IGNORE"; 
+probe log tail:
+1795367986 no-reply
+1795367987 no-reply
+1795367988 no-reply
+1795367989 no-reply
+after marker-scan KILL:
+(end)
+spike/gemini/part-b-e11.sh: line 18: 90215 Terminated: 15          node "$G/mock-api.mjs" "$1" "$2" > "$SP/mock$1.log" 2>&1 < /dev/null
+launcher exit after the kill: 1
+leftover LSFMARK processes: 0
+agy stdout after kill: {"conversation_id":"e42a5e52-dff0-432c-af86-7a6d2e3d706f","status":"ERROR","response":"","error":"interrupted","duration_seconds":10.052621,"num_turns":1,"usage":{"input_tokens":22,"output_tokens":6,"thinking_tokens":0,"cache_read_tokens":0,"total_to
+
+##### part-b-e12.sh
+HTTP 429: e12-429 rc=124 wall=100s mock requests=7
+status=ERROR finished_reason=interrupted error='API error (attempt 7): RESOURCE_EXHAUSTED (code 429): mock 429' denied=[] structured=False turns=1 dur=83.5s
+  stderr: error: interrupted
+HTTP 500: e12-500 rc=124 wall=100s mock requests=7
+status=ERROR finished_reason=interrupted error='API error (attempt 7): INTERNAL (code 500): mock 500' denied=[] structured=False turns=1 dur=97.6s
+  stderr: error: interrupted
+HTTP 503: e12-503 rc=124 wall=100s mock requests=7
+status=ERROR finished_reason=interrupted error='API error (attempt 7): UNAVAILABLE (code 503): mock 503' denied=[] structured=False turns=1 dur=94.2s
+  stderr: error: interrupted
+HTTP 401: e12-401 rc=3 wall=0s mock requests=1
+status=ERROR finished_reason=error error='mock 401' denied=[] structured=False turns=1 dur=0.0s
+  stderr: error: mock 401 | AGY_ERROR: {"short_error":"UNAUTHENTICATED (code 401): mock 401","retryable":false,"error_id":"b0d92e2a-9f1c-47ef-883a-7015f8fafd2a-1"}
+HTTP 400: e12-400 rc=3 wall=0s mock requests=1
+status=ERROR finished_reason=error error='mock 400' denied=[] structured=False turns=1 dur=0.0s
+  stderr: error: mock 400 | AGY_ERROR: {"short_error":"INVALID_ARGUMENT (code 400): mock 400","retryable":false,"error_id":"abc048f8-4d7d-4f3c-b775-13c8c224a0cd-1"}
+HTTP 403: e12-403 rc=3 wall=0s mock requests=1
+status=ERROR finished_reason=error error='mock 403' denied=[] structured=False turns=1 dur=0.0s
+  stderr: error: mock 403 | AGY_ERROR: {"short_error":"PERMISSION_DENIED (code 403): mock 403","retryable":false,"error_id":"45fd62c5-39e0-4738-a156-08a6a78ddc91-1"}
+e12-trunc rc=0
+status=SUCCESS finished_reason=None error='' denied=[] structured=False turns=1 dur=0.0s
+  stderr: 
+e12-ptimeout rc=3
+  wall=6s
+status=ERROR finished_reason=print_timeout error='print timeout after 6s with the turn still in progress; the response is partial' denied=[] structured=False turns=1 dur=0.0s
+  stderr: [agy] print timeout after 6s with turn in progress; returning partial output | error: print timeout after 6s with the turn still in progress; the response is partial | AG
+e12-hang rc=124
+  wall=8s (with-timeout.pl: TERM at 8 s, KILL 10 s later; rc 124 = harness timeout)
+status=ERROR finished_reason=interrupted error='interrupted' denied=[] structured=False turns=1 dur=0.0s
+  stderr: error: interrupted
+e12-nofinish rc=0
+status=SUCCESS finished_reason=None error='' denied=[] structured=False turns=4 dur=0.0s
+  stderr: 
+  io/out files: 0
+e12-model rc=1
+status=ERROR finished_reason=error error='invalid model selection (--model "not-a-model" --effort ""): model not-a-model is not recognized as a known model or custom model in settings\nAvailabl' denied=[] structured=False turns=0 dur=0.0s
+  stderr: error: invalid model selection (--model "not-a-model" --effort ""): model not-a-model is not recognized as a known model or custom model in settings | Available models: |
+  mock requests: 0
+e12-empty rc=0
+stdout not JSON: 'CLI error: bubbletea: error opening TTY: bubbletea: could not open TTY: open /dev/tty: operation not permitted'
+  stderr: 
+e12-nocred rc=1
+status=ERROR finished_reason=error error='authentication failed or timed out' denied=[] structured=False turns=0 dur=0.0s
+  stderr: Error: authentication required. Run 'agy' to log in, then retry. | error: authentication failed or timed out
+  gateway hosts:    2 "host":"play.googleapis.com" 
+e12-expired rc=1
+status=ERROR finished_reason=error error='authentication failed or timed out' denied=[] structured=False turns=0 dur=0.0s
+  stderr: Error: authentication required. Run 'agy' to log in, then retry. | error: authentication failed or timed out
+  gateway hosts:    3 "host":"play.googleapis.com" 
+e12-deny rc=0
+status=SUCCESS finished_reason=None error='' denied=[] structured=False turns=1 dur=0.1s
+  stderr: 
+  tool write_file -> {"error": "Encountered error in tool execution: open /private/tmp/lsf-e12-outside.txt: operation not permitted"}
+  tool run_command -> eted At: 2026-11-22T17:10:02Z\nCommand exited with code 1.\n\nCommand output:\ntouch: /private/tmp/lsf-e12-outside2.txt: Operation not permitted\r\n"}
+  outside files created: 0
+
+##### part-b-s1s5.sh
+s1s5 rc=0
+S1-ssh rc=1 denied
+S1-zshrc rc=1 denied
+S1-gh rc=1 denied
+S1-otherstep rc=1 denied
+S1-keychain rc=44 bytes=200
+S1-token rc=1 denied
+S1-agyhome rc=1 denied
+S1-agysupport rc=1 denied
+S1-owntoken rc=0 bytes=107
+S2-launchctl rc=1 bytes=0
+S2-open rc=1 bytes=43
+S2-osascript rc=0 bytes=670
+S2-kill rc=1 denied
+S2-psenv rc=126 denied
+S3-direct rc=1 bytes=0
+S3-gwport rc=1 bytes=0
+S3-ownport rc=0 bytes=52
+S4-tokenwrite rc=1 denied
+S4-outside rc=1 denied
+S4-realhome rc=1 denied
+S4-inrepo rc=0 bytes=0
+S4-in rc=1 denied
+S5-node rc=0 bytes=1
+S5-npm rc=0 bytes=6
+the worker's terminal tool and read_file tool read the Step's own (fake) credential file; canary occurrences in the request that carries the tool results (= what would reach the model provider): 2
+environment variable NAMES visible to the terminal tool: _ AGY_LLM_GATEWAY_API_KEY AGY_LLM_GATEWAY_MODELS AGY_LLM_GATEWAY_URL ANTIGRAVITY_AGENT ANTIGRAVITY_AGENTAPI_EXE ANTIGRAVITY_APP_DATA_DIR ANTIGRAVITY_CONVERSATION_ID ANTIGRAVITY_CSRF_TOKEN ANTIGRAVITY_LS_ADDRESS ANTIGRAVITY_LS_VERSION ANTIGRAVITY_PROJECT_ID ANTIGRAVITY_SOURCE_METADATA ANTIGRAVITY_TRAJECTORY_ID FACTORY_STEP GEMINI_API_KEY GIT_EDITOR GIT_PAGER HGEDITOR HOME HTTP_PROXY HTTPS_PROXY JJ_EDITOR JJ_PAGER LANG LOGNAME OLDPWD PAGER PATH PWD SHLVL TERM TMPDIR 
+GEMINI_API_KEY (set for agy, fake) value reached the model request: 0
+
+##### part-b-real.sh (summary of the single real run)
+R1 status=SUCCESS usage={'input_tokens': 9667, 'output_tokens': 15, 'thinking_tokens': 0, 'cache_read_tokens': 0, 'total_tokens': 9682} keys=['conversation_id', 'duration_seconds', 'num_turns', 'response', 'status', 'usage'] response='CANARY-AGENTS-MD CANARY-GEMINI-MD ok\n'
+R2 stream events: ['init', 'step_update', 'step_update', 'step_update', 'step_update', 'step_update', 'result'] ... total 7
+R2 final result keys: ['conversation_id', 'duration_seconds', 'json_schema', 'num_turns', 'response', 'status', 'structured_output', 'usage']
+R2 status=SUCCESS structured_output={'notes': 'CANARY-AGENTS-MD CANARY-GEMINI-MD', 'role_shape': 'reviewer-readonly', 'schema': 'fake-result/1', 'status': 'done', 'summary': 'The code review found no issues and all changes meet the expected standards.'} usage={'input_tokens': 12059, 'output_tokens': 137, 'thinking_tokens': 0, 'cache_read_tokens': 7870, 'total_tokens': 12196}
+R2 validate.py: VALID
+R3 status=SUCCESS denied=None turns=1 usage={'input_tokens': 14263, 'output_tokens': 230, 'thinking_tokens': 0, 'cache_read_tokens': 15569, 'total_tokens': 14493}
+R3 result.json: {   "schema": "fake-result/1",   "status": "done",   "summary": "The calc.py file defines a function that adds two values and returns their sum.",   "role_shape": "reviewer-readonly" } 
+R3 validate.py: VALID
+R5 status=ERROR finished_reason=error error='authentication failed or timed out' stderr=Error: authentication required. Run 'agy' to log in, then retry. | error: authentication failed or timed out
+r4a quota buckets: [('Gemini Models', 'gemini-weekly', 0.9487, 'weekly', '2026-11-28T09:57:35Z'), ('Gemini Models', 'gemini-5h', 0.9997, '5h', '2026-11-22T21:58:32Z'), ('Claude and GPT models', '3p-weekly', 1, 'weekly', '2026-11-29T16:59:11Z'), ('Claude and GPT models', '3p-5h', 1, '5h', '2026-11-22T21:59:11Z'), ('Gemini 4 Argon', 'gemini-argon-wtu-weekly', 0.6053, 'weekly', '2026-11-28T09:08:45Z')]
+r4b quota buckets: [('Gemini Models', 'gemini-weekly', 0.9485, 'weekly', '2026-11-28T09:57:35Z'), ('Gemini Models', 'gemini-5h', 0.9987, '5h', '2026-11-22T21:58:32Z'), ('Claude and GPT models', '3p-weekly', 1, 'weekly', '2026-11-29T16:59:40Z'), ('Claude and GPT models', '3p-5h', 1, '5h', '2026-11-22T21:59:40Z'), ('Gemini 4 Argon', 'gemini-argon-wtu-weekly', 0.6053, 'weekly', '2026-11-28T09:08:45Z')]
+  gateway hosts so far:   20 "aicode.googleapis.com"   39 "daily-cloudcode-pa.googleapis.com"   10 "lh3.googleusercontent.com"    2 "oauth2.googleapis.com"   25 "play.googleapis.com"   10 "www.googleapis.com" 

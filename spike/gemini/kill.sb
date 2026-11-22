@@ -1,0 +1,2 @@
+;; Spike 3.6 (E8, E11, S1-S5): lets a worker's shell (agy terminal tool, hook or MCP command) start perl/sleep/touch/nohup so planted hooks run and escape attempts can be made. Appended after agy.sb + shell.sb + pty.sb. Same rule as spike/codex/kill.sb.
+(allow process-exec (subpath "/usr/bin") (subpath "/bin") (subpath "/System/Library/Perl") (subpath "/Library/Developer/CommandLineTools/usr/bin"))
