@@ -1,67 +1,74 @@
 E2 token lifetimes of the owner's file (no token values):
-access_token exp in hours: 239.5 age in hours: 0.5
-id_token exp in hours: 0.5 age in hours: 0.5
+access_token exp in hours: 239.4 age in hours: 0.6
+id_token exp in hours: 0.4 age in hours: 0.6
 last_refresh 2026-11-22T11:35:26.037766Z
 E1/E3 credential (dummy refresh token) + libinfo only + CA bundle:
-e1 rc=0 answers=1 {'chatgpt.com:443': 11, 'sdmntprcentralus.oaiusercontent.com:443': 1, 'sdmntprsouthcentralus.oaiusercontent.com:443': 1, 'ab.chatgpt.com:443': 1} bytes_up 79654 bytes_down 1443089
+e1 rc=0 answers=1 {'chatgpt.com:443': 12, 'sdmntprcentralus.oaiusercontent.com:443': 1, 'sdmntprsouthcentralus.oaiusercontent.com:443': 1, 'ab.chatgpt.com:443': 1} bytes_up 83691 bytes_down 1448494
+  turn.completed=1 reconnect-events=0
 E1 no credential file at all:
-nocred rc=1 answers=0 {'api.openai.com:443': 13, 'api.github.com:443': 1, 'codeload.github.com:443': 1} bytes_up 493647 bytes_down 30967341
- err: Reconnecting... 2/5 (unexpected status 401 Unauthorized: Missing bearer or basic authentication in header, url: wss://api.openai.com/v1/responses, cf-ray:
- err: Reconnecting... 3/5 (unexpected status 401 Unauthorized: Missing bearer or basic authentication in header, url: wss://api.openai.com/v1/responses, cf-ray:
+nocred rc=1 answers=0 {'api.openai.com:443': 13, 'api.github.com:443': 1, 'codeload.github.com:443': 1, 'chatgpt.com:443': 1, 'files.openai.com:443': 1} bytes_up 496301 bytes_down 18075584
+  turn.completed=0 reconnect-events=9
+ err: unexpected status 401 Unauthorized: Missing bearer or basic authentication in header, url: https://api.openai.com/v1/responses, cf-ray: a5e7d87358155033-W
 E2a last_refresh 30 days old, valid access token (expect no auth.openai.com):
-e2a rc=0 answers=1 {'chatgpt.com:443': 12, 'sdmntprcentralus.oaiusercontent.com:443': 1, 'sdmntprsouthcentralus.oaiusercontent.com:443': 1, 'ab.chatgpt.com:443': 1} bytes_up 105370 bytes_down 1454373
+e2a rc=0 answers=1 {'chatgpt.com:443': 11, 'sdmntprcentralus.oaiusercontent.com:443': 1, 'sdmntprsouthcentralus.oaiusercontent.com:443': 1, 'ab.chatgpt.com:443': 1} bytes_up 101269 bytes_down 1449156
+  turn.completed=1 reconnect-events=0
 E2b access-token signature destroyed (expect one auth.openai.com CONNECT, rc 1):
-e2b rc=1 answers=0 {'chatgpt.com:443': 21, 'auth.openai.com:443': 1} bytes_up 85903 bytes_down 122097
+e2b rc=1 answers=0 {'chatgpt.com:443': 21, 'auth.openai.com:443': 1} bytes_up 88273 bytes_down 128749
+  turn.completed=0 reconnect-events=0
  err: Your access token could not be refreshed. Please log out and sign in again.
 E3 no Mach rule at all:
 e3-none rc=1 answers=0 {} bytes_up 0 bytes_down 0
+  turn.completed=0 reconnect-events=0
 E3 libinfo, no CA bundle (platform TLS):
-e3-noca rc=1 answers=0 {'chatgpt.com:443': 65} bytes_up 11115 bytes_down 181353
- err: Reconnecting... 2/5 (workspace routing discovery failed)
- err: Reconnecting... 3/5 (workspace routing discovery failed)
+e3-noca rc=1 answers=0 {'chatgpt.com:443': 66} bytes_up 11286 bytes_down 183070
+  turn.completed=0 reconnect-events=9
+ err: workspace routing discovery failed
 E3 libinfo+trustd.agent, no CA bundle:
-e3-trust rc=1 answers=0 {'chatgpt.com:443': 66} bytes_up 11286 bytes_down 183756
- err: Reconnecting... 2/5 (workspace routing discovery failed)
- err: Reconnecting... 3/5 (workspace routing discovery failed)
+e3-trust rc=1 answers=0 {'chatgpt.com:443': 66} bytes_up 11286 bytes_down 182598
+  turn.completed=0 reconnect-events=9
+ err: workspace routing discovery failed
 E3 libinfo+trustd.agent+SecurityServer, no CA bundle:
-e3-sec rc=0 answers=1 {'chatgpt.com:443': 13, 'sdmntprcentralus.oaiusercontent.com:443': 1, 'sdmntprsouthcentralus.oaiusercontent.com:443': 1, 'ab.chatgpt.com:443': 1} bytes_up 74688 bytes_down 1439736
+e3-sec rc=0 answers=1 {'chatgpt.com:443': 13, 'sdmntprcentralus.oaiusercontent.com:443': 1, 'sdmntprsouthcentralus.oaiusercontent.com:443': 1, 'ab.chatgpt.com:443': 1} bytes_up 94932 bytes_down 1444291
+  turn.completed=1 reconnect-events=0
 E3 libinfo+cfprefsd.agent+cfprefsd.daemon, CA bundle:
 e3-cfd rc=1 answers=0 {} bytes_up 0 bytes_down 0
+  turn.completed=0 reconnect-events=0
 E4 hygiene flags:
-e4 rc=0 answers=1 {'chatgpt.com:443': 5} bytes_up 14001 bytes_down 133640
+e4 rc=0 answers=1 {'chatgpt.com:443': 5} bytes_up 14002 bytes_down 133598
+  turn.completed=1 reconnect-events=0
 E4 plugin switches but analytics left on:
-e4-an rc=0 answers=1 {'chatgpt.com:443': 7, 'ab.chatgpt.com:443': 1} bytes_up 52541 bytes_down 186997
+e4-an rc=0 answers=1 {'chatgpt.com:443': 7, 'ab.chatgpt.com:443': 1} bytes_up 52547 bytes_down 187351
+  turn.completed=1 reconnect-events=0
 E4 dead gateway port (nothing listens on it; no direct egress possible):
-e4-dead rc=1 seconds=22 answers=0
+e4-dead rc=1 seconds=22 answers=0 reconnect-events=9
 E5 own sandbox ON (workspace-write), no sandbox-exec exec rule:
-e5-on-79747 rc=0
- msg: The shell command could not run: operation not permitted.
- usage: {"input_tokens": 26168, "cached_input_tokens": 23552, "cache_write_input_tokens": 0, "output_tokens": 68, "reasoning_output_tokens": 0}
+e5-on-95940 rc=0
+ msg: I can’t run shell commands in this read-only environment.
+ usage: {"input_tokens": 26177, "cached_input_tokens": 23552, "cache_write_input_tokens": 0, "output_tokens": 70, "reasoning_output_tokens": 0}
  stderr: exec_command failed: CreateProcess { message: "UnsupportedOperation(\"Operation not permitted (os error 1)\")" }
 E5 own sandbox ON (workspace-write), /usr/bin/sandbox-exec exec-allowed:
-e5-nest-79747 rc=0
- msg: I’ll run the requested shell command exactly.
- msg: I can’t run shell commands in this read-only environment; the command was blocked.
- usage: {"input_tokens": 26193, "cached_input_tokens": 23552, "cache_write_input_tokens": 0, "output_tokens": 91, "reasoning_output_tokens": 0}
+e5-nest-95940 rc=0
+ msg: I’ll run that exact shell command.
+ msg: Operation not permitted (os error 1)
+ usage: {"input_tokens": 26207, "cached_input_tokens": 23552, "cache_write_input_tokens": 0, "output_tokens": 89, "reasoning_output_tokens": 0}
  stderr: exec_command failed: CreateProcess { message: "UnsupportedOperation(\"Operation not permitted (os error 1)\")" }
 E5 own sandbox OFF (danger-full-access + approval never):
-e5-off-79747 rc=0
- msg: CANARY-AGENTS-MD.
+e5-off-95940 rc=0
+ msg: I’ll run the requested shell command exactly.
  cmd: /bin/zsh -lc 'echo hello-from-shell' | status: in_progress | exit: None | out: 
  cmd: /bin/zsh -lc 'echo hello-from-shell' | status: completed | exit: 0 | out: hello-from-shell\n
  msg: hello-from-shell
- usage: {"input_tokens": 26139, "cached_input_tokens": 23552, "cache_write_input_tokens": 0, "output_tokens": 75, "reasoning_output_tokens": 0}
+ usage: {"input_tokens": 26149, "cached_input_tokens": 21504, "cache_write_input_tokens": 0, "output_tokens": 77, "reasoning_output_tokens": 0}
 E5 own sandbox OFF (--dangerously-bypass-approvals-and-sandbox):
-e5-byp-79747 rc=0
+e5-byp-95940 rc=0
  cmd: /bin/zsh -lc 'echo hello-from-shell' | status: in_progress | exit: None | out: 
  cmd: /bin/zsh -lc 'echo hello-from-shell' | status: completed | exit: 0 | out: hello-from-shell\n
  msg: hello-from-shell
- usage: {"input_tokens": 26133, "cached_input_tokens": 23552, "cache_write_input_tokens": 0, "output_tokens": 61, "reasoning_output_tokens": 0}
+ usage: {"input_tokens": 26149, "cached_input_tokens": 21504, "cache_write_input_tokens": 0, "output_tokens": 69, "reasoning_output_tokens": 0}
 E5 outer profile still enforces with the CLI sandbox off (write outside repo/ vs inside):
-e5-wr-79747 rc=0
- msg: I’ll run the requested command exactly once and return only its output.
+e5-wr-95940 rc=0
  cmd: /bin/zsh -lc "sh -c 'echo x > ../OUTSIDE-TEST; echo rc="'$?; echo y > ./inside-test; echo rc2=$?'"'" | status: in_progress | exit: None | out: 
  cmd: /bin/zsh -lc "sh -c 'echo x > ../OUTSIDE-TEST; echo rc="'$?; echo y > ./inside-test; echo rc2=$?'"'" | status: completed | exit: 0 | out: Error opening /private/var/select/sh: Operation not permitted\nsh: ../OUTSIDE-TEST: Operation not permitted\nrc=1\nrc2=0\n
  msg: Error opening /private/var/select/sh: Operation not permitted\nsh: ../OUTSIDE-TEST: Operation not permitted\nrc=1\nrc2=0
- usage: {"input_tokens": 26269, "cached_input_tokens": 23680, "cache_write_input_tokens": 0, "output_tokens": 139, "reasoning_output_tokens": 0}
+ usage: {"input_tokens": 26320, "cached_input_tokens": 23680, "cache_write_input_tokens": 0, "output_tokens": 182, "reasoning_output_tokens": 62}
   inside-test present in repo/: 1; OUTSIDE-TEST present beside repo/: 0
