@@ -1,4 +1,4 @@
 ;; Added by spike 3.5, step 2: agy starts an in-process "language server" that listens on two random loopback TCP ports (gRPC/HTTPS and HTTP).
 ;; Without it: "listen tcp 127.0.0.1:0: listen: operation not permitted". Measured: network-inbound alone is enough; network-bind alone is not.
-;; Cost: any process on this machine can connect to those ports while the CLI runs (the CLI uses a CSRF token for them; not tested).
+;; Cost: any process on this machine can connect to those ports while the CLI runs (the CLI uses a CSRF token for them; not tested). It also conflicts with S3: the worker may listen on any loopback port (see findings E3).
 (allow network-inbound (local ip "localhost:*"))
