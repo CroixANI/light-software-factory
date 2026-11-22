@@ -1,0 +1,24 @@
+E1/E3 credential + libinfo only + CA bundle:
+e1 rc=0 answers=1 {'chatgpt.com:443': 11, 'sdmntprcentralus.oaiusercontent.com:443': 1, 'sdmntprsouthcentralus.oaiusercontent.com:443': 1, 'ab.chatgpt.com:443': 1} bytes_up 79656 bytes_down 1443088
+E3 no Mach rule at all:
+e3-none rc=1 answers=0 {} bytes_up 0 bytes_down 0
+E3 libinfo, no CA bundle (platform TLS):
+e3-noca rc=1 answers=0 {'chatgpt.com:443': 66} bytes_up 11286 bytes_down 182886
+E3 libinfo+trustd.agent+SecurityServer, no CA bundle:
+e3-sec rc=0 answers=1 {'chatgpt.com:443': 13, 'sdmntprcentralus.oaiusercontent.com:443': 1, 'sdmntprsouthcentralus.oaiusercontent.com:443': 1, 'ab.chatgpt.com:443': 1} bytes_up 74689 bytes_down 1439831
+E4 hygiene flags:
+e4 rc=0 answers=1 {'chatgpt.com:443': 5} bytes_up 13981 bytes_down 133598
+E4 dead gateway port (nothing listens on it; no direct egress possible):
+e4-dead rc=1 seconds=22 answers=0
+E5 own sandbox ON (workspace-write) inside the profile:
+e5-on-54424 rc=0
+ msg: I read the repository instruction: CANARY-AGENTS-MD. I’ll run the requested shell command exactly.
+ msg: UnsupportedOperation("Operation not permitted (os error 1)")
+ usage: {"input_tokens": 26198, "cached_input_tokens": 23552, "cache_write_input_tokens": 0, "output_tokens": 99, "reasoning_output_tokens": 0}
+E5 own sandbox OFF (danger-full-access + approval never):
+e5-off-54424 rc=0
+ msg: I read the provided AGENTS.md instruction: CANARY-AGENTS-MD. Running the requested shell command exactly.
+ cmd: /bin/zsh -lc 'echo hello-from-shell' | status: in_progress | exit: None | out: 
+ cmd: /bin/zsh -lc 'echo hello-from-shell' | status: completed | exit: 0 | out: hello-from-shell\n
+ msg: hello-from-shell
+ usage: {"input_tokens": 26155, "cached_input_tokens": 23552, "cache_write_input_tokens": 0, "output_tokens": 91, "reasoning_output_tokens": 0}

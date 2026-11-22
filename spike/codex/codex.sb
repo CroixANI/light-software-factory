@@ -1,0 +1,10 @@
+;; Spike 3.3 fragment appended after spike/harness/sandbox/base.sb: the codex CLI is a native binary in CLIDIR.
+;; reviewer-readonly shape: exec only the CLI binary (no shell). Mach list stays empty here; extra services are added by --mach, one at a time.
+(allow process-exec (subpath (param "CLIDIR")))
+;; the credential copy is read-only for the CLI: a refresh must not be able to rewrite it (E2). Later rule wins over the home write rule in base.sb.
+(deny file-write* (literal (string-append (param "STEP") "/home/.codex/auth.json")))
+;; managed-requirements file (admin policy). Codex reads it at startup and aborts on EPERM, so reads must be allowed (absent file = ENOENT is fine). Read-only.
+(allow file-read* (literal "/private/etc/codex/requirements.toml") (literal "/private/etc/codex"))
+(allow file-read-metadata (literal "/private/etc") (literal "/etc"))
+;; public CA bundle (system roots as a PEM file) so the CLI can verify TLS without Security.framework/trustd: CODEX_CA_CERTIFICATE points here.
+(allow file-read* (literal "/private/etc/ssl/cert.pem") (literal "/private/etc/ssl"))
