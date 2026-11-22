@@ -1,5 +1,5 @@
 #!/bin/bash
-# Spike 3.6 E10: no shell (reviewer-readonly: agy.sb + base.sb only, no shell.sb/pty.sb/kill.sb). Mock model; the scripted worker tries every tool class under --dangerously-skip-permissions so that only the PROFILE decides.
+# Spike 3.6 E10: no shell (reviewer-readonly: base.sb + agy.sb + hosts.sb + lsbind.sb + the one Mach service, no shell.sb/pty.sb/kill.sb). Mock model; the scripted worker tries every tool class under --dangerously-skip-permissions so that only the PROFILE decides.
 # Prints, per tool call, ok / the first 110 chars of the tool error. Usage: SP=<new scratch dir> LSF_GEMINI_DIR=... H=... bash part-b-e10.sh
 set -u
 . "$LSF_GEMINI_DIR/part-b-lib.sh"; trap cleanup EXIT

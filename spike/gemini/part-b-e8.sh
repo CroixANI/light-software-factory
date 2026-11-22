@@ -63,7 +63,7 @@ PY
 import json,sys
 o=json.loads(open(sys.argv[1]).read()); print('  status=%s denied=%s' % (o.get('status'), [x['action'] for x in o.get('denied_actions',[])]))
 PY
-  mockstop 8913; sleep 1; pkill -f "/tmp/mcp-.*-ran" 2>/dev/null; true; }
+  mockstop 8913; sleep 1; }
 echo "V0 default flags, planted files in home/ and repo/"; variant e8-v0 planted
 echo "V1 --disable-slash-commands"; variant e8-v1 planted --disable-slash-commands
 echo "V2 excluded from the copy (home/.gemini emptied; repo has none of the listed files), default flags"; variant e8-v2 excluded
