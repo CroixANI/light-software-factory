@@ -11,8 +11,8 @@ mkdir -p "$SP"; chmod 700 "$SP"; : > "$SP/.lsf-codex-scratch"
 CA=/private/etc/ssl/cert.pem; LI=com.apple.system.opendirectoryd.libinfo
 HYG=(--disable plugins --disable remote_plugin --disable apps --disable in_app_updates -c analytics.enabled=false)
 GWOWN=""
-gwstart(){ if [ -f "$SP/gw.$1" ] && kill -0 "$(cat "$SP/gw.$1")" 2>/dev/null; then return 0; fi; GWOWN="$GWOWN $1"; local a=(); [ -n "${2:-}" ] && a=(--allow "$2"); node "$H/proxy/connect-proxy.mjs" --port "$1" --step "gw$1" ${a[@]+"${a[@]}"} > "$SP/gw$1.log" 2>&1 & echo $! > "$SP/gw.$1"; sleep 1; }
+gwstart(){ if [ -f "$SP/gw.$1" ] && kill -0 "$(cat "$SP/gw.$1")" 2>/dev/null; then [ "$(cat "$SP/gw.$1.allow" 2>/dev/null)" = "${2:-}" ] && return 0; echo "gateway on $1 runs with a different allowlist; stop it first" >&2; return 1; fi; GWOWN="$GWOWN $1"; local a=(); [ -n "${2:-}" ] && a=(--allow "$2"); node "$H/proxy/connect-proxy.mjs" --port "$1" --step "gw$1" ${a[@]+"${a[@]}"} > "$SP/gw$1.log" 2>&1 & echo $! > "$SP/gw.$1"; echo "${2:-}" > "$SP/gw.$1.allow"; sleep 1; }
 gwcleanup(){ for p in $GWOWN; do gwstop "$p"; done; }   # stops only the gateways this shell started (a caller's gateway on the same port is left alone)
-gwstop(){ kill -INT "$(cat "$SP/gw.$1")" 2>/dev/null; wait "$(cat "$SP/gw.$1")" 2>/dev/null; rm -f "$SP/gw.$1"; }
+gwstop(){ kill -INT "$(cat "$SP/gw.$1")" 2>/dev/null; wait "$(cat "$SP/gw.$1")" 2>/dev/null; rm -f "$SP/gw.$1" "$SP/gw.$1.allow"; }
 runx(){ id=$1; pf=$2; port=$3; shift 3; s=$SP/work/$id; xsb=(); for f in ${XSB:-}; do xsb+=(--extra-sb "$f"); done
   perl -e 'alarm 120; exec @ARGV' "$R" --step "$s" --port "$port" --env CODEX_CA_CERTIFICATE=$CA --mach $LI ${xsb[@]+"${xsb[@]}"} ${XENV[@]+"${XENV[@]}"} -- "$@" < "$pf" > "$SP/$id.out" 2> "$SP/$id.err"; echo "$id rc=$?"; }

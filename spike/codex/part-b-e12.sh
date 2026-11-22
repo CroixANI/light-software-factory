@@ -16,7 +16,7 @@ for c in "429 usage" "429 rate" "500 plain" "503 plain" "401 plain" "400 plain" 
   echo "$r mock=$st/$kd secs=$(( $(date +%s)-t0 )) mock-requests=$(grep -c '"n"' "$SP/mock.log") events=$(types "$SP/$id.out")"
   python3 -I "$C/summarize.py" "$SP/$id.out" | grep ' err:' | tail -1 | cut -c1-170; done
 echo "-- unknown model (real backend):"
-id=e12-model; rm -rf "$SP/work/$id"; step "$id"; gwstart 8961 chatgpt.com; trap gwcleanup EXIT
+id=e12-model; rm -rf "$SP/work/$id"; step "$id"; gwstart 8961 chatgpt.com; trap 'kill $mp 2>/dev/null; gwcleanup' EXIT
 runx "$id" "$SP/p-pong.txt" 8961 exec --json --skip-git-repo-check -s read-only -m no-such-model-xyz "${HYG[@]}"; python3 -I "$C/summarize.py" "$SP/$id.out" | grep ' err:' | tail -1 | cut -c1-200
 echo "-- unsupported effort for the model (real backend):"
 id=e12-effort; rm -rf "$SP/work/$id"; step "$id"
