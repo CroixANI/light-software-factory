@@ -31,7 +31,7 @@ gw() {
   kill -INT $gp; wait $gp 2>/dev/null
   echo "$lbl rc=$rc answers=$(grep -c '"agent_message"' "$SP/$id.out") $(python3 -I "$here/hosts.py" "$SP/$id.gw" | cut -c1-200)" | sed "s#$SP#SP#g"
   echo "  turn.completed=$(grep -c '"turn.completed"' "$SP/$id.out") reconnect-events=$(grep -c 'Reconnecting' "$SP/$id.out")"
-  python3 -I "$here/summarize.py" "$SP/$id.out" | grep -E '^ err:' | tail -1 | cut -c1-160
+  python3 -I "$here/summarize.py" "$SP/$id.out" | grep -E '^ err:' | tail -1 | sed 's/, cf-ray.*//' | cut -c1-160
 }
 EXEC=(exec --json --skip-git-repo-check -s read-only)
 echo "E2 token lifetimes of the owner's file (no token values):"; python3 -I "$here/mutate-auth.py" "${CODEX_AUTH_SRC:-$HOME/.codex/auth.json}" show-exp

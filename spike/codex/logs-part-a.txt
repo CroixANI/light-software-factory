@@ -8,7 +8,7 @@ e1 rc=0 answers=1 {'chatgpt.com:443': 12, 'sdmntprcentralus.oaiusercontent.com:4
 E1 no credential file at all:
 nocred rc=1 answers=0 {'api.openai.com:443': 13, 'api.github.com:443': 1, 'codeload.github.com:443': 1, 'chatgpt.com:443': 1, 'files.openai.com:443': 1} bytes_up 496301 bytes_down 18075584
   turn.completed=0 reconnect-events=9
- err: unexpected status 401 Unauthorized: Missing bearer or basic authentication in header, url: https://api.openai.com/v1/responses, cf-ray: a5e7d87358155033-W
+ err: unexpected status 401 Unauthorized: Missing bearer or basic authentication in header, url: https://api.openai.com/v1/responses
 E2a last_refresh 30 days old, valid access token (expect no auth.openai.com):
 e2a rc=0 answers=1 {'chatgpt.com:443': 11, 'sdmntprcentralus.oaiusercontent.com:443': 1, 'sdmntprsouthcentralus.oaiusercontent.com:443': 1, 'ab.chatgpt.com:443': 1} bytes_up 101269 bytes_down 1449156
   turn.completed=1 reconnect-events=0

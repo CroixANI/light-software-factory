@@ -1,6 +1,6 @@
 #!/bin/bash
 # Spike 3.3 throwaway: one codex run with the shell tool prompt under base.sb + codex.sb + shell.sb (+ one extra .sb), summarised from --json.
-# Needs env: SP (scratch dir outside the repo), prompt file $SP/p-shell.txt, gateway on PORT (default 8911). Prints rc and the command/message/error items.
+# Needs env: SP (scratch dir outside the repo), prompt file $SP/p-shell.txt, gateway on PORT (default 8911; part-a.sh sets 8946). Prints rc and the command/message/error items.
 # Usage: shell-probe.sh <id> <extra.sb|-> <prompt-file> -- <codex exec args...>
 set -u
 here="$(cd "$(dirname "$0")" && pwd)"; export LSF_CODEX_DIR="$here"; H="$here/../harness"; R="$here/run-codex.sh"
