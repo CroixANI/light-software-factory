@@ -14,3 +14,19 @@ Throwaway. Runs `codex exec` under the starting Seatbelt profile (`../harness/sa
 | `mutate-auth.py` | credential copy with a dummy refresh token (modes `dummy-refresh`, `old-last-refresh`, `bad-access-token`, `both`) and `show-exp` (token lifetimes, no values); never touches the owner's real file |
 
 Needs: the owner's file login in `~/.codex/auth.json`, `codex`, `node` >= 22, a NEW scratch directory outside the repository (`SP`; `part-a.sh` refuses an existing directory it did not create). The credential copy is mode 0400 inside the Step folder; `part-a.sh` removes the Step folders on exit (other helpers do not: remove `$SP/work` yourself). It is never printed or committed.
+
+## Part B (task 3.4, issue #17)
+Results and commands: [docs/spike/findings/codex.md](../../docs/spike/findings/codex.md) (part B section); output of the final run of every script: `logs-part-b.txt`.
+
+| File | What |
+|---|---|
+| `part-b-lib.sh` | helpers: `gwstart`/`gwstop` (gateway, optional host allowlist), `runx` (one `codex exec` run under the profile, 120 s wall clock), hygiene flag set `HYG` |
+| `part-b-e6.sh` | E6 (model/effort flags, `--output-schema` strict-mode limits, `-o`), E7 (usage, quota from the rollout), E10 (no shell, tool inventory) |
+| `part-b-e8.sh` | E8: which planted instruction/config/skill/rules files reach the model's context (read from the rollout), per flag set and with the files excluded |
+| `part-b-e9.sh` | E9: `needs_context` re-issue with a discarded and rebuilt Step; control with a reused `home/` |
+| `part-b-e11.sh`, `e11-spawn.sh`, `e11-kill.sh`, `kill.sb` | E11: escapes from the codex shell tool and the harness kill procedure (tool-shell group, marker scan) |
+| `part-b-e12.sh`, `mock-api.mjs` | E12: API errors forced with a fake Responses API, plus unknown model, sandbox denial, invalid output, timeout |
+| `part-b-s1s5.sh`, `s1s5.sh`, `s5.sb` | S1–S5 re-run with the codex shell tool as the worker |
+| `result.schema.strict.json` | the envelope `fake-result/1` rewritten as an OpenAI strict-mode schema (all keys required, optionals nullable) |
+
+Needs the same as part A (a NEW scratch directory outside the repository): `SP=<NEW dir outside the repo> LSF_CODEX_DIR=<this dir> H=<spike/harness> R=<run-codex.sh> bash part-b-e6.sh` (each script starts the gateways it needs; `part-b-e8.sh` and `part-b-e12.sh` expect one on 8961 allowing `chatgpt.com`, started with `. part-b-lib.sh; gwstart 8961 chatgpt.com`). The scripts remove nothing outside `$SP/work/<their ids>`; remove `$SP/work` (it holds credential copies with a dummy refresh token and the live access token) when done.

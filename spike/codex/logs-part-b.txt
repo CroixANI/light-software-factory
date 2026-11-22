@@ -1,0 +1,138 @@
+===== part-b-e6.sh output (final run) =====
+-- E6 model and effort flags; effective values from the rollout:
+e6-flags rc=0
+ msg: pong
+ usage: {"input_tokens": 10382, "cached_input_tokens": 9344, "cache_write_input_tokens": 0, "output_tokens": 5, "reasoning_output_tokens": 0}
+  turn_context: {'model': 'gpt-5.6-luna', 'effort': 'low', 'approval_policy': 'never'}
+  E7 quota (rollout token_count.rate_limits): keys ['credits', 'individual_limit', 'limit_id', 'limit_name', 'plan_type', 'primary', 'rate_limit_reached_type', 'secondary', 'spend_control_reached'] | primary keys ['resets_at', 'used_percent', 'window_minutes'] | used_percent 7.0 | window_minutes 43200 | secondary None
+-- E6 --output-schema: what the API accepts (errors come back before any model tokens):
+e6-schema-full rc=1
+  schema=full:  err: {"type":"error","error":{"message":"Invalid schema for response_format 'codex_output_schema': schema must have type 'object' and not have 'oneOf'/'anyOf'/'allOf'/'enum'/'not' at the top level. Found '
+e6-schema-noallof rc=1
+  schema=noallof:  err: {"type":"error","error":{"message":"Invalid schema for response_format 'codex_output_schema': In context=(), 'required' is required to be supplied and to be an array including every key in properties.
+e6-schema-strict rc=0
+  schema=strict: 
+  -o file is JSON with keys ['blocked', 'needs_context', 'notes', 'role_shape', 'schema', 'status', 'summary', 'tools_used'] | null-valued: ['blocked', 'needs_context', 'notes']
+  after dropping null optionals: VALID
+-- E10 no shell (--disable shell_tool, profile without shell.sb): tools, read attempt, result.json written by the worker with apply_patch:
+e10 rc=0
+ msg: I’ll attempt the file read first, then write the requested JSON via `apply_patch`.
+ item: file_change {"id": "item_1", "type": "file_change", "changes": [{"path": "SP/work/e10/io/out/result.json", "kind": "add"}], "status": "in_progress"}
+ item: file_change {"id": "item_1", "type": "file_change", "changes": [{"path": "SP/work/e10/io/out/result.json", "kind": "add"}], "status": "completed"}
+ msg: written
+  result.json: VALID; summary: Could not read src/calc.py with the view_image tool.
+-- E10 tool inventory with and without shell_tool:
+  default:  msg: apply_patch,create_goal,exec_command,get_goal,list_mcp_resource_templates,list_mcp_resources,multi_agent_v1__close_agent,multi_agent_v1__resume_agent,multi_agent_v1__send_input,multi_agent_v1__spawn_agent,multi_agent_v1__wait_agent,read_mcp_resource,update_goal,view_image,web__run,write_stdin
+  noshell:  msg: apply_patch,create_goal,get_goal,list_mcp_resource_templates,list_mcp_resources,multi_agent_v1__close_agent,multi_agent_v1__resume_agent,multi_agent_v1__send_input,multi_agent_v1__spawn_agent,multi_agent_v1__wait_agent,read_mcp_resource,update_goal,view_image,web__run
+
+===== part-b-e8.sh output (final run) =====
+V0 default: context canaries = ['CANARY-AGENTS-SKILL', 'CANARY-HOME-CONFIG', 'CANARY-HOME-OVERRIDE', 'CANARY-HOME-SKILL', 'CANARY-REPO-OVERRIDE', 'CANARY-REPO-SKILL'] | effective effort = high
+V1 --ignore-user-config --ignore-rules: context canaries = ['CANARY-AGENTS-SKILL', 'CANARY-HOME-OVERRIDE', 'CANARY-HOME-SKILL', 'CANARY-REPO-OVERRIDE', 'CANARY-REPO-SKILL'] | effective effort = None
+V2 V1 + -c project_doc_max_bytes=0: context canaries = ['CANARY-AGENTS-SKILL', 'CANARY-HOME-OVERRIDE', 'CANARY-HOME-SKILL', 'CANARY-REPO-SKILL'] | effective effort = None
+V4 V2 + -c skills.include_instructions=false: context canaries = ['CANARY-HOME-OVERRIDE'] | effective effort = None
+V3 planted files excluded from the copy, default flags: context canaries = NONE | effective effort = None
+R0 rule in CODEX_HOME/rules, default flags: 0 successful shell command(s); 1 refusal message(s)
+R1 rule in CODEX_HOME/rules, --ignore-rules: 1 successful shell command(s); 0 refusal message(s)
+R2 rule only in repo/.codex/rules, default flags: 1 successful shell command(s); 0 refusal message(s)
+
+===== part-b-e9.sh output (final run) =====
+call 1: result.json VALID; marker in calc.py: 1
+state left in home/.codex after call 1: auth.json goals_1.sqlite goals_1.sqlite-shm goals_1.sqlite-wal installation_id logs_2.sqlite memories_1.sqlite memories_1.sqlite-wal models_cache.json queue_1.sqlite sessions shell_snapshots skills state_5.sqlite state_5.sqlite-shm state_5.sqlite-wal thread-writer-locks thread_history_1.sqlite tmp 
+state in tmp/ after call 1: lsf-codex.sb 
+call 2 (fresh Step, --ephemeral): VALID; marker in calc.py: 0; notes=NO-MEMORY
+  call 2 home/.codex has sessions: 0 rollout file(s)
+call 2b (call 1's home/ reused): VALID; notes=NO-MEMORY; rollout files in home now: 2
+
+===== part-b-e11.sh output (final run) =====
+process tree before the kill (pid ppid pgid, marker or binary name):
+  41503 41500 41500 bash HOME/.t3/worktrees/light-software-factory/t3-5fe6d09c-bba95a7ffd691c
+  41570 41503 41570 codex exec
+  41753 41570 41753 codex-code-mode-host --listen
+  41754 41570 41754 sh SP/work/e11/tmp/e11-spawn.sh
+  41755 41754 41754 perl -e
+  41756 41754 41756 perl -e
+  41759 1 41754 perl -e
+  41761 1 41760 perl -e
+probe lines before the kill: 38
+tracked pids: 41570 41753 41754 41755 41756 41762 | groups: 41570 41753 41754 41756 
+marker scan before kill:
+41755 41754 41754 perl -e sleep 600 LSFMARK_A
+41756 41754 41756 /usr/bin/perl -e sleep 600 LSFMARK_B
+41759     1 41754 perl -e sleep 600 LSFMARK_C
+41761     1 41760 perl -e use POSIX; use IO::Socket::INET; $SIG{PIPE}="IGNORE"; 
+after TERM+10 s, marker scan:
+41761     1 41760 perl -e use POSIX; use IO::Socket::INET; $SIG{PIPE}="IGNORE"; 
+after KILL of tracked set (group+pid), marker survivors:
+41761     1 41760 perl -e use POSIX; use IO::Socket::INET; $SIG{PIPE}="IGNORE"; 
+gateway closed at 1795353967
+marker survivors still alive 3 s after gateway close:
+41761     1 41760 perl -e use POSIX; use IO::Socket::INET; $SIG{PIPE}="IGNORE"; 
+probe log tail:
+1795353966 no-reply
+1795353967 no-reply
+1795353968 no-reply
+1795353969 no-reply
+after marker-scan KILL:
+(end)
+REPO/spike/codex/part-b-e11.sh: line 18: 41570 Terminated: 15          perl -e 'setpgrp(0,0); alarm 200; exec @ARGV' "$R" --step "$s" --port 8971 --env CODEX_CA_CERTIFICATE=$CA --mach $LI --extra-sb "$C/shell.sb" --extra-sb "$C/kill.sb" -- exec --json --skip-git-repo-check -s danger-full-access -c 'approval_policy="never"' -m gpt-5.6-luna -c model_reasoning_effort=low "${HYG[@]}" --disable multi_agent < "$SP/p-e11.txt" > "$SP/e11.out" 2> "$SP/e11.err"
+launcher exit after the kill: 143
+leftover LSFMARK processes: 0
+
+===== part-b-e12.sh output (final run) =====
+-- API errors forced with mock-api.mjs (profile port = mock port):
+e12-429-usage rc=1 mock=429/usage secs=0 mock-requests=3 events=['thread.started', 'turn.started', 'error', 'turn.failed']
+ err: You’ve hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/settings/usage to purchase more credits or try again at 2:2
+e12-429-rate rc=1 mock=429/rate secs=0 mock-requests=3 events=['thread.started', 'turn.started', 'error', 'turn.failed']
+ err: exceeded retry limit, last status: 429 Too Many Requests, request id: req_mock
+e12-500-plain rc=1 mock=500/plain secs=27 mock-requests=40 events=['thread.started', 'turn.started', 'error', 'error', 'error', 'error', 'error', 'error', 'turn.failed']
+ err: We’re currently experiencing high demand, which may cause temporary errors.
+e12-503-plain rc=1 mock=503/plain secs=28 mock-requests=40 events=['thread.started', 'turn.started', 'error', 'error', 'error', 'error', 'error', 'error', 'turn.failed']
+ err: unexpected status 503 Service Unavailable: mock 503, url: http://127.0.0.1:8963/v1/responses, request id: req_mock
+e12-401-plain rc=1 mock=401/plain secs=6 mock-requests=14 events=['thread.started', 'turn.started', 'error', 'error', 'error', 'error', 'error', 'error', 'turn.failed']
+ err: error sending request for url (https://auth.openai.com/oauth/token)
+e12-400-plain rc=1 mock=400/plain secs=0 mock-requests=3 events=['thread.started', 'turn.started', 'error', 'turn.failed']
+ err: {"error":{"type":"api_error","message":"mock 400"}}
+e12-200-sse-fail rc=1 mock=200/sse-fail secs=7 mock-requests=8 events=['thread.started', 'turn.started', 'error', 'error', 'error', 'error', 'error', 'error', 'turn.failed']
+ err: stream disconnected before completion: mock stream failure
+e12-200-sse-bad rc=1 mock=200/sse-bad secs=6 mock-requests=8 events=['thread.started', 'turn.started', 'error', 'error', 'error', 'error', 'error', 'error', 'turn.failed']
+ err: stream disconnected before completion: stream closed before response.completed
+-- unknown model (real backend):
+e12-model rc=1
+ err: The 'no-such-model-xyz' model is not supported when using Codex with a ChatGPT account.
+-- unsupported effort for the model (real backend):
+e12-effort rc=0
+ msg: pong
+Reading prompt from stdin...
+-- sandbox denial through the shell tool (write outside repo/):
+e12-denial rc=0
+ cmd: /bin/zsh -lc "sh -c 'echo x > ../OUTSIDE-TEST'" | status: failed | exit: 1 | out: Error opening /private/var/select/sh: Operation not permitted\nsh: ../OUTSIDE-TEST: Operation not permitted\n
+-- invalid output: the worker is asked for prose, the harness expects JSON in -o:
+e12-invalid rc=0
+  -o file content is JSON: no; result.json present: no
+-- timeout (wall clock 25 s, shell tool sleeps 60 s):
+REPO/spike/codex/part-b-e12.sh: line 35: 36338 Alarm clock: 14         perl -e 'alarm 25; exec @ARGV' "$R" --step "$s" --port 8961 --env CODEX_CA_CERTIFICATE=$CA --mach $LI --extra-sb "$C/shell.sb" --extra-sb "$C/kill.sb" -- exec --json --skip-git-repo-check -s danger-full-access -c 'approval_policy="never"' -m gpt-5.6-luna -c model_reasoning_effort=low "${HYG[@]}" --disable multi_agent < "$SP/p-sleep.txt" > "$SP/$id.out" 2> "$SP/$id.err"
+  rc=142 secs=25 events=['thread.started', 'turn.started', 'item.completed', 'item.started']
+
+===== part-b-s1s5.sh output (final run; log written by the codex shell tool) =====
+S1-ssh rc=1 denied
+S1-zshrc rc=1 denied
+S1-gh rc=1 denied
+S1-otherstep rc=1 denied
+S1-keychain rc=44 bytes=200
+S1-token rc=1 denied
+S1-codexauth rc=1 denied
+S1-codexdir rc=1 denied
+S2-launchctl rc=1 bytes=0
+S2-open rc=1 bytes=43
+S2-osascript rc=0 bytes=670
+S2-kill rc=1 denied
+S2-psenv rc=126 denied
+S3-direct rc=1 bytes=0
+S3-gwport rc=1 bytes=0
+S3-ownport rc=0 bytes=52
+S4-outside rc=1 denied
+S4-realhome rc=1 denied
+S4-inrepo rc=0 bytes=0
+S4-in rc=1 denied
+S5-node rc=0 bytes=1
+S5-npm rc=0 bytes=6
