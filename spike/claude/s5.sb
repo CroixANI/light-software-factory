@@ -1,0 +1,2 @@
+;; Spike 3.2 S5 only (extra profile after claude.sb + shell.sb + kill.sb): exec of the node install granted by --node-root (read is already granted by base.sb NODEROOT).
+(allow process-exec (subpath (param "NODEROOT")))

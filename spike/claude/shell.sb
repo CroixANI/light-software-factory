@@ -1,3 +1,3 @@
-;; E5 only: let the claude Bash tool run (shell + a few coreutils) so nesting of claude's own sandbox can be observed.
+;; E5, E6/E9 file writes, S1-S5: let the claude Bash tool run (shell + a few coreutils) so nesting of claude's own sandbox can be observed.
 (allow process-exec (literal "/bin/sh") (literal "/bin/bash") (literal "/bin/echo") (literal "/usr/bin/id") (literal "/bin/cat"))
 (allow file-write* (subpath (string-append (param "STEP") "/repo")))

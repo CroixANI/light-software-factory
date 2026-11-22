@@ -1,0 +1,2 @@
+;; Spike 3.2 E11 (also used with S1-S5): lets the worker's shell start perl/sleep/nohup so escape attempts can be made. Appended after claude.sb + shell.sb.
+(allow process-exec (subpath "/usr/bin") (subpath "/bin") (subpath "/System/Library/Perl") (subpath "/Library/Developer/CommandLineTools/usr/bin"))
