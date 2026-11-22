@@ -19,7 +19,7 @@ J
 mockstart 8913 "$SP/sc-e9-c1.json" "$SP/dump/e9-c1"
 runa e9-c1 8913 60 "$SP/p.txt" --extra-sb "$G/shell.sb" -- --output-format json --settings "$(rules "$S1")" --model $MODEL
 echo "call 1: $(head -c 300 "$SP/e9-c1.out" | sed 's/"conversation_id":"[^"]*",//')"
-echo "call 1 result.json: $(cat "$S1/io/out/result.json" 2>/dev/null | head -c 200)"; python3 "$V" "$S1/io/out/result.json" "$SCH" | head -2
+echo "call 1 result.json: $(cat "$S1/io/out/result.json" 2>/dev/null | head -c 200)"; python3 -I "$V" "$S1/io/out/result.json" "$SCH" | head -2
 echo "marker in call-1 calc.py: $(grep -c MARKER-FROM-CALL-1 "$S1/repo/src/calc.py")"
 echo "state left in home/ after call 1 (names, depth 3):"; (cd "$S1/home" && find . -maxdepth 3 \( -type f -o -type d \) | sed 's#^\./##' | grep -v '^$' | sort | head -40)
 echo "tmp/ after call 1: $(ls "$S1/tmp" | tr '\n' ' ')"
@@ -32,7 +32,7 @@ J
 mockstart 8913 "$SP/sc-e9-c2.json" "$SP/dump/e9-c2"
 runa e9-c2 8913 60 "$SP/p.txt" -- --output-format json --settings "$(rules "$S2")" --model $MODEL
 echo "call 2: $(head -c 300 "$SP/e9-c2.out" | sed 's/"conversation_id":"[^"]*",//')"
-python3 "$V" "$S2/io/out/result.json" "$SCH" | head -2; echo "status in call-2 result: $(python3 -c "import json;print(json.load(open('$S2/io/out/result.json'))['status'])" 2>&1)"
+python3 -I "$V" "$S2/io/out/result.json" "$SCH" | head -2; echo "status in call-2 result: $(python3 -I -c "import json,sys;print(json.load(open(sys.argv[1]))['status'])" "$S2/io/out/result.json" 2>&1)"
 echo "call-2 request 1: $(python3 -I "$G/bodyinfo.py" "$SP/dump/e9-c2/req-1.bin" | tail -1); marker strings in all call-2 requests: $(cat "$SP/dump"/e9-c2/req-*.bin | grep -c MARKER-FROM-CALL-1)"
 echo "call-2 read of more.txt reached the model: $(cat "$SP/dump"/e9-c2/req-2.bin | grep -c MORE-CONTEXT-DETAIL)"
 echo "marker in call-2 calc.py: $(grep -c MARKER-FROM-CALL-1 "$S2/repo/src/calc.py")"

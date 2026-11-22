@@ -144,7 +144,7 @@ e8-v4 rc=1
 
 ##### part-b-e9.sh
 e9-c1 rc=0
-call 1: {"status":"SUCCESS","response":"needs context\n","duration_seconds":0.036156,"num_turns":1,"usage":{"input_tokens":22,"output_tokens":6,"thinking_tokens":0,"cache_read_tokens":0,"total_tokens":28}}
+call 1: {"status":"SUCCESS","response":"needs context\n","duration_seconds":0.046148,"num_turns":1,"usage":{"input_tokens":22,"output_tokens":6,"thinking_tokens":0,"cache_read_tokens":0,"total_tokens":28}}
 call 1 result.json: {"schema":"fake-result/1","status":"needs_context","summary":"need more","role_shape":"builder","needs_context":[{"kind":"file","ref":"io/in/more.txt","why":"missing detail"}]}
 VALID
 marker in call-1 calc.py: 1
@@ -171,10 +171,10 @@ state left in home/ after call 1 (names, depth 3):
 .gemini/config/projects
 tmp/ after call 1: lsf-agy.sb 
 e9-c2 rc=0
-call 2: {"status":"SUCCESS","response":"done\n","duration_seconds":0.051184,"num_turns":1,"usage":{"input_tokens":22,"output_tokens":6,"thinking_tokens":0,"cache_read_tokens":0,"total_tokens":28}}
+call 2: {"status":"SUCCESS","response":"done\n","duration_seconds":0.04079,"num_turns":1,"usage":{"input_tokens":22,"output_tokens":6,"thinking_tokens":0,"cache_read_tokens":0,"total_tokens":28}}
 VALID
 status in call-2 result: done
-call-2 request 1: contents: 1 bytes: 39778; marker strings in all call-2 requests: 0
+call-2 request 1: contents: 1 bytes: 39726; marker strings in all call-2 requests: 0
 call-2 read of more.txt reached the model: 1
 marker in call-2 calc.py: 0
 e9-2b-plain rc=0
@@ -187,10 +187,10 @@ e9-2c rc=0
 ##### part-b-e10.sh
 e10 rc=0
   model requests made: 3 (one per scripted turn; invoke_subagent adds its own)
-  run_command echo     ok: :18:49Z Command failed to run: failed to create PTY: operation not permitted.  No output from the command.
-  read_file calc.py    ok: :18:49Z Showing lines 1-2 of 2 1: def add(a, b): 2:     return a + b
+  run_command echo     ok: :28:45Z Command failed to run: failed to create PTY: operation not permitted.  No output from the command.
+  read_file calc.py    ok: :28:45Z Showing lines 1-2 of 2 1: def add(a, b): 2:     return a + b
   read_file dir src    ERROR Encountered error in tool execution: path is a directory, not a file
-  write_file io/out    ok: :18:49Z Created file.
+  write_file io/out    ok: :28:45Z Created file.
   write_file repo/     ERROR Encountered error in tool execution: open <step>/repo/r.txt: operation not permitted
   edit_file repo       ERROR Encountered error in tool execution: open <step>/repo/src/calc.py: operation not permitted
   search_web           ERROR Encountered error in tool execution: proto: syntax error (line 1:1): unexpected token [
@@ -202,6 +202,7 @@ run_workflow (model-supplied Python script run by the CLI; reviewer-readonly pro
 tools declared to the model (request 1): tools: read_file run_command manage_task send_message schedule invoke_subagent define_subagent manage_subagents write_file edit_file search_web run_workflow swarm ask_question
 e10-init rc=0
 stream-json init lists 60 tool names, the model request declares 14; init-only names: ask_custom_permission ask_permission browser_click_element browser_drag_pixel_to_pixel browser_get_dom browser_get_network_request browser_input browser_list_network_requests browser_mouse_down browser_mouse_up browser_move_mouse browser_press_key browser_refresh_page browser_resize_window browser_scroll browser_scroll_dom browser_select_option browser_subagent call_mcp_tool capture_browser_console_logs capture_browser_screenshot click_browser_pixel command_status delete_knowledge execute_browser_javascript find_by_name finish generate_image grep_search list_browser_pages list_dir list_permissions list_plugin_accounts list_resources manage_inbox multi_replace_file_content notebook_edit notebook_execution open_browser_url read_browser_page read_resource read_url_content replace_file_content search_marketplace sed_file send_command_input view_file wait wait_5_seconds write_to_file
+declared to the model but NOT in init.tools (init is not a superset): read_file write_file edit_file swarm
 
 ##### part-b-e11.sh
 process tree before the kill (pid ppid pgid sid-leader?, marker or binary name):

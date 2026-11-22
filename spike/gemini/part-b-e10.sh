@@ -39,5 +39,6 @@ python3 -I - "$SP/e10-init.out" "$SP/dump/e10-init/req-1.bin" <<'PY'
 import json,sys
 ev=json.loads(open(sys.argv[1]).readline()); init=ev["init"]["tools"]; d=json.load(open(sys.argv[2])); decl=[f["name"] for t in d["tools"] for f in t["functionDeclarations"]]
 print("stream-json init lists %d tool names, the model request declares %d; init-only names: %s" % (len(init), len(decl), " ".join(n for n in init if n not in decl)))
+print("declared to the model but NOT in init.tools (init is not a superset): %s" % " ".join(n for n in decl if n not in init))
 PY
 

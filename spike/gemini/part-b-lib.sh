@@ -5,7 +5,10 @@
 # stepnew <id> : fresh Step folder under $SP/work (build-step-folder.sh); then rm -rf of the id first if it exists
 # runa <id> <port> <seconds> <prompt-file|-> <run-agy extra args...> -- <agy args...> : with-timeout.pl + run-agy.sh with the mock route env; stdout -> $SP/<id>.out, stderr -> $SP/<id>.err; echo rc
 : "${SP:?set SP to a NEW scratch directory outside the repository}"; : "${LSF_GEMINI_DIR:?}"; : "${H:?}"
-case "$SP" in "$PWD"/*|*/light-software-factory/*) echo "SP must be outside the repository" >&2; exit 2;; esac
+case "$SP" in /*) ;; *) echo "SP must be an absolute path" >&2; exit 2;; esac
+case "$SP" in /|/tmp|/private|/private/tmp|"$HOME"|"$HOME"/) echo "SP is too broad: $SP" >&2; exit 2;; esac
+top=$(git -C "$(dirname "$LSF_GEMINI_DIR")" rev-parse --show-toplevel 2>/dev/null) || top=
+case "$SP/" in "$PWD"/*|"${top:-/nonexistent}"/*) echo "SP must be outside the repository" >&2; exit 2;; esac
 mkdir -p "$SP/work" "$SP/dump"; chmod 700 "$SP"
 G=$LSF_GEMINI_DIR; R=$G/run-agy.sh; MODEL=mock-model
 X=(--mach com.apple.trustd.agent --extra-sb "$G/hosts.sb" --extra-sb "$G/lsbind.sb")

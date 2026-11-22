@@ -1,5 +1,6 @@
 #!/usr/bin/perl
 # Spike 3.6 throwaway: wall-clock limit that works for agy. `perl -e 'alarm N; exec ...'` does NOT stop agy (a Go binary: SIGALRM is ignored unless the program asks for it; measured: still running after 126 s with alarm 60).
+# LIMIT: it signals only the launcher's process group. agy puts its terminal tool's shell (and hook/MCP children) in groups of their own (E11), so a builder run that is stopped by this timer can leave those behind; the real kill procedure is e11-kill.sh (tracked set + marker scan).
 # Usage: with-timeout.pl <seconds> <cmd> [args...]   -> runs cmd in a NEW process group, TERM at <seconds>, KILL 10 s later (the same TERM-then-KILL order as ADR-005 §7), rc 124 on timeout, otherwise cmd's rc. stdout/stderr/stdin are inherited.
 use strict; use warnings; use POSIX qw(:sys_wait_h setpgid);
 my $secs = shift @ARGV; die "usage\n" unless defined $secs && $secs =~ /^\d+$/ && @ARGV;
