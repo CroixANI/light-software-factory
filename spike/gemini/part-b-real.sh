@@ -6,7 +6,8 @@
 set -u
 . "$LSF_GEMINI_DIR/part-b-real-lib.sh"; trap cleanup EXIT
 V=$H/fake-cli/validate.py; SCH=$H/fake-cli/result.schema.json
-[ -z "${SUMMARY_ONLY:-}" ] && gwstart $RP "$HOSTS"; hosts(){ echo "  gateway hosts so far: $(grep -oE '"host":"[^"]*"' "$SP/gw$RP.log" | sort | uniq -c | sed 's/"host"://' | tr '\n' ' ')"; }
+[ -z "${SUMMARY_ONLY:-}" ] && { gwstart $RP "$HOSTS"; trap 'cleanup; rm -rf "$RW"' EXIT; }   # a real run deletes its token copies (the Steps under $RW) when it ends
+hosts(){ echo "  gateway hosts so far: $(grep -oE '"host":"[^"]*"' "$SP/gw$RP.log" | sort | uniq -c | sed 's/"host"://' | tr '\n' ' ')"; }
 Q(){ rstep "$1"; echo "/quota" > "$SP/pq.txt"; runr "$1" 60 "$SP/pq.txt" -- --output-format json --model $RMODEL; }
 if [ -z "${SUMMARY_ONLY:-}" ]; then   # SUMMARY_ONLY=1 re-prints the summary of the outputs of an earlier run (no model call); the committed log was made that way from the single real run
 echo "== R4a quota before the model calls"; Q r4a
@@ -17,6 +18,7 @@ runr r2 120 "$SP/pr2.txt" -- --output-format stream-json --json-schema "$RW/r2/i
 echo "== R3 worker writes io/out/result.json itself (reviewer-readonly profile, allow rules, no flag)"; rstep r3; S=$RW/r3
 echo "Read the file $S/repo/src/calc.py. Then write the JSON file $S/io/out/result.json with exactly these keys: schema = \"fake-result/1\", status = \"done\", summary = one sentence about calc.py, role_shape = \"reviewer-readonly\". No other keys. Do not run commands." > "$SP/pr3.txt"
 runr r3 120 "$SP/pr3.txt" -- --output-format json --settings "{\"enableTerminalSandbox\":false,\"permissions\":{\"allow\":[\"read_file($S)\",\"write_file($S/io/out)\"]}}" --model $RMODEL
+cp "$RW/r3/io/out/result.json" "$SP/r3-result.json" 2>/dev/null
 echo "== R5 revoked credential: copy of the real token with a junk refresh token and an expired expiry"; rstep r5
 python3 -I - "$(tokpath r5)" <<'PY'
 import json,sys
@@ -41,7 +43,7 @@ fin=[e for e in ev if e['event']=='result'][-1]['result']; print('R2 final resul
 if fin.get('structured_output'):
     json.dump(fin['structured_output'], open(f'{sp}/r2-structured.json','w')); print('R2 validate.py:', subprocess.run(['python3',V,f'{sp}/r2-structured.json',SCH],capture_output=True,text=True).stdout.strip()[:80])
 r=load('r3'); print('R3 status=%s denied=%s turns=%s usage=%s' % (r and r['status'], r and r.get('denied_actions'), r and r['num_turns'], r and r['usage']))
-try: print('R3 result.json:', open(f'{rw}/r3/io/out/result.json').read()[:300].replace('\n',' ')); print('R3 validate.py:', subprocess.run(['python3',V,f'{rw}/r3/io/out/result.json',SCH],capture_output=True,text=True).stdout.strip()[:100])
+try: print('R3 result.json:', open(f'{sp}/r3-result.json').read()[:300].replace('\n',' ')); print('R3 validate.py:', subprocess.run(['python3',V,f'{sp}/r3-result.json',SCH],capture_output=True,text=True).stdout.strip()[:100])
 except Exception as e: print('R3 no result.json', e)
 r=load('r5'); print('R5 status=%s finished_reason=%s error=%r stderr=%s' % (r and r['status'], r and r.get('finished_reason'), r and (r.get('error') or '')[:150], err('r5')))
 for i in ('r4a','r4b'):

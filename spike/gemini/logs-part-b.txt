@@ -1,21 +1,32 @@
 ##### part-b-e6.sh
 --- E6/E7 a: prompt on stdin (no -p), --output-format json; mock API usage = prompt 100, candidates 7, cached 40, thoughts 5
 e6-json rc=0
-{"status":"SUCCESS","response":"mock says hi\n","duration_seconds":0.028613,"num_turns":1,"usage":{"input_tokens":60,"output_tokens":12,"thinking_tokens":5,"cache_read_tokens":40,"total_tokens":72}}
-(note, checked by hand, output not kept: -p takes the prompt as its VALUE: '-p' followed by a flag gives '-p took --output-format as its prompt' (rc 2), '-p' last gives 'flag needs an argument: -p' (rc 2); the prompt goes on stdin WITHOUT -p; -p "" is an empty prompt, see e12-empty)
+{"status":"SUCCESS","response":"mock says hi\n","duration_seconds":0.029796,"num_turns":1,"usage":{"input_tokens":60,"output_tokens":12,"thinking_tokens":5,"cache_read_tokens":40,"total_tokens":72}}
+(note, checked by hand, output not kept: -p takes the prompt as its VALUE: '-p' followed by a flag gives '-p took --output-format as its prompt' (rc 2), '-p' last gives 'flag needs an argument: -p' (rc 2); the prompt goes on stdin WITHOUT -p; -p "" gave 'empty prompt', rc 1: manual; e12-empty is a different case, an empty stdin WITHOUT -p)
 --- b: default text output
 e6-text rc=0
 stdout: mock says hi
 --- c: stream-json: event names and the keys of the last event
 e6-stream rc=0
-  events: ['init', 'step_update', 'step_update', 'result']
+  events: ['init', 'step_update', 'step_update', 'step_update', 'result']
   init keys: ['cwd', 'model', 'permission_mode', 'tools'] tools declared in init: 60
   result keys: ['conversation_id', 'duration_seconds', 'num_turns', 'response', 'status', 'usage'] usage: {'input_tokens': 60, 'output_tokens': 12, 'thinking_tokens': 5, 'cache_read_tokens': 40, 'total_tokens': 72}
 --- d: --effort on a model the CLI does not know / an invalid level (validated by the CLI before any request)
 e6-eff-unsup rc=1
-  rc/err: invalid model selection (--model \
+  invalid model selection (--model "mock-model" --effort "low"): --effort is not supported for model "mock-model"
 e6-eff-bad rc=1
-  rc/err: invalid model selection (--model \
+  invalid model selection (--model "mock-model" --effort "ultra"): invalid --effort "ultra" (valid: low, medium, high, xhigh, max)
+--- d2: real model ids served by the mock (the CLI believes it talks to a known model family): the tools declared to the model, and what --model/--effort do to the request
+e6-m-gemini-3-8-flash-low rc=0
+  [gemini-3.8-flash-low ] {"maxOutputTokens": 65536, "thinkingConfig": {"includeThoughts": true, "thinkingLevel": "LOW"}}; declared tools: 14; list/search tool among them: 0
+e6-m-gemini-3-8-flash rc=0
+  [gemini-3.8-flash ] {"maxOutputTokens": 65536, "thinkingConfig": {"includeThoughts": true, "thinkingLevel": "MEDIUM"}}; declared tools: 14; list/search tool among them: 0
+e6-m-gemini-3-8-flash--effort-high rc=0
+  [gemini-3.8-flash --effort high] {"maxOutputTokens": 65536, "thinkingConfig": {"includeThoughts": true, "thinkingLevel": "HIGH"}}; declared tools: 14; list/search tool among them: 0
+e6-m-gemini-3-8-flash--effort-low rc=0
+  [gemini-3.8-flash --effort low] {"maxOutputTokens": 65536, "thinkingConfig": {"includeThoughts": true, "thinkingLevel": "LOW"}}; declared tools: 14; list/search tool among them: 0
+e6-m-gemini-3-8-flash-low--effort-high rc=0
+  [gemini-3.8-flash-low --effort high] {"maxOutputTokens": 65536, "thinkingConfig": {"includeThoughts": true, "thinkingLevel": "HIGH"}}; declared tools: 14; list/search tool among them: 0
 --- e: --json-schema with the common envelope (schema file inside the Step): the model calls finish(args)
 e6-schema-ok rc=0
   finish(ok): status=SUCCESS turns=1 structured_output=present
@@ -26,54 +37,81 @@ e6-schema-bad rc=0
 e6-schema-none rc=0
   finish(none): status=SUCCESS turns=4 structured_output=ABSENT
   tool error the model gets for the invalid finish call: user ['functionResponse']: '{"name": "finish", "response": {"error": "Encountered error in tool validation: invalid arguments:\\n- at \'/status\': value must be one of \'done\', \'blocked\', \'needs_context\'"}}'
---- exit codes seen in E6/E12: success 0; invalid --effort/--model, empty -p prompt, no credential 1; non-retryable API error (400/401/403) and --print-timeout expiry 3; harness TERM/KILL 124 (with-timeout.pl); see part-b-e12.sh
+--- exit codes: see the rc= lines of this script and of part-b-e12.sh (the summary in the findings is written from them; the empty -p prompt rc 1 is the manual run above)
 
 ##### part-b-perm.sh
 V1 no flag, no rules
 v1 rc=0
-  status=SUCCESS denied_actions=['write_file']
+  status=SUCCESS response='' denied_actions=['write_file']
+  stderr: jetski: no output produced — a tool required the "write_file" permission that headless mode cannot prompt for, so it was auto-denied. Add an allow-rule under permissions.allow in settings.json (e.g. write_file(<target>)). Alternat
   tool results: [('run ended at the first denied call: no second model request', '')]
   files: a.txt=False b.txt=False
 V2 no flag, allow write_file(<exact io/out/a.txt>)
 v2 rc=0
-  status=SUCCESS denied_actions=['write_file']
+  status=SUCCESS response='' denied_actions=['write_file']
+  stderr: jetski: no output produced — a tool required the "write_file" permission that headless mode cannot prompt for, so it was auto-denied. Add an allow-rule under permissions.allow in settings.json (e.g. write_file(<target>)). Alternat
   tool results: [('run ended at the first denied call: no second model request', '')]
   files: a.txt=True b.txt=False
 V3a no flag, allow with * globs (write_file(STEP/io/out/*), command(echo *))
 v3a rc=0
-  status=SUCCESS denied_actions=['write_file']
+  status=SUCCESS response='' denied_actions=['write_file']
+  stderr: jetski: no output produced — a tool required the "write_file" permission that headless mode cannot prompt for, so it was auto-denied. Add an allow-rule under permissions.allow in settings.json (e.g. write_file(<target>)). Alternat
   tool results: [('run ended at the first denied call: no second model request', '')]
   files: a.txt=False b.txt=False
 V3b no flag, allow by directory / prefix (write_file(STEP/io/out), command(echo))
 v3b rc=0
-  status=SUCCESS denied_actions=['write_file']
+  status=SUCCESS response='' denied_actions=['write_file']
+  stderr: jetski: no output produced — a tool required the "write_file" permission that headless mode cannot prompt for, so it was auto-denied. Add an allow-rule under permissions.allow in settings.json (e.g. write_file(<target>)). Alternat
   tool results: [('run ended at the first denied call: no second model request', '')]
   files: a.txt=True b.txt=False
 V4 no flag, allow dir + deny exact file (deny must win)
 v4 rc=0
-  status=SUCCESS denied_actions=['write_file']
+  status=SUCCESS response='' denied_actions=['write_file']
+  stderr: jetski: no output produced — a tool required the "write_file" permission that headless mode cannot prompt for, so it was auto-denied. Add an allow-rule under permissions.allow in settings.json (e.g. write_file(<target>)). Alternat
   tool results: [('run ended at the first denied call: no second model request', '')]
   files: a.txt=False b.txt=False
 V5 --mode accept-edits, no rules
 v5 rc=0
-  status=SUCCESS denied_actions=['write_file']
+  status=SUCCESS response='' denied_actions=['write_file']
+  stderr: jetski: no output produced — a tool required the "write_file" permission that headless mode cannot prompt for, so it was auto-denied. Add an allow-rule under permissions.allow in settings.json (e.g. write_file(<target>)). Alternat
   tool results: [('run ended at the first denied call: no second model request', '')]
   files: a.txt=False b.txt=False
 V6a --dangerously-skip-permissions, deny with * globs
 v6a rc=0
-  status=SUCCESS denied_actions=[]
+  status=SUCCESS response='finished\n' denied_actions=[]
+  stderr: 
   tool results: [('write_file', 'ok'), ('write_file', 'ok'), ('run_command', 'ok'), ('read_file', 'error:{"error": "Encountered error in tool execution: failed to access file:')]
   files: a.txt=True b.txt=True
 V6b --dangerously-skip-permissions, deny by directory / prefix (write_file(STEP/repo), command(echo))
 v6b rc=0
-  status=SUCCESS denied_actions=[]
+  status=SUCCESS response='finished\n' denied_actions=[]
+  stderr: 
   tool results: [('write_file', 'ok'), ('write_file', 'denied'), ('run_command', 'denied'), ('read_file', 'error:{"error": "Encountered error in tool execution: failed to access file:')]
   files: a.txt=True b.txt=False
 V7 --dangerously-skip-permissions, no rules
 v7 rc=0
-  status=SUCCESS denied_actions=[]
+  status=SUCCESS response='finished\n' denied_actions=[]
+  stderr: 
   tool results: [('write_file', 'ok'), ('write_file', 'ok'), ('run_command', 'ok'), ('read_file', 'error:{"error": "Encountered error in tool execution: failed to access file:')]
   files: a.txt=True b.txt=True
+C1 no flag, allow command(touch) (prefix) for touch <file>
+c1 rc=0
+  status=SUCCESS denied_actions=['command'] first call ran (t.txt)=True second call ran (mkdir d)=False
+C2 no flag, allow command(touch *) (glob)
+c2 rc=0
+  status=SUCCESS denied_actions=['command'] first call ran (t.txt)=False second call ran (mkdir d)=False
+C3 no flag, allow the exact command line
+c3 rc=0
+  status=SUCCESS denied_actions=['command'] first call ran (t.txt)=True second call ran (mkdir d)=False
+C4 no flag, allow command(touch) and command(mkdir) (both prefixes)
+c4 rc=0
+  status=SUCCESS denied_actions=[] first call ran (t.txt)=True second call ran (mkdir d)=True
+C5 no flag, allow command(echo) (prefix) for a command line with a redirect (echo hi > file)
+c5 rc=0
+  status=SUCCESS denied_actions=['command'] first call ran (t.txt)=False second call ran (mkdir d)=False
+C6 no flag, allow the exact command line with the redirect
+c6 rc=0
+  status=SUCCESS denied_actions=['command'] first call ran (t.txt)=True second call ran (mkdir d)=False
 
 ##### part-b-e8.sh
 V0 default flags, planted files in home/ and repo/
@@ -148,62 +186,56 @@ e9-2c rc=0
 
 ##### part-b-e10.sh
 e10 rc=0
-  model requests made: 4 (one per scripted turn; invoke_subagent adds its own)
-  run_command echo     ok: :06:55Z Command failed to run: failed to create PTY: operation not permitted.  No output from the command.
-  read_file calc.py    ok: :06:55Z Showing lines 1-2 of 2 1: def add(a, b): 2:     return a + b
+  model requests made: 3 (one per scripted turn; invoke_subagent adds its own)
+  run_command echo     ok: :18:49Z Command failed to run: failed to create PTY: operation not permitted.  No output from the command.
+  read_file calc.py    ok: :18:49Z Showing lines 1-2 of 2 1: def add(a, b): 2:     return a + b
   read_file dir src    ERROR Encountered error in tool execution: path is a directory, not a file
-  write_file io/out    ok: :06:55Z Created file.
-  write_file repo/     ERROR y-t3-dfe63fba-00c1e14f307cc93a/7d94459a-c4e4-456b-ae8e-e791d61177b1/scratchpad-final2/work/e10/repo/r.txt: operation not permitted
-  edit_file repo       ERROR fe63fba-00c1e14f307cc93a/7d94459a-c4e4-456b-ae8e-e791d61177b1/scratchpad-final2/work/e10/repo/src/calc.py: operation not permitted
+  write_file io/out    ok: :18:49Z Created file.
+  write_file repo/     ERROR Encountered error in tool execution: open <step>/repo/r.txt: operation not permitted
+  edit_file repo       ERROR Encountered error in tool execution: open <step>/repo/src/calc.py: operation not permitted
   search_web           ERROR Encountered error in tool execution: proto: syntax error (line 1:1): unexpected token [
   invoke_subagent      ERROR Encountered error in tool validation: invalid arguments: - missing property 'TypeName'
-  run_workflow         ok: 5470-4417-982b-52352a3132fe/task-10 Task logs are available at: file://<path>
+  run_workflow         ERROR ools). Install the Xcode Command Line Tools (xcode-select --install), or Python from https://www.python.org/downloads/ or Homebrew
 repo/src/calc.py unchanged: yes
 io/out: r.txt 
+run_workflow (model-supplied Python script run by the CLI; reviewer-readonly profile): wrote inside io/out: no; write outside the Step: not created (); exec of /bin/echo from the script: no error recorded
+tools declared to the model (request 1): tools: read_file run_command manage_task send_message schedule invoke_subagent define_subagent manage_subagents write_file edit_file search_web run_workflow swarm ask_question
+e10-init rc=0
+stream-json init lists 60 tool names, the model request declares 14; init-only names: ask_custom_permission ask_permission browser_click_element browser_drag_pixel_to_pixel browser_get_dom browser_get_network_request browser_input browser_list_network_requests browser_mouse_down browser_mouse_up browser_move_mouse browser_press_key browser_refresh_page browser_resize_window browser_scroll browser_scroll_dom browser_select_option browser_subagent call_mcp_tool capture_browser_console_logs capture_browser_screenshot click_browser_pixel command_status delete_knowledge execute_browser_javascript find_by_name finish generate_image grep_search list_browser_pages list_dir list_permissions list_plugin_accounts list_resources manage_inbox multi_replace_file_content notebook_edit notebook_execution open_browser_url read_browser_page read_resource read_url_content replace_file_content search_marketplace sed_file send_command_input view_file wait wait_5_seconds write_to_file
 
 ##### part-b-e11.sh
 process tree before the kill (pid ppid pgid sid-leader?, marker or binary name):
-  69153 69081 69153 tty=?? agy --output-format
-  69189 69187 69189 tty=?? perl -e
-  69194 1 69193 tty=?? perl -e
-  911 846 911 tty=ttys000 login -flp
-  912 911 912 tty=ttys000 -zsh 
-  91949 846 91949 tty=ttys001 login -flp
-  91950 91949 91950 tty=ttys001 -zsh 
-  80474 846 80474 tty=ttys002 login -flp
-  80475 80474 80475 tty=ttys002 -zsh 
-  13157 846 13157 tty=ttys003 login -flp
-  13158 13157 13158 tty=ttys003 -zsh 
-  42188 846 42188 tty=ttys004 login -flp
-  42189 42188 42189 tty=ttys004 -zsh 
-  69187 69153 69187 tty=ttys005 sh e11-spawn.sh
-  69188 69187 69187 tty=ttys005 perl -e
-  69191 1 69187 tty=ttys005 perl -e
+  90238 90187 90238 tty=?? agy --output-format
+  90274 90272 90274 tty=?? perl -e
+  90279 1 90278 tty=?? perl -e
+  90272 90238 90272 tty=ttys005 sh e11-spawn.sh
+  90273 90272 90272 tty=ttys005 perl -e
+  90277 1 90272 tty=ttys005 perl -e
 probe lines before the kill: 40
-tracked pids: 69153 69187 69189 69188 69195 | groups: 69153 69187 69189 
+tracked pids: 90238 90272 90274 90273 90280 | groups: 90238 90272 90274 
 marker scan before kill:
-69189 69187 69189 /usr/bin/perl -e sleep 600 LSFMARK_69081_B
-69194     1 69193 perl -e use POSIX; use IO::Socket::INET; $SIG{PIPE}="IGNORE"; 
-69188 69187 69187 perl -e sleep 600 LSFMARK_69081_A
-69191     1 69187 perl -e sleep 600 LSFMARK_69081_C
+90274 90272 90274 /usr/bin/perl -e sleep 600 LSFMARK_90187_B
+90279     1 90278 perl -e use POSIX; use IO::Socket::INET; $SIG{PIPE}="IGNORE"; 
+90273 90272 90272 perl -e sleep 600 LSFMARK_90187_A
+90277     1 90272 perl -e sleep 600 LSFMARK_90187_C
 after TERM+10 s, marker scan:
-69194     1 69193 perl -e use POSIX; use IO::Socket::INET; $SIG{PIPE}="IGNORE"; 
+90279     1 90278 perl -e use POSIX; use IO::Socket::INET; $SIG{PIPE}="IGNORE"; 
 after KILL of tracked set (group+pid), marker survivors:
-69194     1 69193 perl -e use POSIX; use IO::Socket::INET; $SIG{PIPE}="IGNORE"; 
-gateway closed at 1795367269
+90279     1 90278 perl -e use POSIX; use IO::Socket::INET; $SIG{PIPE}="IGNORE"; 
+gateway closed at 1795367986
 marker survivors still alive 3 s after gateway close:
-69194     1 69193 perl -e use POSIX; use IO::Socket::INET; $SIG{PIPE}="IGNORE"; 
+90279     1 90278 perl -e use POSIX; use IO::Socket::INET; $SIG{PIPE}="IGNORE"; 
 probe log tail:
-1795367269 no-reply
-1795367270 no-reply
-1795367271 no-reply
-1795367272 no-reply
+1795367986 no-reply
+1795367987 no-reply
+1795367988 no-reply
+1795367989 no-reply
 after marker-scan KILL:
 (end)
-REPO/spike/gemini/part-b-e11.sh: line 18: 69108 Terminated: 15          node "$G/mock-api.mjs" "$1" "$2" > "$SP/mock$1.log" 2>&1 < /dev/null
+spike/gemini/part-b-e11.sh: line 18: 90215 Terminated: 15          node "$G/mock-api.mjs" "$1" "$2" > "$SP/mock$1.log" 2>&1 < /dev/null
 launcher exit after the kill: 1
 leftover LSFMARK processes: 0
-agy stdout after kill: {"conversation_id":"efbad1c2-d4cf-4751-8eb9-a08e9d0cb520","status":"ERROR","response":"","error":"interrupted","duration_seconds":10.062943,"num_turns":1,"usage":{"input_tokens":22,"output_tokens":6,"thinking_tokens":0,"cache_read_tokens":0,"total_to
+agy stdout after kill: {"conversation_id":"e42a5e52-dff0-432c-af86-7a6d2e3d706f","status":"ERROR","response":"","error":"interrupted","duration_seconds":10.052621,"num_turns":1,"usage":{"input_tokens":22,"output_tokens":6,"thinking_tokens":0,"cache_read_tokens":0,"total_to
 
 ##### part-b-e12.sh
 HTTP 429: e12-429 rc=124 wall=100s mock requests=7

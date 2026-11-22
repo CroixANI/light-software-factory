@@ -21,7 +21,8 @@ try:
         r=pt['functionResponse']; t=json.dumps(r['response'])
         res.append((r['name'],'denied' if 'denied' in t.lower() or 'Permission' in t else 'error:'+t[:70] if 'error' in r['response'] else 'ok'))
 except Exception as e: res.append(('run ended at the first denied call: no second model request',''))
-print('  status=%s denied_actions=%s' % (o.get('status'), [x['action'] for x in o.get('denied_actions',[])]))
+print('  status=%s response=%r denied_actions=%s' % (o.get('status'), o.get('response'), [x['action'] for x in o.get('denied_actions',[])]))
+print('  stderr: %s' % open(sys.argv[1].replace('.out','.err')).read().strip().replace('\n',' ')[:230])
 print('  tool results:', res)
 print('  files: a.txt=%s b.txt=%s' % (os.path.exists(S+'/io/out/a.txt'), os.path.exists(S+'/repo/b.txt')))
 PY
@@ -37,3 +38,22 @@ echo "V5 --mode accept-edits, no rules";         variant v5 "{$T}" --mode accept
 echo "V6a --dangerously-skip-permissions, deny with * globs"; variant v6a "{$T,\"permissions\":{\"deny\":[\"write_file(STEP/repo/*)\",\"command(echo *)\"]}}" --dangerously-skip-permissions
 echo "V6b --dangerously-skip-permissions, deny by directory / prefix (write_file(STEP/repo), command(echo))"; variant v6b "{$T,\"permissions\":{\"deny\":[\"write_file(STEP/repo)\",\"command(echo)\"]}}" --dangerously-skip-permissions
 echo "V7 --dangerously-skip-permissions, no rules"; variant v7 "{$T}" --dangerously-skip-permissions
+# --- command rules WITHOUT the skip flag (the scripted model runs `touch <io/out/t.txt>` then `mkdir <io/out/d>`; the run ends at the first call no rule allows, so the files show which calls ran). Also a redirect variant (`echo hi > file`).
+cmdvariant(){ id=$1; allow=$2; first=${3:-touch}; stepnew "$id"; S=$SP/work/$id
+  case $first in touch) CMD1="touch $S/io/out/t.txt";; redirect) CMD1="echo hi > $S/io/out/t.txt";; esac
+  cat > "$SP/sc-$id.json" <<J
+[{"calls":[{"name":"run_command","args":{"CommandLine":"$CMD1","toolSummary":"a","WaitMsBeforeAsync":2000}},{"name":"run_command","args":{"CommandLine":"mkdir $S/io/out/d","toolSummary":"b","WaitMsBeforeAsync":2000}}]},{"text":"finished"}]
+J
+  mockstart 8913 "$SP/sc-$id.json"; runa "$id" 8913 40 "$SP/p.txt" --extra-sb "$G/shell.sb" --extra-sb "$G/pty.sb" --extra-sb "$G/kill.sb" -- --output-format json --settings "{$T,\"permissions\":{\"allow\":[${allow//STEP/$S}]}}" --model $MODEL
+  python3 -I - "$SP/$id.out" "$S" <<'PY'
+import json,sys,os
+o=json.loads(open(sys.argv[1]).read()); S=sys.argv[2]
+print('  status=%s denied_actions=%s first call ran (t.txt)=%s second call ran (mkdir d)=%s' % (o.get('status'), [x['action'] for x in o.get('denied_actions',[])], os.path.exists(S+'/io/out/t.txt'), os.path.exists(S+'/io/out/d')))
+PY
+  mockstop 8913; sleep 1; }
+echo "C1 no flag, allow command(touch) (prefix) for touch <file>";   cmdvariant c1 '"command(touch)"'
+echo "C2 no flag, allow command(touch *) (glob)";                    cmdvariant c2 '"command(touch *)"'
+echo "C3 no flag, allow the exact command line";                     cmdvariant c3 '"command(touch STEP/io/out/t.txt)"'
+echo "C4 no flag, allow command(touch) and command(mkdir) (both prefixes)"; cmdvariant c4 '"command(touch)","command(mkdir)"'
+echo "C5 no flag, allow command(echo) (prefix) for a command line with a redirect (echo hi > file)"; cmdvariant c5 '"command(echo)"' redirect
+echo "C6 no flag, allow the exact command line with the redirect";   cmdvariant c6 '"command(echo hi > STEP/io/out/t.txt)"' redirect

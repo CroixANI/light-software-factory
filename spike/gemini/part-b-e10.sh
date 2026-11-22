@@ -14,7 +14,7 @@ cat > "$SP/sc-$id.json" <<J
  {"name":"edit_file","args":{"Path":"$S/repo/src/calc.py","Target":"a + b","Replacement":"a - b"}},
  {"name":"search_web","args":{"query":"x"}},
  {"name":"invoke_subagent","args":{"Prompt":"x","Role":"r"}},
- {"name":"run_workflow","args":{"Script":"print(1)","Description":"d"}}]},{"text":"finished"}]
+ {"name":"run_workflow","args":{"Script":"import subprocess\nopen(\"$S/io/out/wf-inside.txt\",\"w\").write(\"x\")\ntry:\n    open(\"/private/tmp/lsf-wf-outside.txt\",\"w\").write(\"x\")\nexcept Exception as e:\n    open(\"$S/io/out/wf-outside-error.txt\",\"w\").write(type(e).__name__)\ntry:\n    subprocess.run([\"/bin/echo\",\"x\"],check=True)\nexcept Exception as e:\n    open(\"$S/io/out/wf-exec-error.txt\",\"w\").write(type(e).__name__)","Description":"d","WaitMsBeforeAsync":8000}}]},{"text":"finished"}]
 J
 mockstart 8913 "$SP/sc-$id.json" "$SP/dump/$id"; gwstart 8914 ""
 runa $id 8913 60 "$SP/p.txt" -- --output-format json --dangerously-skip-permissions --settings '{"enableTerminalSandbox":false}' --model $MODEL
@@ -26,7 +26,18 @@ d=[r for r in reqs if any("functionResponse" in p for p in r["contents"][-1]["pa
 names=['run_command echo','read_file calc.py','read_file dir src','write_file io/out','write_file repo/','edit_file repo','search_web','invoke_subagent','run_workflow']
 for n,p in zip(names,d['contents'][-1]['parts']):
     r=p['functionResponse']['response']; import re
-    print('  %-20s %s' % (n, ('ERROR '+r['error'][-130:].replace('\n',' ')) if 'error' in r else 'ok: '+re.sub(r'file://\S+','file://<path>',str(r.get('output',''))[60:260]).replace('\n',' ')))
+    red=lambda t: re.sub(r'file://\S+','file://<path>',re.sub(r'/[^ ]*/work/e10/','<step>/',t))
+    print('  %-20s %s' % (n, ('ERROR '+red(r['error'])[-130:].replace('\n',' ')) if 'error' in r else 'ok: '+red(str(r.get('output','')))[60:260].replace('\n',' ')))
 PY
 echo "repo/src/calc.py unchanged: $(cmp -s "$S/repo/src/calc.py" "$H/sample-repo/src/calc.py" && echo yes || echo NO)"; echo "io/out: $(ls "$S/io/out" | tr '\n' ' ')"
+echo "run_workflow (model-supplied Python script run by the CLI; reviewer-readonly profile): wrote inside io/out: $([ -f "$S/io/out/wf-inside.txt" ] && echo yes || echo no); write outside the Step: $([ -f /private/tmp/lsf-wf-outside.txt ] && echo CREATED || echo not created) ($(cat "$S/io/out/wf-outside-error.txt" 2>/dev/null)); exec of /bin/echo from the script: $(cat "$S/io/out/wf-exec-error.txt" 2>/dev/null || echo "no error recorded")"; rm -f /private/tmp/lsf-wf-outside.txt
+echo "tools declared to the model (request 1): $(python3 -I "$G/bodyinfo.py" "$SP/dump/$id/req-1.bin" --tools | head -1)"
 mockstop 8913
+# the CLI lists more tool names in stream-json init than it declares to the model: which ones
+stepnew e10-init; echo '[{"text":"x"}]' > "$SP/sc-e10i.json"; mockstart 8913 "$SP/sc-e10i.json" "$SP/dump/e10-init"; runa e10-init 8913 40 "$SP/p.txt" -- --output-format stream-json --model $MODEL; mockstop 8913
+python3 -I - "$SP/e10-init.out" "$SP/dump/e10-init/req-1.bin" <<'PY'
+import json,sys
+ev=json.loads(open(sys.argv[1]).readline()); init=ev["init"]["tools"]; d=json.load(open(sys.argv[2])); decl=[f["name"] for t in d["tools"] for f in t["functionDeclarations"]]
+print("stream-json init lists %d tool names, the model request declares %d; init-only names: %s" % (len(init), len(decl), " ".join(n for n in init if n not in decl)))
+PY
+

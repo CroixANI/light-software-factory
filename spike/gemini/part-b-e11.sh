@@ -13,7 +13,7 @@ echo go > "$SP/p.txt"
 perl -e 'setpgrp(0,0); exec @ARGV' "$R" --step "$S" --port 8913 "${X[@]}" --extra-sb "$G/shell.sb" --extra-sb "$G/pty.sb" --extra-sb "$G/kill.sb" --env "AGY_LLM_GATEWAY_URL=http://127.0.0.1:8913" --env AGY_LLM_GATEWAY_API_KEY=fake --env "AGY_LLM_GATEWAY_MODELS=$MODEL" -- --output-format json --dangerously-skip-permissions --settings '{"enableTerminalSandbox":false}' --model $MODEL < "$SP/p.txt" > "$SP/$id.out" 2> "$SP/$id.err" &
 root=$!; sleep 40
 echo "process tree before the kill (pid ppid pgid sid-leader?, marker or binary name):"
-ps -axo pid=,ppid=,pgid=,sess=,tty=,command= | grep -E "LSFMARK_$$|e11-spawn|/agy |zsh -c|/bin/zsh" | grep -v grep | grep -E "LSFMARK|e11-spawn|bin/agy|agy -|zsh" | awk '{printf "  %s %s %s tty=%s %s %s\n",$1,$2,$3,$5,$6,$7}' | sed 's#/[^ ]*/##' | cut -c1-110
+ps -axo pid=,ppid=,pgid=,sess=,tty=,command= | grep -E "LSFMARK_$$|e11-spawn|bin/agy|agy --output" | grep -v grep | awk '{printf "  %s %s %s tty=%s %s %s\n",$1,$2,$3,$5,$6,$7}' | sed 's#/[^ ]*/##' | cut -c1-110
 echo "probe lines before the kill: $(grep -c 'reply:HTTP/1.1 200' "$S/tmp/probe.log")"
 bash "$G/e11-kill.sh" "$root" "$mockpid" "$S/tmp/probe.log" $$ 2>&1 | cut -c1-120
 wait $root 2>/dev/null; echo "launcher exit after the kill: $?"; echo "leftover LSFMARK processes: $(pgrep -f "LSFMARK_$$" | wc -l | tr -d ' ')"
