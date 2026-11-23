@@ -31,7 +31,7 @@ None. The change sets `skip_specs: true` (`openspec/specs/` is empty; the spike 
 - Not changed: `docs/decisions.md`, `docs/architecture/**`, `docs/spike/plan.md`, `spike/harness/**` and every earlier `spike/<cli>/` directory. A profile that needs a change is copied into the task's own directory as a candidate.
 - Binding decisions touched as inputs only: D-56, D-57, D-63; the proposed D-75, D-76, D-77, D-78, D-79, D-80, D-81, D-82, D-83 (status per the owner: D-75, D-76, D-78, D-79, D-82 accepted, with D-82's adapter calling a pinned `openspec archive`; D-83 accepted; D-81 "the worker writes `result.json`" accepted; D-80 §3 order: in-process runner first, then loopback for the check Step only with serialization; builder exec list extended by `cat ls head tail grep sort git`).
 - Values: 4 (safe by structure) drives every check; value 1 caps spend, so model calls are tiny fixed prompts and most tool-shell checks use a scripted mock model with no quota. Value collision: none found.
-- Risk to the owner's machine: attended tasks use a dedicated factory directory and a separate account where possible; no check enumerates, reads or writes the owner's Keychain.
+- Risk to the owner's machine: attended tasks use a dedicated factory directory and the owner's own subscription (D-84 (d); no second account); no check enumerates, reads or writes the owner's Keychain.
 
 ## GitHub Group
 
