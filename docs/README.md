@@ -55,6 +55,7 @@ cloud runner, deployment. **Out of v1:** see [requirements.md](requirements.md#n
 | [glossary.md](glossary.md) | Shared vocabulary |
 | [architecture/](architecture/) | Architecture v1 ([`architecture.md`](architecture/architecture.md), [`adr/`](architecture/adr/)); review rounds, triage ledgers and the Gemini review in [`reviews/`](architecture/reviews/) |
 | [process/session-protocol.md](process/session-protocol.md) | What an agent does on a short command ("do next task", "spec <slug>", …); D-74 |
+| [process/orchestrator.md](process/orchestrator.md) | What the session orchestrator does on `orchestrate`: finds the next tasks, proposes them, launches or prints their sessions; D-83 |
 | [spike/plan.md](spike/plan.md) | Implementation-spike plan derived from the architecture's open questions |
 
 ## Process

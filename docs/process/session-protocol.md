@@ -9,6 +9,7 @@ What an agent does when the owner gives a short command. One source for every to
 | `review PR #N` | Review |
 | `archive <slug>` | Archive |
 | `decide <topic>` | Decision |
+| `orchestrate` | Orchestrate (D-83): read [orchestrator.md](orchestrator.md); it proposes and launches sessions, it does not do tasks |
 
 Anything else: ask once what is meant.
 
@@ -38,7 +39,7 @@ Up to 3 rounds. In each: start a sub-agent with a **clean context** (not a fork)
 Fetch the PR and its issue; check against the specs and the declared files; post findings as a PR review; do not push to the author's branch.
 
 ## Archive
-Only when every sub-issue of the parent is closed and the owner said so: `openspec-archive-change`, then a PR, then close the parent issue.
+Only when every sub-issue of the parent is closed and the owner said so: `openspec-archive-change`, then a PR, then close the parent issue. The session orchestrator proposes `archive <slug>` when every sub-issue of a parent is closed, no open PR has `Closes` on it and `main` is green (D-83); it starts the session only after the owner says so.
 
 ## Decision
 Interview the owner (`grill-me`), then append `D-NN` marked "proposed" to `docs/decisions.md` in the existing format, on a branch `docs/d<nn>-<slug>` (never a name ending in `-<number>`, which `scripts/next-task.sh` reads as a claimed issue); PR with label `type:decision`. Never edit accepted decisions except to mark them superseded.
