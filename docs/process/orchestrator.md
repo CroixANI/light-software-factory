@@ -34,7 +34,7 @@ Talk to the owner in Russian. Commits, comments and documents are in English (D-
 
 **`threads` mode.** For each chosen task:
 1. Launch a separate top-level thread (several at once if the tool allows) in its own git worktree from `origin/main`, fresh context, title `Task #N <slug>`, delegated from this thread. The message holds only the command, the background and the session rules. Do not launch tasks with sub-agents.
-2. Before the first launch, check on one task that `scripts/next-task.sh --claim <N> --here` works inside the worktree the tool created (the session protocol, Apply step 3); the session message tells the thread to use it.
+2. Before the first launch, check on one task that `scripts/next-task.sh --claim <N> --here` works inside the worktree the tool created (the session protocol, Apply step 2); the session message tells the thread to use it.
 3. Wait for the thread to finish its turn, then read its report and check it against the issue and the PR. Do not trust the report. Check: `Closes #N` is in the PR, only declared files are touched, the handoff comment exists, review rounds and unresolved findings are named.
 4. By session kind:
    - Apply: `tasks.md` checkboxes untouched; requirements come from the named change; scenario ids (`<capability>/<requirement>/<scenario>`) are used where the task touches them (D-67).
