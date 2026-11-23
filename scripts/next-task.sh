@@ -28,8 +28,9 @@ if [ "$here" = 1 ]; then
     echo "--here: this checkout has uncommitted changes; commit or discard them, or use a clean worktree" >&2; exit 5
   fi
   gitdir=$(cd "$(git rev-parse --git-dir)" && pwd -P); commondir=$(cd "$(git rev-parse --git-common-dir)" && pwd -P)
-  if [ "$gitdir" = "$commondir" ] && [ "$(git branch --show-current)" = main ]; then
-    echo "--here: this is the main checkout on main; create your own worktree first (or use the worktree steps in docs/process/session-protocol.md)" >&2; exit 5
+  # The main checkout is refused on any branch and in detached HEAD; a linked worktree (even detached) is fine.
+  if [ "$gitdir" = "$commondir" ]; then
+    echo "--here: this is the main checkout; create your own worktree first (or use the worktree steps in docs/process/session-protocol.md)" >&2; exit 5
   fi
 fi
 
@@ -91,6 +92,10 @@ if [ "$mode" = claim ]; then
   case "$kind" in impl) kind=feat;; decision) kind=docs;; esac
   [ -n "$change" ] || { echo "issue #$target has no OpenSpec change slug (expected 'OpenSpec change: <slug>' or the form field)" >&2; exit 3; }
   branch="$kind/$change-$target"
+  # --here: a leftover local branch (e.g. after --release) would make the switch fail AFTER GitHub changed, so refuse now.
+  if [ "$here" = 1 ] && git show-ref --verify --quiet "refs/heads/$branch"; then
+    echo "--here: a local branch $branch already exists (left from an earlier claim or --release). If it holds nothing you need, remove it with 'git branch -D $branch' (from another worktree if it is checked out here) and run the claim again; GitHub was not changed" >&2; exit 7
+  fi
   sha=$(gh api "repos/$repo/git/ref/heads/main" -q .object.sha)
   # Creating the ref is the lock: HTTP 422 if another session already has it.
   run gh api -X POST "repos/$repo/git/refs" -f ref="refs/heads/$branch" -f sha="$sha" >/dev/null \
