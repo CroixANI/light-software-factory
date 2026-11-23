@@ -43,11 +43,11 @@ When the owner gives a short command ("do next task", "do task #N", "spec <slug>
 The command `orchestrate` (D-83) makes you the *session orchestrator*: read [docs/process/orchestrator.md](docs/process/orchestrator.md). You propose the next tasks and launch or print their sessions; you never do a task yourself.
 
 ## Asking the owner
-- Do not ask when the task, the code, an accepted decision or a reasonable default gives the answer: decide, and say so in one line.
-- When you must ask, offer 2-4 concrete options (a free-text answer is always possible). Mark the one you recommend and give the reason in one or two lines. Give each option one line on its consequences.
-- One to three questions: use your tool's native choice dialog (Claude Code `AskUserQuestion`; elsewhere the equivalent, for example the T3 Code question request), recommended option first, labelled "(Recommended)".
-- More than three questions, or no such dialog: one numbered list in the message, one line per option, the recommendation marked.
-- Secrets, sign-in and access to other people's data are never asked in chat: use the secret-request tool (see [docs/process/orchestrator.md](docs/process/orchestrator.md)).
+- Do not ask when the task, the code, an accepted decision or a reasonable default gives the answer: decide, and say so in one line. A process rule that says to ask (unclear mode, unknown command, `attended: true`) wins over this.
+- When you must ask, offer 2-4 concrete options (a free-text answer is always possible; with more than 4, group them or decide). Put the one you recommend first, labelled "(Recommended)", with the reason in one or two lines. Give each option one line on its consequences.
+- One to three questions: use your tool's native choice dialog if it has one (for example `AskUserQuestion` in Claude Code, the pending-question request in T3 Code).
+- More than three questions, or no such dialog: one numbered list in the message, one line per option, recommendation first and labelled the same way.
+- Secrets, sign-in and access to other people's data are never asked in chat, in any session: use the secret-request tool (see [docs/process/orchestrator.md](docs/process/orchestrator.md)); if your tool has none, stop and tell the owner.
 
 ## Hygiene
 - No local paths, credentials, tokens or private material in the repository; the repository is public.
