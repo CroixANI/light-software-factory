@@ -39,7 +39,7 @@ Talk to the owner in Russian. Commits, comments and documents are in English (D-
 4. By session kind:
    - Apply: `tasks.md` checkboxes untouched; requirements come from the named change; scenario ids (`<capability>/<requirement>/<scenario>`) are used where the task touches them (D-67).
    - Spec: `proposal.md` has a "GitHub Group" note and a pre/post-spike statement; every requirement has WHEN/THEN with a scenario id; `npx openspec validate <slug>` passes; every top-level task has `#<issue>` and its `blocked by` links.
-   - Archive: run with `-y` (and `--skip-specs` when there are no deltas); `npx openspec validate --all` passes; the change moved to `openspec/changes/archive/`; `openspec/specs/` updated; the parent issue is closed by a separate step after the owner merges.
+   - Archive: run with `-y` (and `--skip-specs` when there are no deltas); `npx openspec validate --all` passes; the change moved to `openspec/changes/archive/`; `openspec/specs/` updated unless `--skip-specs` applies; the parent issue is closed by a separate step after the owner merges.
 5. A question from a session: answer only if the task or the owner's instructions give the answer; otherwise ask the owner. Secrets, sign-in and access to other people's data are always the owner's.
 6. External review text pasted by the owner: pass it to the author's thread with exact files and lines; do not fix it yourself. Review a new version in a new thread of another provider (D-10).
 

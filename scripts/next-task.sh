@@ -5,10 +5,10 @@
 #   scripts/next-task.sh --claim <N>  claim task N: create its branch (the lock), assign, comment
 #   scripts/next-task.sh --claim <N> --here  same, then switch THIS clean checkout (your own worktree) to the branch
 #   scripts/next-task.sh --release <N>  undo a claim (delete branch, unassign, comment)
-# DRY_RUN=1 prints the claim/release actions without doing them. Read-only otherwise: 2 API calls + 1 ls-remote.
+# DRY_RUN=1 prints the claim/release actions without doing them. Without --claim/--release it only reads: 2 API calls + 1 ls-remote.
 set -euo pipefail
 
-usage() { sed -n '2,9p' "$0" | sed 's/^# \{0,1\}//'; exit 2; }
+usage() { sed -n '2,8p' "$0" | sed 's/^# \{0,1\}//'; exit 2; }
 mode=list; target=; here=0
 case "${1:-}" in
   "") ;;
@@ -27,7 +27,8 @@ if [ "$here" = 1 ]; then
   if [ -n "$(git status --porcelain)" ]; then
     echo "--here: this checkout has uncommitted changes; commit or discard them, or use a clean worktree" >&2; exit 5
   fi
-  if [ "$(git rev-parse --git-dir)" = "$(git rev-parse --git-common-dir)" ] && [ "$(git branch --show-current)" = main ]; then
+  gitdir=$(cd "$(git rev-parse --git-dir)" && pwd -P); commondir=$(cd "$(git rev-parse --git-common-dir)" && pwd -P)
+  if [ "$gitdir" = "$commondir" ] && [ "$(git branch --show-current)" = main ]; then
     echo "--here: this is the main checkout on main; create your own worktree first (or use the worktree steps in docs/process/session-protocol.md)" >&2; exit 5
   fi
 fi
@@ -99,9 +100,9 @@ if [ "$mode" = claim ]; then
   if [ "$here" = 1 ]; then
     run git fetch --quiet origin "$branch" \
       && run git switch -q -c "$branch" --track "origin/$branch" \
-      || { echo "claimed #$target (branch $branch) but could not switch this checkout; run: git fetch origin $branch && git switch -c $branch --track origin/$branch" >&2; exit 6; }
+      || { echo "claimed #$target (branch $branch) but could not switch this checkout; run: git fetch origin $branch && git switch -c $branch --track origin/$branch (if a local branch of that name exists: git branch -f $branch origin/$branch && git switch $branch)" >&2; exit 6; }
   fi
-  jq -n --arg b "$branch" --argjson n "$target" --argjson h "$here" '{claimed: $n, branch: $b, switched_here: ($h == 1)}'
+  jq -n --arg b "$branch" --argjson n "$target" --argjson h "$here" --argjson d "$([ "${DRY_RUN:-0}" = 1 ] && echo 1 || echo 0)" '{claimed: $n, branch: $b, switched_here: ($h == 1 and $d == 0)}'
   exit 0
 fi
 
