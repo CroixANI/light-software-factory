@@ -1,8 +1,10 @@
-# Orchestrator (draft, proposed by D-83)
+# Session orchestrator (in force, D-83)
 
-**Status:** draft. Not in force until the owner accepts D-83; `AGENTS.md` and `session-protocol.md` do not name this file yet.
+**Status:** in force (D-83). `AGENTS.md` and `session-protocol.md` name this file.
 
-What an agent does on the command `orchestrate`. It finds the next tasks, proposes one or several to run in parallel and, where the tools allow, runs them in separate threads. It never does a task itself. How each session kind works stays in [session-protocol.md](session-protocol.md); this file does not repeat it.
+What an agent does on the command `orchestrate`. This agent is the **session orchestrator**, a repository-development agent; it is not the product component "orchestrator" of the architecture. It finds the next tasks, proposes one or several to run in parallel and, where the tools allow, runs them in separate threads. It never does a task itself. How each session kind works stays in [session-protocol.md](session-protocol.md); this file does not repeat it.
+
+This file, `session-protocol.md`, `AGENTS.md`, `scripts/next-task.sh` and `openspec/` are repository tooling: the product neither ships nor reads them (D-83 §7).
 
 Talk to the owner in Russian. Commits, comments and documents are in English (D-07).
 
@@ -32,12 +34,12 @@ Talk to the owner in Russian. Commits, comments and documents are in English (D-
 
 **`threads` mode.** For each chosen task:
 1. Launch a separate top-level thread (several at once if the tool allows) in its own git worktree from `origin/main`, fresh context, title `Task #N <slug>`, delegated from this thread. The message holds only the command, the background and the session rules. Do not launch tasks with sub-agents.
-2. Before the first launch, check on one task that `scripts/next-task.sh --claim` works inside the worktree the tool created.
+2. Before the first launch, check on one task that `scripts/next-task.sh --claim <N> --here` works inside the worktree the tool created (the session protocol, Apply step 3); the session message tells the thread to use it.
 3. Wait for the thread to finish its turn, then read its report and check it against the issue and the PR. Do not trust the report. Check: `Closes #N` is in the PR, only declared files are touched, the handoff comment exists, review rounds and unresolved findings are named.
 4. By session kind:
    - Apply: `tasks.md` checkboxes untouched; requirements come from the named change; scenario ids (`<capability>/<requirement>/<scenario>`) are used where the task touches them (D-67).
    - Spec: `proposal.md` has a "GitHub Group" note and a pre/post-spike statement; every requirement has WHEN/THEN with a scenario id; `npx openspec validate <slug>` passes; every top-level task has `#<issue>` and its `blocked by` links.
-   - Archive: run with `-y` or `--json`; `npx openspec validate` passes; the change moved to `openspec/changes/archive/`; `openspec/specs/` updated; the parent issue is closed by a separate step after the owner merges.
+   - Archive: run with `-y` (and `--skip-specs` when there are no deltas); `npx openspec validate --all` passes; the change moved to `openspec/changes/archive/`; `openspec/specs/` updated unless `--skip-specs` applies; the parent issue is closed by a separate step after the owner merges.
 5. A question from a session: answer only if the task or the owner's instructions give the answer; otherwise ask the owner. Secrets, sign-in and access to other people's data are always the owner's.
 6. External review text pasted by the owner: pass it to the author's thread with exact files and lines; do not fix it yourself. Review a new version in a new thread of another provider (D-10).
 
