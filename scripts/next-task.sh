@@ -3,20 +3,34 @@
 #   scripts/next-task.sh              list ready / claimed / blocked tasks as JSON
 #   scripts/next-task.sh <N>          same, plus whether task N is ready
 #   scripts/next-task.sh --claim <N>  claim task N: create its branch (the lock), assign, comment
+#   scripts/next-task.sh --claim <N> --here  same, then switch THIS clean checkout (your own worktree) to the branch
 #   scripts/next-task.sh --release <N>  undo a claim (delete branch, unassign, comment)
 # DRY_RUN=1 prints the claim/release actions without doing them. Read-only otherwise: 2 API calls + 1 ls-remote.
 set -euo pipefail
 
-usage() { sed -n '2,8p' "$0" | sed 's/^# \{0,1\}//'; exit 2; }
-mode=list; target=
+usage() { sed -n '2,9p' "$0" | sed 's/^# \{0,1\}//'; exit 2; }
+mode=list; target=; here=0
 case "${1:-}" in
   "") ;;
-  --claim) mode=claim; target=${2:-}; [[ "$target" =~ ^[0-9]+$ ]] || usage ;;
-  --release) mode=release; target=${2:-}; [[ "$target" =~ ^[0-9]+$ ]] || usage ;;
+  --claim) mode=claim; target=${2:-}; [[ "$target" =~ ^[0-9]+$ ]] || usage
+    case "${3:-}" in "") ;; --here) here=1 ;; *) usage ;; esac
+    [ $# -le 3 ] || usage ;;
+  --release) mode=release; target=${2:-}; [[ "$target" =~ ^[0-9]+$ ]] || usage; [ $# -le 2 ] || usage ;;
   -h|--help) usage ;;
   *) [[ "$1" =~ ^[0-9]+$ ]] && target=$1 || usage ;;
 esac
 run() { if [ "${DRY_RUN:-0}" = 1 ]; then echo "DRY_RUN: $*" >&2; else "$@"; fi; }
+
+# --here: check the local checkout BEFORE claiming, so a refusal leaves GitHub untouched.
+if [ "$here" = 1 ]; then
+  git rev-parse --is-inside-work-tree >/dev/null 2>&1 || { echo "--here: not inside a git checkout" >&2; exit 5; }
+  if [ -n "$(git status --porcelain)" ]; then
+    echo "--here: this checkout has uncommitted changes; commit or discard them, or use a clean worktree" >&2; exit 5
+  fi
+  if [ "$(git rev-parse --git-dir)" = "$(git rev-parse --git-common-dir)" ] && [ "$(git branch --show-current)" = main ]; then
+    echo "--here: this is the main checkout on main; create your own worktree first (or use the worktree steps in docs/process/session-protocol.md)" >&2; exit 5
+  fi
+fi
 
 repo=$(gh repo view --json nameWithOwner -q .nameWithOwner)
 all=$(gh api "repos/$repo/issues?state=open&per_page=100" --paginate | jq -s 'add')
@@ -82,7 +96,12 @@ if [ "$mode" = claim ]; then
     || { echo "could not create $branch: already claimed by another session" >&2; exit 4; }
   run gh issue edit "$target" --add-assignee @me >/dev/null
   run gh issue comment "$target" --body "claimed: ${AGENT_NAME:-agent}, $(date -u +%Y-%m-%dT%H:%MZ), branch \`$branch\`" >/dev/null
-  jq -n --arg b "$branch" --argjson n "$target" '{claimed: $n, branch: $b}'
+  if [ "$here" = 1 ]; then
+    run git fetch --quiet origin "$branch" \
+      && run git switch -q -c "$branch" --track "origin/$branch" \
+      || { echo "claimed #$target (branch $branch) but could not switch this checkout; run: git fetch origin $branch && git switch -c $branch --track origin/$branch" >&2; exit 6; }
+  fi
+  jq -n --arg b "$branch" --argjson n "$target" --argjson h "$here" '{claimed: $n, branch: $b, switched_here: ($h == 1)}'
   exit 0
 fi
 
