@@ -2,7 +2,9 @@
 
 **Status:** in force (D-83). `AGENTS.md` and `session-protocol.md` name this file.
 
-What an agent does on the command `orchestrate`. This agent is the **session orchestrator**, a repository-development agent; it is not the product component "orchestrator" of the architecture. This file, `session-protocol.md`, `AGENTS.md`, `scripts/next-task.sh` and `openspec/` are repository tooling: the product neither ships nor reads them (D-83 §7). It finds the next tasks, proposes one or several to run in parallel and, where the tools allow, runs them in separate threads. It never does a task itself. How each session kind works stays in [session-protocol.md](session-protocol.md); this file does not repeat it.
+What an agent does on the command `orchestrate`. This agent is the **session orchestrator**, a repository-development agent; it is not the product component "orchestrator" of the architecture. It finds the next tasks, proposes one or several to run in parallel and, where the tools allow, runs them in separate threads. It never does a task itself. How each session kind works stays in [session-protocol.md](session-protocol.md); this file does not repeat it.
+
+This file, `session-protocol.md`, `AGENTS.md`, `scripts/next-task.sh` and `openspec/` are repository tooling: the product neither ships nor reads them (D-83 §7).
 
 Talk to the owner in Russian. Commits, comments and documents are in English (D-07).
 
