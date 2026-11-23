@@ -20,7 +20,7 @@ Talk to the owner in Russian. Commits, comments and documents are in English (D-
 1. `git fetch` and `git pull --ff-only` on `main`.
 2. `scripts/next-task.sh`: show ready, claimed (stale ones marked) and blocked tasks.
 3. `npx openspec list`, then for each change find its parent issue (`OpenSpec change: <slug>`). Show: sub-issues closed of total, and any change without a parent issue. `0/N tasks` is expected (D-74 §5); progress comes from the sub-issues.
-4. Current phase: before M1 no production code is written (D-73 §6, as clarified by D-85): the product's code waits for the reviewed spike; repository tooling (`scripts/`, `.github/`, `AGENTS.md`/`CLAUDE.md`/`GEMINI.md`, `package.json`, `openspec/`) and `docs/` and `spike/` may change.
+4. Current phase: until the M1 gate passes no production code is written (D-73 §6, as clarified by D-85): the product's code waits for the reviewed spike; repository tooling (`scripts/`, `.github/`, `AGENTS.md`/`CLAUDE.md`/`GEMINI.md`, `package.json`/`package-lock.json`, `openspec/`) and `docs/` and `spike/` may change.
 
 ## 2. Propose
 - Propose one task, or several that can run in parallel (the script already applies the declared-files rule, D-38). Say why each is ready.

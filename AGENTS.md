@@ -15,8 +15,8 @@ This repository holds the design (and, later, the code) of a local software fact
 - The entity model must fit on one page (architecture §2, D-33). A new concept replaces or merges with an existing one
   before it is added.
 - **No production code before the spike findings are reviewed.** Production code is code that becomes the product (the
-  factory's own code). Until M1, change only `docs/`, throwaway work in `spike/` (see [docs/spike/plan.md](docs/spike/plan.md))
-  and the repository's own development tooling: `scripts/`, `.github/` templates and configs, `AGENTS.md`/`CLAUDE.md`/`GEMINI.md`,
+  factory's own code). Until the M1 gate passes, change only `docs/`, throwaway work in `spike/` (see [docs/spike/plan.md](docs/spike/plan.md))
+  and the repository's own development tooling, for example `scripts/`, `.github/` templates and configs, `AGENTS.md`/`CLAUDE.md`/`GEMINI.md`,
   `package.json`/`package-lock.json` (for OpenSpec) and `openspec/` (D-85 clarifies D-73 §6).
 - Keep Mermaid diagrams valid and relative links working when you move or rename files.
 

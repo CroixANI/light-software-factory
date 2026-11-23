@@ -94,7 +94,7 @@ if [ "$mode" = claim ]; then
   branch="$kind/$change-$target"
   # --here: a leftover local branch (e.g. after --release) would make the switch fail AFTER GitHub changed, so refuse now.
   if [ "$here" = 1 ] && git show-ref --verify --quiet "refs/heads/$branch"; then
-    echo "--here: a local branch $branch already exists (left from an earlier claim or --release). If it holds nothing you need, remove it with 'git branch -D $branch' (from another worktree if it is checked out here) and run the claim again; GitHub was not changed" >&2; exit 7
+    echo "--here: a local branch $branch already exists (left from an earlier claim or --release). If it holds nothing you need, remove it with 'git branch -D $branch' (if it is checked out in another worktree, switch or remove that worktree first) and run the claim again; GitHub was not changed" >&2; exit 7
   fi
   sha=$(gh api "repos/$repo/git/ref/heads/main" -q .object.sha)
   # Creating the ref is the lock: HTTP 422 if another session already has it.
@@ -105,7 +105,7 @@ if [ "$mode" = claim ]; then
   if [ "$here" = 1 ]; then
     run git fetch --quiet origin "$branch" \
       && run git switch -q -c "$branch" --track "origin/$branch" \
-      || { echo "claimed #$target (branch $branch) but could not switch this checkout; run: git fetch origin $branch && git switch -c $branch --track origin/$branch (if a local branch of that name exists: git branch -f $branch origin/$branch && git switch $branch)" >&2; exit 6; }
+      || { echo "claimed #$target (branch $branch) but could not switch this checkout; run: git fetch origin $branch && git switch -c $branch --track origin/$branch" >&2; exit 6; }
   fi
   jq -n --arg b "$branch" --argjson n "$target" --argjson h "$here" --argjson d "$([ "${DRY_RUN:-0}" = 1 ] && echo 1 || echo 0)" '{claimed: $n, branch: $b, switched_here: ($h == 1 and $d == 0)}'
   exit 0
