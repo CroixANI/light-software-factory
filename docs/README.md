@@ -2,7 +2,7 @@
 
 ← Back to the [repository README](../README.md).
 
-**Status:** requirements confirmed (D-01…D-74). Architecture v1 revision 4.1 — reviewed in 3 rounds, simplified after an independent Gemini review, consistency-checked; ready for the implementation spike. New readers start with [how-it-works.md](how-it-works.md).
+**Status:** requirements confirmed (D-01…D-74); accepted since: D-75, D-76, D-78, D-79, D-81…D-85; still proposed: D-77, D-80. Architecture v1 revision 4.1 — reviewed in 3 rounds, simplified after an independent Gemini review, consistency-checked; ready for the implementation spike. New readers start with [how-it-works.md](how-it-works.md).
 **Purpose of this folder:** agree on *what* we build before deciding *how*. Architecture, ADRs and specs come after the requirements reach `agreed`.
 
 ## What it is
@@ -28,7 +28,7 @@ a human merges (D-03, D-37). New dependencies are approved before restore (D-62,
 
 **Group done.** All items merged, gate green on main, OpenSpec change archived, retrospective PR open (D-37).
 
-**Agents.** Claude, Gemini, OpenAI as headless local CLI processes under the owner's own subscriptions, no extra macOS users (D-24, D-57, D-63).
+**Agents.** Claude Code, Antigravity (`agy`) and Codex as headless local CLI processes under the owner's own subscriptions, no extra macOS users (D-24, D-57, D-63); Gemini CLI is no longer the third provider slot (D-78).
 Five roles stored as data with capability presets, editable in the UI via PR (D-17, D-18, D-72); critic ≠ builder profile (D-10).
 Workers see only a manifest of inputs and talk only through the orchestrator's board (D-11, D-30, D-53).
 
