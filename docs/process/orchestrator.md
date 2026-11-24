@@ -20,7 +20,7 @@ Talk to the owner in Russian. Commits, comments and documents are in English (D-
 1. `git fetch` and `git pull --ff-only` on `main`.
 2. `scripts/next-task.sh`: show ready, claimed (stale ones marked) and blocked tasks.
 3. `npx openspec list`, then for each change find its parent issue (`OpenSpec change: <slug>`). Show: sub-issues closed of total, and any change without a parent issue. `0/N tasks` is expected (D-74 §5); progress comes from the sub-issues.
-4. Current phase: before M1 only `docs/`, `openspec/` and `spike/` change (D-73 §6).
+4. Current phase: until the M1 gate passes no production code is written (D-73 §6, as clarified by D-85): the product's code waits for the reviewed spike; repository tooling (`scripts/`, `.github/`, `AGENTS.md`/`CLAUDE.md`/`GEMINI.md`, `package.json`/`package-lock.json`, `openspec/`) and `docs/` and `spike/` may change.
 
 ## 2. Propose
 - Propose one task, or several that can run in parallel (the script already applies the declared-files rule, D-38). Say why each is ready.
@@ -34,7 +34,7 @@ Talk to the owner in Russian. Commits, comments and documents are in English (D-
 
 **`threads` mode.** For each chosen task:
 1. Launch a separate top-level thread (several at once if the tool allows) in its own git worktree from `origin/main`, fresh context, title `Task #N <slug>`, delegated from this thread. The message holds only the command, the background and the session rules. Do not launch tasks with sub-agents.
-2. Before the first launch, check on one task that `scripts/next-task.sh --claim <N> --here` works inside the worktree the tool created (the session protocol, Apply step 3); the session message tells the thread to use it.
+2. Before the first launch, check on one task that `scripts/next-task.sh --claim <N> --here` works inside the worktree the tool created (the session protocol, Apply step 2); the session message tells the thread to use it.
 3. Wait for the thread to finish its turn, then read its report and check it against the issue and the PR. Do not trust the report. Check: `Closes #N` is in the PR, only declared files are touched, the handoff comment exists, review rounds and unresolved findings are named.
 4. By session kind:
    - Apply: `tasks.md` checkboxes untouched; requirements come from the named change; scenario ids (`<capability>/<requirement>/<scenario>`) are used where the task touches them (D-67).

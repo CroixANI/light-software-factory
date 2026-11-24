@@ -60,7 +60,7 @@ Common "done when" for every task: the findings file exists and states, per chec
 
 ## 3. Credentials with the owner's sign-in (Attended: yes; the session asks the owner first)
 
-Rules for 3.1–3.3: the owner signs in; secrets only through the secret-request tool; the factory directory is a dedicated directory outside the repository and outside the Step folders, preferably with a separate account; the Keychain is not enumerated, read or copied; credential values are never printed, logged, committed or put into request bodies kept as evidence; CLIs run inside the spike profile with an empty `HOME` except the sign-in command itself (D-75 §1); one tiny fixed prompt per real call.
+Rules for 3.1–3.3: the owner signs in; secrets only through the secret-request tool; the factory directory is a dedicated directory outside the repository and outside the Step folders, signed in with the owner's own subscription (D-84 (d)); no second account; the Keychain is not enumerated, read or copied; credential values are never printed, logged, committed or put into request bodies kept as evidence; CLIs run inside the spike profile with an empty `HOME` except the sign-in command itself (D-75 §1); one tiny fixed prompt per real call.
 
 - [ ] 3.1 agy: refresh behavior and where the sign-in writes. `#56` — blocked by: none — Attended: yes
   - Read first: antigravity-cli.md (Credential mechanism, E2 measured refresh, "Baseline", the Keychain enumeration incident); D-75 ("Not verified"), D-78; findings §9 (b), (h) 3.
