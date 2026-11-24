@@ -11,7 +11,7 @@ What an agent does when the owner gives a short command. One source for every to
 | `decide <topic>` | Decision |
 | `orchestrate` | Orchestrate (D-83): read [orchestrator.md](orchestrator.md); it proposes and launches sessions, it does not do tasks |
 
-Anything else: ask once what is meant.
+Anything else: ask once what is meant (how to ask: [AGENTS.md](../../AGENTS.md#asking-the-owner)).
 
 ## Rules for every kind
 - Obey `AGENTS.md`. GitHub is the state (claims, comments, labels); the repository holds only artifacts. No progress files.
